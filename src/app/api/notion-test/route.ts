@@ -33,7 +33,7 @@ export async function GET() {
 
     try {
         // 1. Unfiltered Query (Simple)
-        const response = await notion.databases.query({
+        const response = await (notion.databases as any).query({
             database_id: dbId,
             page_size: 5,
         });
@@ -41,7 +41,7 @@ export async function GET() {
         const results = response.results;
         const unfilteredCount = results.length;
 
-        const sampleTitles = results.map((page) => {
+        const sampleTitles = results.map((page: any) => {
             if (!('properties' in page)) return '(not a page)';
             return getTitle(page as PageObjectResponse);
         });
