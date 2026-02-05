@@ -1,149 +1,149 @@
-# Personal Site
+# 个人变现网站
 
-A Next.js 15+ personal website for selling digital products and collecting SaaS waitlist signups.
+基于 Next.js 15+ 的个人网站，用于销售数字产品和收集 SaaS 候补名单。
 
-## Features
+## 功能特性
 
-- 🌐 **i18n Support** - Chinese (zh) and Japanese (ja) with URL prefix routing
-- 📦 **Digital Products** - Product listing with detail pages and purchase links
-- 📚 **Resource Library** - Prompts, templates, checklists, and SOPs with copy/download
-- 🎯 **SaaS Waitlist** - Form for collecting interested users
-- 📖 **Playbooks** - Step-by-step guides for specific goals
-- 📝 **Cases & Notes** - Blog-style content with MDX
-- 📊 **Analytics** - GA4 integration with custom event tracking
-- 🎨 **Modern UI** - Google Material Design-inspired, mobile-first
+- 🌐 **国际化支持** - 中文 (zh) 和日语 (ja)，基于 URL 前缀路由
+- 📦 **数字产品** - 产品列表和详情页，带购买链接
+- 📚 **资源库** - Prompt、模板、检查清单、SOP，支持复制/下载
+- 🎯 **SaaS 候补名单** - 收集感兴趣用户的表单
+- 📖 **Playbooks** - 针对特定目标的分步指南
+- 📝 **案例 & 笔记** - 基于 MDX 的博客内容
+- 📊 **数据分析** - GA4 集成，支持自定义事件追踪
+- 🎨 **现代 UI** - Google Material Design 风格，移动优先
 
-## Tech Stack
+## 技术栈
 
-- **Framework**: Next.js 15 (App Router)
-- **Language**: TypeScript
-- **Styling**: TailwindCSS
-- **Content**: MDX with gray-matter
-- **i18n**: next-intl
-- **Deployment**: Vercel
+- **框架**: Next.js 15 (App Router)
+- **语言**: TypeScript
+- **样式**: TailwindCSS
+- **内容**: MDX + gray-matter
+- **国际化**: next-intl
+- **部署**: Vercel
 
-## Getting Started
+## 快速开始
 
-### Prerequisites
+### 环境要求
 
 - Node.js 18+
-- npm or yarn
+- npm 或 yarn
 
-### Installation
+### 安装依赖
 
 ```bash
 npm install
 ```
 
-### Environment Variables
+### 环境变量
 
-Create a `.env.local` file based on `.env.example`:
+基于 `.env.example` 创建 `.env.local` 文件：
 
 ```bash
 cp .env.example .env.local
 ```
 
-Configure the following:
-- `NEXT_PUBLIC_GA_ID` - Google Analytics 4 Measurement ID
-- `NEXT_PUBLIC_FORM_ENDPOINT` - Form submission endpoint (e.g., Formspree)
-- `NEXT_PUBLIC_SITE_URL` - Your production URL
+配置以下变量：
+- `NEXT_PUBLIC_GA_ID` - Google Analytics 4 测量 ID
+- `NEXT_PUBLIC_FORM_ENDPOINT` - 表单提交端点（如 Formspree）
+- `NEXT_PUBLIC_SITE_URL` - 生产环境 URL
 
-### Development
+### 开发环境
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+打开 [http://localhost:3000](http://localhost:3000)。
 
-### Build
+### 构建
 
 ```bash
 npm run build
 ```
 
-## Project Structure
+## 项目结构
 
 ```
 personal-site/
-├── content/                 # MDX content files
-│   ├── products/           # Digital products (*.zh.mdx, *.ja.mdx)
-│   ├── library/            # Resources (prompts, templates, etc.)
-│   ├── playbooks/          # Step-by-step guides
-│   ├── cases/              # Success stories
-│   └── notes/              # Blog posts
-├── messages/               # i18n translation files
+├── content/                 # MDX 内容文件
+│   ├── products/           # 数字产品 (*.zh.mdx, *.ja.mdx)
+│   ├── library/            # 资源 (prompts, templates 等)
+│   ├── playbooks/          # 分步指南
+│   ├── cases/              # 成功案例
+│   └── notes/              # 博客文章
+├── messages/               # 国际化翻译文件
 │   ├── zh.json
 │   └── ja.json
 ├── src/
-│   ├── app/                # Next.js App Router pages
-│   │   └── [locale]/       # Locale-prefixed routes
-│   ├── components/         # React components
+│   ├── app/                # Next.js App Router 页面
+│   │   └── [locale]/       # 带语言前缀的路由
+│   ├── components/         # React 组件
 │   │   ├── layout/         # Header, Footer, LanguageSwitcher
 │   │   ├── cards/          # ProductCard, ResourceCard
 │   │   ├── forms/          # WaitlistForm, NewsletterSignup
 │   │   └── ui/             # TagFilter, CopyButton, DownloadButton
-│   ├── i18n/               # i18n configuration
-│   └── lib/                # Utilities (mdx.ts, analytics.ts)
-└── public/                 # Static assets
+│   ├── i18n/               # 国际化配置
+│   └── lib/                # 工具函数 (mdx.ts, analytics.tsx)
+└── public/                 # 静态资源
 ```
 
-## Content Management
+## 内容管理
 
-### Adding Products
+### 添加产品
 
-Create MDX files in `content/products/`:
+在 `content/products/` 创建 MDX 文件：
 
 ```mdx
 ---
-title: "Product Name"
-summary: "Short description"
-tags: ["tag1", "tag2"]
+title: "产品名称"
+summary: "简短描述"
+tags: ["标签1", "标签2"]
 updatedAt: "2024-01-01"
 language: "zh"
 price: "¥99"
 purchaseUrl: "https://gumroad.com/..."
 ---
 
-Your product content here...
+产品内容...
 ```
 
-### Adding Library Resources
+### 添加资源
 
-Create MDX files in `content/library/`:
+在 `content/library/` 创建 MDX 文件：
 
 ```mdx
 ---
-title: "Resource Name"
-summary: "Description"
-tags: ["tag1"]
+title: "资源名称"
+summary: "描述"
+tags: ["标签1"]
 updatedAt: "2024-01-01"
 language: "zh"
 type: "prompt"  # prompt | template | checklist | sop
-copyText: "Text to copy"  # for prompts
-downloadUrl: "..."  # for downloadable resources
+copyText: "要复制的文本"  # 用于 prompt 类型
+downloadUrl: "..."  # 用于可下载资源
 ---
 ```
 
-## Deployment
+## 部署
 
-### Vercel (Recommended)
+### Vercel（推荐）
 
-1. Push to GitHub
-2. Import project in Vercel
-3. Configure environment variables
-4. Deploy
+1. 推送到 GitHub
+2. 在 Vercel 导入项目
+3. 配置环境变量
+4. 部署
 
-### Other Platforms
+### 其他平台
 
-Build and export:
+构建并导出：
 
 ```bash
 npm run build
 ```
 
-Deploy the `.next` folder to your hosting provider.
+将 `.next` 文件夹部署到你的托管平台。
 
-## License
+## 许可证
 
 MIT
