@@ -1,65 +1,74 @@
 import { NextResponse } from 'next/server';
-import { notion } from '@/lib/notionClient';
-import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function getTitle(page: any): string {
+    if (!page || !page.properties) return '(no properties)';
+
+    // Iterate to find title
     const props = page.properties;
-    if (!props) return '(no props)';
+    const titleKey = Object.keys(props).find(key => props[key].type === 'title');
+    if (!titleKey) return '(no title title)';
 
-    // Find the title property (it has type 'title')
-    const titlePropKey = Object.keys(props).find(key => props[key].type === 'title');
-    if (!titlePropKey) return '(no title prop)';
-
-    const titleProp = props[titlePropKey];
-    if (titleProp.title && Array.isArray(titleProp.title)) {
-        return titleProp.title.map((t: any) => t.plain_text).join('');
+    const titleVal = props[titleKey];
+    if (titleVal.title && Array.isArray(titleVal.title)) {
+        return titleVal.title.map((t: any) => t.plain_text).join('');
     }
     return '(empty title)';
 }
 
 export async function GET() {
-    const dbId = process.env.NOTION_DATABASE_ID;
-
-    if (!process.env.NOTION_TOKEN) {
-        return NextResponse.json({ ok: false, error: 'NOTION_TOKEN missing' }, { status: 500 });
-    }
-    if (!dbId) {
-        return NextResponse.json({ ok: false, error: 'NOTION_DATABASE_ID missing' }, { status: 500 });
-    }
-
     try {
-        // 1. Unfiltered Query (Simple)
-        const response = await (notion.databases as any).query({
+        // Dynamic import to avoid build-time static analysis issues
+        const { Client } = await import('@notionhq/client');
+
+        const token = process.env.NOTION_TOKEN;
+        const dbId = process.env.NOTION_DATABASE_ID;
+
+        if (!token || !dbId) {
+            return NextResponse.json({
+                ok: false,
+                error: 'Missing ENV',
+                debug: { hasToken: !!token, hasDbId: !!dbId }
+            }, { status: 500 });
+        }
+
+        const notion = new Client({ auth: token });
+
+        // Extensive SDK Debugging
+        const sdkDebug = {
+            typeofClient: typeof Client,
+            clientKeys: Object.keys(notion),
+            databasesKeys: notion.databases ? Object.keys(notion.databases) : 'undefined',
+            hasQuery: notion.databases && 'query' in notion.databases,
+        };
+
+        console.log('Notion SDK Debug:', sdkDebug);
+
+        // Force cast to any to bypass local TS issues while we debug runtime
+        const response = await (notion as any).databases.query({
             database_id: dbId,
             page_size: 5,
         });
 
-        const results = response.results;
-        const unfilteredCount = results.length;
-
-        const sampleTitles = results.map((page: any) => {
-            if (!('properties' in page)) return '(not a page)';
-            return getTitle(page as PageObjectResponse);
-        });
+        const results = response.results || [];
+        const sampleTitles = results.slice(0, 3).map((p: any) => getTitle(p));
 
         return NextResponse.json({
             ok: true,
-            databaseId: dbId,
-            unfilteredCount,
+            unfilteredCount: results.length,
             sampleTitles,
-            rawFirstItem: results[0] ? results[0] : null
+            sdkDebug,
         });
 
-    } catch (error) {
-        console.error('Notion API Error:', error);
+    } catch (error: any) {
+        console.error('Notion Test Error:', error);
         return NextResponse.json({
             ok: false,
-            error: error instanceof Error ? error.message : 'Unknown error occurred',
-            details: error
+            error: error.message || 'Unknown Error',
+            stack: error.stack,
         }, { status: 500 });
     }
 }
