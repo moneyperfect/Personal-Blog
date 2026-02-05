@@ -19,7 +19,16 @@ export async function notionDatabaseQuery(
 
     if (!res.ok) {
         const errorText = await res.text();
-        throw new Error(`Notion API Error: ${res.status} ${res.statusText} - ${errorText}`);
+        let errorMessage = `Notion API Error: ${res.status} ${res.statusText} - ${errorText}`;
+
+        if (res.status === 404) {
+            errorMessage += '\n[HINT] 404 "object_not_found" usually means:\n1. The NOTION_DATABASE_ID is incorrect.\n2. The Integration (Token) has NOT been connected to the database.\n   --> Go to your Notion Database page > "..." menu > "Connect to" > Select your integration.';
+        }
+        if (res.status === 401) {
+            errorMessage += '\n[HINT] 401 "unauthorized" usually means the NOTION_TOKEN is invalid.';
+        }
+
+        throw new Error(errorMessage);
     }
 
     return res.json();
