@@ -1,32 +1,23 @@
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
-import { MDXRemote } from 'next-mdx-remote/rsc';
+import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
-import { getNoteBySlug, getAllSlugs } from '@/lib/mdx';
-import { Locale, routing } from '@/i18n/routing';
+import { getNotePageBySlug, getPageContent } from '@/lib/notion';
+import { Locale } from '@/i18n/routing';
+
+export const revalidate = 60; // Cache for 60 seconds
 
 type Props = {
     params: Promise<{ locale: string; slug: string }>;
 };
 
-export async function generateStaticParams() {
-    const params: { locale: string; slug: string }[] = [];
-    for (const locale of routing.locales) {
-        const slugs = getAllSlugs('notes', locale);
-        for (const slug of slugs) {
-            params.push({ locale, slug });
-        }
-    }
-    return params;
-}
-
 export async function generateMetadata({ params }: Props) {
     const { locale, slug } = await params;
-    const note = getNoteBySlug(slug, locale as Locale);
+    const note = await getNotePageBySlug(slug, locale as 'zh' | 'ja');
     if (!note) return { title: 'Note Not Found' };
     return {
-        title: note.frontmatter.title,
-        description: note.frontmatter.summary,
+        title: note.title,
+        description: note.summary,
     };
 }
 
@@ -34,8 +25,10 @@ export default async function NoteDetailPage({ params }: Props) {
     const { locale, slug } = await params;
     setRequestLocale(locale);
 
-    const note = getNoteBySlug(slug, locale as Locale);
+    const note = await getNotePageBySlug(slug, locale as 'zh' | 'ja');
     if (!note) notFound();
+
+    const markdownContent = await getPageContent(note.id);
 
     return (
         <div className="py-12 sm:py-20">
@@ -47,17 +40,17 @@ export default async function NoteDetailPage({ params }: Props) {
                 </nav>
                 <header className="mb-10">
                     <div className="flex flex-wrap gap-2 mb-3">
-                        {note.frontmatter.tags.map((tag) => (
+                        {note.tags.map((tag) => (
                             <span key={tag} className="text-sm text-surface-500">#{tag}</span>
                         ))}
                     </div>
                     <h1 className="text-3xl sm:text-4xl font-bold text-surface-900 mb-4">
-                        {note.frontmatter.title}
+                        {note.title}
                     </h1>
-                    <p className="text-surface-500">{note.frontmatter.updatedAt}</p>
+                    <p className="text-surface-500">{note.date}</p>
                 </header>
                 <article className="prose max-w-none">
-                    <MDXRemote source={note.content} />
+                    <ReactMarkdown>{markdownContent}</ReactMarkdown>
                 </article>
             </div>
         </div>

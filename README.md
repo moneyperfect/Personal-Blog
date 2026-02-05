@@ -90,40 +90,40 @@ personal-site/
 
 ## 内容管理
 
-### 添加产品
+### Notion CMS (Notes)
 
-在 `content/products/` 创建 MDX 文件：
+Notes 模块已接入 Notion。按照以下步骤配置：
 
-```mdx
----
-title: "产品名称"
-summary: "简短描述"
-tags: ["标签1", "标签2"]
-updatedAt: "2024-01-01"
-language: "zh"
-price: "¥99"
-purchaseUrl: "https://gumroad.com/..."
----
+1. **创建 Integration**
+   - 访问 [Notion My Integrations](https://www.notion.so/my-integrations)
+   - 创建新 Integration，获取 `Internal Integration Secret` (作为 `NOTION_TOKEN`)
 
-产品内容...
-```
+2. **准备数据库**
+   - 复制 [Notion 模板](https://www.notion.so/...) (建议参考以下字段结构)
+   - 在数据库页面点击右上角 `...` > `Connect to` > 选择你的 Integration
+   - 获取 Database ID (URL 中 `https://www.notion.so/myworkspace/{database_id}?v=...`)
 
-### 添加资源
+3. **数据库字段要求**
+   - `Title` (title): 文章标题
+   - `Slug` (text): URL 路径 (例如: `my-first-note`)
+   - `Language` (select): `zh` 或 `ja`
+   - `Type` (select): 固定为 `note`
+   - `Summary` (text): 文章摘要
+   - `Date` (date): 发布日期
+   - `Tags` (multi_select): 标签
+   - `Published` (checkbox): 勾选后才会显示
 
-在 `content/library/` 创建 MDX 文件：
+4. **环境变量**
+   在 `.env.local` 或 Vercel 中配置：
+   ```
+   NOTION_TOKEN=secret_...
+   NOTION_DATABASE_ID=...
+   ```
 
-```mdx
----
-title: "资源名称"
-summary: "描述"
-tags: ["标签1"]
-updatedAt: "2024-01-01"
-language: "zh"
-type: "prompt"  # prompt | template | checklist | sop
-copyText: "要复制的文本"  # 用于 prompt 类型
-downloadUrl: "..."  # 用于可下载资源
----
-```
+### 其他内容 (MDX)
+
+目前 Products, Library, Playbooks 等仍使用本地 MDX 文件管理。
+在 `content/` 目录下创建对应文件夹的 MDX 文件即可。
 
 ## 部署
 
