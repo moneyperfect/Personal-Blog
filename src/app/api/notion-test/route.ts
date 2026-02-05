@@ -1,109 +1,57 @@
 import { NextResponse } from 'next/server';
-import { Client } from '@notionhq/client';
+import { notion } from '@/lib/notionClient';
 import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
-function getPropValue(page: any, propName: string, type: string): string {
+function getTitle(page: any): string {
     const props = page.properties;
-    if (!props || !props[propName]) return '(missing)';
+    if (!props) return '(no props)';
 
-    const prop = props[propName];
-    if (prop.type !== type && type !== 'any') return `(type mismatch: ${prop.type}, expected ${type})`;
+    // Find the title property (it has type 'title')
+    const titlePropKey = Object.keys(props).find(key => props[key].type === 'title');
+    if (!titlePropKey) return '(no title prop)';
 
-    if (type === 'title' || prop.type === 'title') {
-        return prop.title?.map((t: any) => t.plain_text).join('') || '';
+    const titleProp = props[titlePropKey];
+    if (titleProp.title && Array.isArray(titleProp.title)) {
+        return titleProp.title.map((t: any) => t.plain_text).join('');
     }
-    if (type === 'rich_text' || prop.type === 'rich_text') {
-        return prop.rich_text?.map((t: any) => t.plain_text).join('') || '';
-    }
-    if (type === 'select' || prop.type === 'select') {
-        return prop.select?.name || '(select empty)';
-    }
-    if (type === 'multi_select' || prop.type === 'multi_select') {
-        return prop.multi_select?.map((o: any) => o.name).join(', ') || '(empty)';
-    }
-    if (type === 'date' || prop.type === 'date') {
-        return prop.date?.start || '(no date)';
-    }
-    if (type === 'checkbox' || prop.type === 'checkbox') {
-        return prop.checkbox ? 'true' : 'false';
-    }
-    return `(unsupported type: ${prop.type})`;
+    return '(empty title)';
 }
 
 export async function GET() {
-    const token = process.env.NOTION_TOKEN;
     const dbId = process.env.NOTION_DATABASE_ID;
 
-    if (!token || !dbId) {
-        return NextResponse.json({
-            ok: false,
-            error: 'Missing environment variables: NOTION_TOKEN or NOTION_DATABASE_ID'
-        }, { status: 500 });
+    if (!process.env.NOTION_TOKEN) {
+        return NextResponse.json({ ok: false, error: 'NOTION_TOKEN missing' }, { status: 500 });
+    }
+    if (!dbId) {
+        return NextResponse.json({ ok: false, error: 'NOTION_DATABASE_ID missing' }, { status: 500 });
     }
 
-    const notion = new Client({ auth: token });
-
     try {
-        // 1. Unfiltered Query (First 10)
-        console.log('Querying Notion unfiltered...');
-        const unfilteredResponse = await (notion.databases as any).query({
+        // 1. Unfiltered Query (Simple)
+        const response = await notion.databases.query({
             database_id: dbId,
-            page_size: 10,
+            page_size: 5,
         });
 
-        const unfilteredResults = unfilteredResponse.results;
-        const unfilteredCount = unfilteredResults.length;
+        const results = response.results;
+        const unfilteredCount = results.length;
 
-        const sample = unfilteredResults.slice(0, 3).map((page: any) => {
-            if (!('properties' in page)) return { id: page.id, message: 'Not a page object' };
-
-            return {
-                id: page.id,
-                title: getPropValue(page, 'Title', 'title'),
-                slug: getPropValue(page, 'Slug', 'any'), // Could be text or rich_text
-                language: getPropValue(page, 'Language', 'select'),
-                type: getPropValue(page, 'Type', 'select'),
-                published: getPropValue(page, 'Published', 'checkbox'),
-                date: getPropValue(page, 'Date', 'date'),
-                rawProps: Object.keys(page.properties) // To see available properties
-            };
-        });
-
-        // 2. Filtered Queries
-        // Check ZH notes count
-        const zhResponse = await (notion.databases as any).query({
-            database_id: dbId,
-            filter: {
-                and: [
-                    { property: 'Published', checkbox: { equals: true } },
-                    { property: 'Type', select: { equals: 'note' } },
-                    { property: 'Language', select: { equals: 'zh' } },
-                ],
-            },
-        });
-
-        // Check JA notes count
-        const jaResponse = await (notion.databases as any).query({
-            database_id: dbId,
-            filter: {
-                and: [
-                    { property: 'Published', checkbox: { equals: true } },
-                    { property: 'Type', select: { equals: 'note' } },
-                    { property: 'Language', select: { equals: 'ja' } },
-                ],
-            },
+        const sampleTitles = results.map((page) => {
+            if (!('properties' in page)) return '(not a page)';
+            return getTitle(page as PageObjectResponse);
         });
 
         return NextResponse.json({
             ok: true,
-            databaseId: dbId, // Return masked or full ID for confirmation
+            databaseId: dbId,
             unfilteredCount,
-            sample,
-            filtered: {
-                zh: zhResponse.results.length,
-                ja: jaResponse.results.length
-            }
+            sampleTitles,
+            rawFirstItem: results[0] ? results[0] : null
         });
 
     } catch (error) {
