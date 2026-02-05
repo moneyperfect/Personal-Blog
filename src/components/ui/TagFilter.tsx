@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { ChipButton } from './Chip';
 
 interface TagFilterProps {
     tags: string[];
@@ -26,26 +27,24 @@ export function TagFilter({ tags, selectedTags, onChange, allLabel }: TagFilterP
 
     return (
         <div className="flex flex-wrap gap-2">
-            <button
+            <ChipButton
                 onClick={handleClearAll}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedTags.length === 0
-                        ? 'bg-primary-600 text-white shadow-sm'
-                        : 'bg-surface-100 text-surface-600 hover:bg-surface-200'
-                    }`}
+                active={selectedTags.length === 0}
+                aria-pressed={selectedTags.length === 0}
+                type="button"
             >
                 {allLabel || t('filterAll')}
-            </button>
+            </ChipButton>
             {tags.map((tag) => (
-                <button
+                <ChipButton
                     key={tag}
                     onClick={() => handleTagClick(tag)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedTags.includes(tag)
-                            ? 'bg-primary-600 text-white shadow-sm'
-                            : 'bg-surface-100 text-surface-600 hover:bg-surface-200'
-                        }`}
+                    active={selectedTags.includes(tag)}
+                    aria-pressed={selectedTags.includes(tag)}
+                    type="button"
                 >
                     {tag}
-                </button>
+                </ChipButton>
             ))}
         </div>
     );

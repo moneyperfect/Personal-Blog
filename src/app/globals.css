@@ -1,15 +1,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;600;700&display=swap');
 
+@config "../../tailwind.config.ts";
 @import "tailwindcss";
 
 :root {
   --font-noto-sans: 'Noto Sans SC', 'Noto Sans JP', system-ui, sans-serif;
 }
 
-body {
-  font-family: var(--font-noto-sans);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@layer base {
+  :root {
+    color-scheme: light;
+    --app-bg: #f6f7f9;
+  }
+
+  body {
+    font-family: var(--font-noto-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--app-bg);
+    @apply text-surface-900;
+  }
+
+  h1, h2, h3 {
+    letter-spacing: -0.01em;
+  }
 }
 
 /* Smooth scrolling */
@@ -53,13 +67,13 @@ html {
 
 /* Prose styling for MDX content */
 .prose {
-  max-width: 65ch;
+  max-width: 70ch;
   color: #3c4043;
 }
 
 .prose h1 {
   font-size: 2rem;
-  font-weight: 700;
+  font-weight: 600;
   margin-bottom: 1rem;
   color: #202124;
 }
@@ -82,7 +96,7 @@ html {
 
 .prose p {
   margin-bottom: 1rem;
-  line-height: 1.75;
+  line-height: 1.8;
 }
 
 .prose ul, .prose ol {
@@ -114,7 +128,7 @@ html {
   background: #202124;
   color: #e8eaed;
   padding: 1rem;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow-x: auto;
   margin-bottom: 1rem;
 }
@@ -130,4 +144,123 @@ html {
   margin: 1rem 0;
   color: #5f6368;
   font-style: italic;
+}
+
+@layer components {
+  .page-shell {
+    @apply min-h-screen;
+    background-color: var(--app-bg);
+  }
+
+  .page-container {
+    @apply mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  .page-width {
+    @apply max-w-page;
+  }
+
+  .page-width-content {
+    @apply max-w-content;
+  }
+
+  .page-width-reading {
+    @apply max-w-reading;
+  }
+
+  .page-header {
+    @apply pt-8 sm:pt-10 pb-6 sm:pb-8;
+  }
+
+  .page-title {
+    @apply text-3xl sm:text-4xl font-semibold text-surface-900;
+  }
+
+  .page-description {
+    @apply mt-2 text-base sm:text-lg text-surface-700 max-w-content;
+  }
+
+  .section {
+    @apply mt-8 sm:mt-12;
+  }
+
+  .section-header {
+    @apply flex flex-wrap items-end justify-between gap-3 mb-4;
+  }
+
+  .section-title {
+    @apply text-lg sm:text-xl font-semibold text-surface-900;
+  }
+
+  .section-description {
+    @apply text-sm sm:text-base text-surface-600;
+  }
+
+  .card {
+    @apply bg-white border border-surface-200 rounded-google-lg shadow-card transition-all focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+  }
+
+  .card-hover {
+    @apply hover:shadow-card-hover hover:-translate-y-0.5;
+  }
+
+  .card-body {
+    @apply p-5;
+  }
+
+  .list-card {
+    @apply bg-white border border-surface-200 rounded-google-lg shadow-card transition-all hover:shadow-card-hover hover:-translate-y-0.5 p-5;
+  }
+
+  .link {
+    @apply text-primary-600 hover:underline;
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-pill border border-surface-200 bg-surface-50 px-3 py-1 text-xs font-medium text-surface-700 transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+  }
+
+  .chip-active {
+    @apply border-primary-200 bg-primary-50 text-primary-700;
+  }
+
+  .chip-muted {
+    @apply bg-surface-100 text-surface-600;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-google px-4 py-2.5 text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700;
+  }
+
+  .btn-tonal {
+    @apply bg-primary-50 text-primary-700 hover:bg-primary-100 border border-primary-100;
+  }
+
+  .btn-text {
+    @apply text-primary-600 hover:bg-primary-50;
+  }
+
+  .btn-success {
+    @apply bg-accent-green/10 text-accent-green border border-accent-green/20;
+  }
+
+  .input {
+    @apply w-full rounded-google border border-surface-300 bg-white/80 px-4 py-3 text-sm text-surface-900 placeholder:text-surface-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors;
+  }
+
+  .select {
+    @apply appearance-none rounded-google border border-surface-300 bg-white/80 px-3 py-2 text-sm font-medium text-surface-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors;
+  }
+
+  .nav-link {
+    @apply px-3 py-2 rounded-google text-sm font-medium text-surface-700 hover:text-surface-900 hover:bg-surface-100 transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+  }
+
+  .nav-link-active {
+    @apply text-primary-700 bg-primary-50;
+  }
 }

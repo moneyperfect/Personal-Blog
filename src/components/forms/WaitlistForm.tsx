@@ -51,7 +51,7 @@ export function WaitlistForm() {
 
     if (isSuccess) {
         return (
-            <div className="bg-accent-green/10 border border-accent-green/30 rounded-google-lg p-6 text-center">
+            <div className="card p-6 text-center border-accent-green/30 bg-accent-green/5">
                 <svg
                     className="w-12 h-12 text-accent-green mx-auto mb-3"
                     fill="none"
@@ -82,7 +82,7 @@ export function WaitlistForm() {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-google border border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    className="input"
                 />
             </div>
 
@@ -96,7 +96,7 @@ export function WaitlistForm() {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 rounded-google border border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    className="input"
                 />
             </div>
 
@@ -110,7 +110,7 @@ export function WaitlistForm() {
                     placeholder={t('rolePlaceholder')}
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value })}
-                    className="w-full px-4 py-3 rounded-google border border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                    className="input"
                 />
             </div>
 
@@ -124,14 +124,14 @@ export function WaitlistForm() {
                     placeholder={t('needsPlaceholder')}
                     value={formData.needs}
                     onChange={(e) => setFormData({ ...formData, needs: e.target.value })}
-                    className="w-full px-4 py-3 rounded-google border border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors resize-none"
+                    className="input resize-none"
                 />
             </div>
 
             <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 px-6 bg-primary-600 text-white font-medium rounded-google hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="btn btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {isSubmitting ? '...' : t('submit')}
             </button>

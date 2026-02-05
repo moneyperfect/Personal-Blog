@@ -9,7 +9,8 @@ export default {
     theme: {
         extend: {
             colors: {
-                // Google Material Design inspired colors
+                // Google Safety Settings inspired palette
+                app: '#f6f7f9',
                 primary: {
                     50: '#e8f0fe',
                     100: '#d2e3fc',
@@ -26,9 +27,9 @@ export default {
                     50: '#ffffff',
                     100: '#f8f9fa',
                     200: '#f1f3f4',
-                    300: '#e8eaed',
+                    300: '#e3e6ea',
                     400: '#dadce0',
-                    500: '#bdc1c6',
+                    500: '#c7c9cc',
                     600: '#9aa0a6',
                     700: '#80868b',
                     800: '#5f6368',
@@ -46,15 +47,23 @@ export default {
                 display: ['var(--font-noto-sans)', 'system-ui', 'sans-serif'],
             },
             boxShadow: {
-                'elevated-1': '0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 1px 3px 1px rgba(60, 64, 67, 0.15)',
-                'elevated-2': '0 1px 2px 0 rgba(60, 64, 67, 0.3), 0 2px 6px 2px rgba(60, 64, 67, 0.15)',
-                'elevated-3': '0 1px 3px 0 rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15)',
-                'elevated-4': '0 2px 3px 0 rgba(60, 64, 67, 0.3), 0 6px 10px 4px rgba(60, 64, 67, 0.15)',
+                'elevated-1': '0 1px 2px rgba(60, 64, 67, 0.16), 0 1px 3px 1px rgba(60, 64, 67, 0.08)',
+                'elevated-2': '0 1px 2px rgba(60, 64, 67, 0.18), 0 2px 6px 2px rgba(60, 64, 67, 0.10)',
+                'elevated-3': '0 1px 3px rgba(60, 64, 67, 0.2), 0 4px 8px 3px rgba(60, 64, 67, 0.12)',
+                'elevated-4': '0 2px 3px rgba(60, 64, 67, 0.24), 0 6px 10px 4px rgba(60, 64, 67, 0.14)',
+                card: '0 1px 2px rgba(60, 64, 67, 0.12), 0 1px 3px 1px rgba(60, 64, 67, 0.08)',
+                'card-hover': '0 2px 4px rgba(60, 64, 67, 0.16), 0 4px 8px 3px rgba(60, 64, 67, 0.10)',
             },
             borderRadius: {
-                'google': '8px',
+                'google': '12px',
                 'google-lg': '16px',
-                'google-xl': '24px',
+                'google-xl': '20px',
+                'pill': '999px',
+            },
+            maxWidth: {
+                page: '1200px',
+                content: '880px',
+                reading: '740px',
             },
         },
     },

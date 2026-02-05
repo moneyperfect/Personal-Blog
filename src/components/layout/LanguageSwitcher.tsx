@@ -29,7 +29,7 @@ export function LanguageSwitcher() {
                 value={locale}
                 onChange={(e) => handleChange(e.target.value)}
                 disabled={isPending}
-                className="appearance-none bg-surface-100 border border-surface-300 rounded-google px-3 py-1.5 pr-8 text-sm font-medium text-surface-700 hover:bg-surface-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 cursor-pointer disabled:opacity-50 transition-colors"
+                className="select pr-8 cursor-pointer disabled:opacity-50"
             >
                 {locales.map((loc) => (
                     <option key={loc.code} value={loc.code}>

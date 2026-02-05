@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import { getProductBySlug, getAllSlugs } from '@/lib/mdx';
@@ -52,39 +52,36 @@ export default async function ProductDetailPage({ params }: Props) {
         notFound();
     }
 
+    const t = await getTranslations({ locale, namespace: 'products' });
+    const common = await getTranslations({ locale, namespace: 'common' });
+
     return (
-        <div className="py-12 sm:py-20">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Breadcrumb */}
-                <nav className="mb-8">
+        <div className="page-shell">
+            <div className="page-container page-width-content">
+                <nav className="pt-8">
                     <Link
                         href={`/${locale}/products`}
-                        className="text-primary-600 hover:underline"
+                        className="link text-sm font-medium"
                     >
-                        ← {locale === 'zh' ? '返回产品列表' : '製品一覧に戻る'}
+                        {common('backTo')} {t('title')}
                     </Link>
                 </nav>
 
-                {/* Header */}
-                <header className="mb-10">
+                <header className="page-header pb-4">
                     <div className="flex flex-wrap gap-2 mb-4">
                         {product.frontmatter.tags.map((tag) => (
                             <span
                                 key={tag}
-                                className="px-3 py-1 text-sm bg-primary-50 text-primary-700 rounded-full"
+                                className="chip chip-active text-[11px]"
                             >
                                 {tag}
                             </span>
                         ))}
                     </div>
-                    <h1 className="text-3xl sm:text-4xl font-bold text-surface-900 mb-4">
-                        {product.frontmatter.title}
-                    </h1>
-                    <p className="text-lg text-surface-600 mb-6">
-                        {product.frontmatter.summary}
-                    </p>
-                    <div className="flex items-center gap-4">
-                        <span className="text-3xl font-bold text-primary-600">
+                    <h1 className="page-title">{product.frontmatter.title}</h1>
+                    <p className="page-description">{product.frontmatter.summary}</p>
+                    <div className="flex flex-wrap items-center gap-4 mt-5">
+                        <span className="text-2xl font-semibold text-primary-600">
                             {product.frontmatter.price}
                         </span>
                         <ProductDetailClient
@@ -96,19 +93,15 @@ export default async function ProductDetailPage({ params }: Props) {
                     </div>
                 </header>
 
-                {/* Content */}
                 <article className="prose max-w-none">
                     <MDXRemote source={product.content} />
                 </article>
 
-                {/* Bottom CTA */}
-                <div className="mt-16 p-8 bg-surface-100 rounded-google-xl text-center">
-                    <h3 className="text-xl font-bold text-surface-900 mb-2">
-                        {locale === 'zh' ? '准备好开始了吗？' : '始める準備はできましたか？'}
-                    </h3>
-                    <p className="text-surface-600 mb-6">
-                        {locale === 'zh' ? '立即获取，开始你的提效之旅' : '今すぐ手に入れて、効率化を始めましょう'}
-                    </p>
+                <div className="mt-10 card p-6 sm:p-8">
+                    <div className="section-header mb-3">
+                        <h2 className="section-title">{t('buyNow')}</h2>
+                    </div>
+                    <p className="section-description mb-4">{t('description')}</p>
                     <ProductDetailClient
                         slug={slug}
                         title={product.frontmatter.title}

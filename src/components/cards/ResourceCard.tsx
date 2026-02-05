@@ -5,32 +5,24 @@ import Link from 'next/link';
 import { LibraryFrontmatter } from '@/lib/mdx';
 import { CopyButton } from '../ui/CopyButton';
 import { DownloadButton } from '../ui/DownloadButton';
+import { Chip } from '../ui/Chip';
+import { Card } from '../ui/Card';
 
 interface ResourceCardProps {
     slug: string;
     frontmatter: LibraryFrontmatter;
 }
 
-const typeIcons: Record<string, string> = {
-    template: '📄',
-    checklist: '✅',
-    sop: '📋',
-    prompt: '💡',
-};
-
 export function ResourceCard({ slug, frontmatter }: ResourceCardProps) {
     const t = useTranslations('library');
     const locale = useLocale();
 
     return (
-        <div className="bg-white rounded-google-lg border border-surface-300 p-5 hover:shadow-elevated-1 transition-all duration-200">
+        <Card className="p-5">
             <div className="flex flex-col h-full">
-                {/* Type badge and icon */}
+                {/* Type badge */}
                 <div className="flex items-center gap-2 mb-3">
-                    <span className="text-xl">{typeIcons[frontmatter.type]}</span>
-                    <span className="px-2 py-0.5 text-xs font-medium bg-primary-50 text-primary-700 rounded-full">
-                        {t(`types.${frontmatter.type}`)}
-                    </span>
+                    <Chip active>{t(`types.${frontmatter.type}`)}</Chip>
                 </div>
 
                 {/* Title */}
@@ -49,12 +41,9 @@ export function ResourceCard({ slug, frontmatter }: ResourceCardProps) {
                 {/* Tags */}
                 <div className="flex flex-wrap gap-1.5 mb-4">
                     {frontmatter.tags.slice(0, 3).map((tag) => (
-                        <span
-                            key={tag}
-                            className="px-2 py-0.5 text-xs bg-surface-100 text-surface-600 rounded-full"
-                        >
+                        <Chip key={tag} muted>
                             {tag}
-                        </span>
+                        </Chip>
                     ))}
                 </div>
 
@@ -74,14 +63,8 @@ export function ResourceCard({ slug, frontmatter }: ResourceCardProps) {
                             title={frontmatter.title}
                         />
                     )}
-                    <Link
-                        href={`/${locale}/library/${slug}`}
-                        className="ml-auto text-sm font-medium text-primary-600 hover:underline"
-                    >
-                        →
-                    </Link>
                 </div>
             </div>
-        </div>
+        </Card>
     );
 }

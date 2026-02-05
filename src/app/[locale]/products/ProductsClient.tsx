@@ -13,6 +13,7 @@ interface ProductsClientProps {
 
 export function ProductsClient({ products, allTags }: ProductsClientProps) {
     const t = useTranslations('products');
+    const common = useTranslations('common');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
     const filteredProducts = selectedTags.length === 0
@@ -22,43 +23,40 @@ export function ProductsClient({ products, allTags }: ProductsClientProps) {
         );
 
     return (
-        <div className="py-12 sm:py-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="text-center mb-12">
-                    <h1 className="text-3xl sm:text-4xl font-bold text-surface-900 mb-4">
-                        {t('title')}
-                    </h1>
-                    <p className="text-lg text-surface-600 max-w-2xl mx-auto">
-                        {t('description')}
-                    </p>
-                </div>
+        <div className="page-shell">
+            <div className="page-container page-width">
+                <header className="page-header">
+                    <h1 className="page-title">{t('title')}</h1>
+                    <p className="page-description">{t('description')}</p>
+                </header>
 
-                {/* Filters */}
-                <div className="mb-10">
-                    <TagFilter
-                        tags={allTags}
-                        selectedTags={selectedTags}
-                        onChange={setSelectedTags}
-                    />
-                </div>
-
-                {/* Products Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {filteredProducts.map((product) => (
-                        <ProductCard
-                            key={product.slug}
-                            slug={product.slug}
-                            frontmatter={product.frontmatter}
-                        />
-                    ))}
-                </div>
-
-                {filteredProducts.length === 0 && (
-                    <div className="text-center py-16 text-surface-600">
-                        No products found matching your criteria.
+                <section className="section">
+                    <div className="section-header">
+                        <h2 className="section-title">{t('title')}</h2>
                     </div>
-                )}
+                    <div className="mb-4">
+                        <TagFilter
+                            tags={allTags}
+                            selectedTags={selectedTags}
+                            onChange={setSelectedTags}
+                        />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {filteredProducts.map((product) => (
+                            <ProductCard
+                                key={product.slug}
+                                slug={product.slug}
+                                frontmatter={product.frontmatter}
+                            />
+                        ))}
+                    </div>
+
+                    {filteredProducts.length === 0 && (
+                        <div className="text-center py-16 text-surface-600">
+                            {common('notFound')}
+                        </div>
+                    )}
+                </section>
             </div>
         </div>
     );

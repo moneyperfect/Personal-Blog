@@ -29,8 +29,7 @@ export function ProductDetailClient({
             target="_blank"
             rel="noopener noreferrer"
             onClick={handleClick}
-            className={`inline-flex items-center justify-center gap-2 bg-primary-600 text-white font-medium rounded-google hover:bg-primary-700 shadow-elevated-1 hover:shadow-elevated-2 transition-all duration-200 ${large ? 'px-8 py-4 text-lg' : 'px-6 py-3'
-                }`}
+            className={`btn btn-primary ${large ? 'px-8 py-4 text-base sm:text-lg' : 'px-6 py-3'}`}
         >
             {buttonText}
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

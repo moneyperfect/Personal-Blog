@@ -14,6 +14,8 @@ interface NotesClientProps {
 
 export function NotesClient({ notes, allTags }: NotesClientProps) {
     const locale = useLocale();
+    const t = useTranslations('notes');
+    const common = useTranslations('common');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
     const filteredNotes = selectedTags.length === 0
@@ -22,70 +24,55 @@ export function NotesClient({ notes, allTags }: NotesClientProps) {
             selectedTags.some((tag) => note.tags.includes(tag))
         );
 
-    // Hardcoded titles if translation missing, but ideally we use t()
-    const title = locale === 'zh' ? '笔记' : 'ノート';
-    const description = locale === 'zh'
-        ? '产品思考、创业心得与技术分享'
-        : '製品思考、起業の知見、技術共有';
-
     return (
-        <div className="py-12 sm:py-20">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="text-center mb-12">
-                    <h1 className="text-3xl sm:text-4xl font-bold text-surface-900 mb-4">
-                        {title}
-                    </h1>
-                    <p className="text-lg text-surface-600 max-w-2xl mx-auto">
-                        {description}
-                    </p>
-                </div>
+        <div className="page-shell">
+            <div className="page-container page-width">
+                <header className="page-header">
+                    <h1 className="page-title">{t('title')}</h1>
+                    <p className="page-description">{t('description')}</p>
+                </header>
 
-                {/* Filters */}
-                <div className="mb-10">
-                    <TagFilter
-                        tags={allTags}
-                        selectedTags={selectedTags}
-                        onChange={setSelectedTags}
-                    />
-                </div>
-
-                {/* Notes List */}
-                <div className="space-y-6">
-                    {filteredNotes.map((note) => (
-                        <Link
-                            key={note.id}
-                            href={`/${locale}/notes/${note.slug}`}
-                            className="group block bg-white rounded-google-lg border border-surface-300 p-6 hover:shadow-elevated-1 transition-all"
-                        >
-                            <div className="flex flex-wrap gap-2 mb-2">
-                                {note.tags.map((tag) => (
-                                    <span key={tag} className="text-xs text-surface-500">#{tag}</span>
-                                ))}
-                            </div>
-                            <h2 className="text-xl font-semibold text-surface-900 group-hover:text-primary-600 mb-2">
-                                {note.title}
-                            </h2>
-                            <p className="text-surface-600 line-clamp-2">{note.summary}</p>
-                            <span className="text-sm text-surface-500 mt-2 block">
-                                {note.date}
-                            </span>
-                        </Link>
-                    ))}
-                </div>
-
-                {filteredNotes.length === 0 && (
-                    <div className="text-center py-16 text-surface-600 bg-surface-50 rounded-google-lg border border-surface-200">
-                        <p className="font-medium mb-2">
-                            {locale === 'zh' ? '暂无文章' : '記事なし'}
-                        </p>
-                        <p className="text-sm">
-                            {locale === 'zh'
-                                ? '请在 Notion 中勾选 Published 并确认 Language/Type/Slug 配置正确'
-                                : 'NotionでPublishedをチェックし、Language/Type/Slugの設定を確認してください'}
-                        </p>
+                <section className="section">
+                    <div className="section-header">
+                        <h2 className="section-title">{t('title')}</h2>
                     </div>
-                )}
+                    <div className="mb-4">
+                        <TagFilter
+                            tags={allTags}
+                            selectedTags={selectedTags}
+                            onChange={setSelectedTags}
+                        />
+                    </div>
+
+                    <div className="space-y-4">
+                        {filteredNotes.map((note) => (
+                            <Link
+                                key={note.id}
+                                href={`/${locale}/notes/${note.slug}`}
+                                className="group block list-card"
+                            >
+                                <div className="flex flex-wrap gap-2 mb-2">
+                                    {note.tags.map((tag) => (
+                                        <span key={tag} className="chip chip-muted text-[11px]">#{tag}</span>
+                                    ))}
+                                </div>
+                                <h2 className="text-lg font-semibold text-surface-900 group-hover:text-primary-600 mb-2">
+                                    {note.title}
+                                </h2>
+                                <p className="text-surface-600 line-clamp-2">{note.summary}</p>
+                                <span className="text-sm text-surface-500 mt-2 block">
+                                    {note.date}
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+
+                    {filteredNotes.length === 0 && (
+                        <div className="text-center py-16 text-surface-600 card p-6">
+                            <p className="font-medium">{common('notFound')}</p>
+                        </div>
+                    )}
+                </section>
             </div>
         </div>
     );

@@ -64,12 +64,12 @@ export function NewsletterSignup() {
                 placeholder={t('placeholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="flex-1 px-4 py-3 rounded-google border border-surface-300 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
+                className="input flex-1"
             />
             <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-6 py-3 bg-primary-600 text-white font-medium rounded-google hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+                className="btn btn-primary px-6 whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 {isSubmitting ? '...' : t('button')}
             </button>

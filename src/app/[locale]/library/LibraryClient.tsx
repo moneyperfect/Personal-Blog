@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ResourceCard } from '@/components/cards';
-import { TagFilter } from '@/components/ui';
+import { TagFilter, ChipButton } from '@/components/ui';
 import { LibraryFrontmatter, ContentItem } from '@/lib/mdx';
 
 interface LibraryClientProps {
@@ -13,6 +13,7 @@ interface LibraryClientProps {
 
 export function LibraryClient({ items, allTags }: LibraryClientProps) {
     const t = useTranslations('library');
+    const common = useTranslations('common');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [selectedType, setSelectedType] = useState<string>('');
 
@@ -26,68 +27,64 @@ export function LibraryClient({ items, allTags }: LibraryClientProps) {
     const types = ['template', 'checklist', 'sop', 'prompt'];
 
     return (
-        <div className="py-12 sm:py-20">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="text-center mb-12">
-                    <h1 className="text-3xl sm:text-4xl font-bold text-surface-900 mb-4">
-                        {t('title')}
-                    </h1>
-                    <p className="text-lg text-surface-600 max-w-2xl mx-auto">
-                        {t('description')}
-                    </p>
-                </div>
+        <div className="page-shell">
+            <div className="page-container page-width">
+                <header className="page-header">
+                    <h1 className="page-title">{t('title')}</h1>
+                    <p className="page-description">{t('description')}</p>
+                </header>
 
-                {/* Type Filter */}
-                <div className="flex flex-wrap gap-2 mb-6">
-                    <button
-                        onClick={() => setSelectedType('')}
-                        className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedType === ''
-                                ? 'bg-primary-600 text-white'
-                                : 'bg-surface-100 text-surface-600 hover:bg-surface-200'
-                            }`}
-                    >
-                        {t('filterAll')}
-                    </button>
-                    {types.map((type) => (
-                        <button
-                            key={type}
-                            onClick={() => setSelectedType(selectedType === type ? '' : type)}
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${selectedType === type
-                                    ? 'bg-primary-600 text-white'
-                                    : 'bg-surface-100 text-surface-600 hover:bg-surface-200'
-                                }`}
-                        >
-                            {t(`types.${type}`)}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Tag Filter */}
-                <div className="mb-10">
-                    <TagFilter
-                        tags={allTags}
-                        selectedTags={selectedTags}
-                        onChange={setSelectedTags}
-                    />
-                </div>
-
-                {/* Resources Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    {filteredItems.map((item) => (
-                        <ResourceCard
-                            key={item.slug}
-                            slug={item.slug}
-                            frontmatter={item.frontmatter}
-                        />
-                    ))}
-                </div>
-
-                {filteredItems.length === 0 && (
-                    <div className="text-center py-16 text-surface-600">
-                        {t('filterAll')}
+                <section className="section">
+                    <div className="section-header">
+                        <h2 className="section-title">{t('title')}</h2>
                     </div>
-                )}
+
+                    <div className="flex flex-wrap gap-2 mb-4">
+                        <ChipButton
+                            onClick={() => setSelectedType('')}
+                            active={selectedType === ''}
+                            aria-pressed={selectedType === ''}
+                            type="button"
+                        >
+                            {t('filterAll')}
+                        </ChipButton>
+                        {types.map((type) => (
+                            <ChipButton
+                                key={type}
+                                onClick={() => setSelectedType(selectedType === type ? '' : type)}
+                                active={selectedType === type}
+                                aria-pressed={selectedType === type}
+                                type="button"
+                            >
+                                {t(`types.${type}`)}
+                            </ChipButton>
+                        ))}
+                    </div>
+
+                    <div className="mb-6">
+                        <TagFilter
+                            tags={allTags}
+                            selectedTags={selectedTags}
+                            onChange={setSelectedTags}
+                        />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {filteredItems.map((item) => (
+                            <ResourceCard
+                                key={item.slug}
+                                slug={item.slug}
+                                frontmatter={item.frontmatter}
+                            />
+                        ))}
+                    </div>
+
+                    {filteredItems.length === 0 && (
+                        <div className="text-center py-16 text-surface-600">
+                            {common('notFound')}
+                        </div>
+                    )}
+                </section>
             </div>
         </div>
     );

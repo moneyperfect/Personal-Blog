@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { GoogleAnalytics } from "@/lib/analytics";
+import { PwaRegister } from "@/components/PwaRegister";
 
 export const metadata: Metadata = {
   title: {
@@ -11,6 +12,19 @@ export const metadata: Metadata = {
   keywords: ["digital products", "templates", "resources", "SaaS", "playbooks"],
   authors: [{ name: "Digital Product Studio" }],
   creator: "Digital Product Studio",
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "Digital Product Studio",
+  },
   openGraph: {
     type: "website",
     locale: "zh_CN",
@@ -26,6 +40,10 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  themeColor: "#1a73e8",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,8 +51,9 @@ export default function RootLayout({
 }>) {
   return (
     <html>
-      <body className="bg-white text-surface-900 antialiased">
+      <body className="antialiased">
         <GoogleAnalytics />
+        <PwaRegister />
         {children}
       </body>
     </html>

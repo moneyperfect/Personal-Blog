@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { trackResourceCopy } from '@/lib/analytics';
+import { Button } from './Button';
 
 interface CopyButtonProps {
     text: string;
@@ -33,12 +34,11 @@ export function CopyButton({ text, slug, title, className = '' }: CopyButtonProp
     };
 
     return (
-        <button
+        <Button
+            type="button"
             onClick={handleCopy}
-            className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-google transition-all duration-200 ${copied
-                    ? 'bg-accent-green text-white'
-                    : 'bg-surface-100 text-surface-700 hover:bg-surface-200'
-                } ${className}`}
+            variant={copied ? 'success' : 'tonal'}
+            className={`px-3 py-1.5 text-xs ${className}`}
         >
             {copied ? (
                 <>
@@ -55,6 +55,6 @@ export function CopyButton({ text, slug, title, className = '' }: CopyButtonProp
                     {t('copy')}
                 </>
             )}
-        </button>
+        </Button>
     );
 }

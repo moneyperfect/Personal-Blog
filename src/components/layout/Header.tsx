@@ -29,8 +29,8 @@ export function Header() {
     };
 
     return (
-        <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-surface-300">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-surface-200">
+            <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <Link
@@ -49,10 +49,7 @@ export function Header() {
                             <Link
                                 key={item.key}
                                 href={`/${locale}${item.href}`}
-                                className={`px-4 py-2 rounded-google text-sm font-medium transition-colors ${isActive(item.href)
-                                        ? 'text-primary-600 bg-primary-50'
-                                        : 'text-surface-700 hover:text-surface-900 hover:bg-surface-100'
-                                    }`}
+                                className={`nav-link ${isActive(item.href) ? 'nav-link-active' : ''}`}
                             >
                                 {t(item.key)}
                             </Link>
@@ -92,10 +89,7 @@ export function Header() {
                                     key={item.key}
                                     href={`/${locale}${item.href}`}
                                     onClick={() => setMobileMenuOpen(false)}
-                                    className={`px-4 py-3 rounded-google text-sm font-medium transition-colors ${isActive(item.href)
-                                            ? 'text-primary-600 bg-primary-50'
-                                            : 'text-surface-700 hover:text-surface-900 hover:bg-surface-100'
-                                        }`}
+                                    className={`nav-link ${isActive(item.href) ? 'nav-link-active' : ''}`}
                                 >
                                     {t(item.key)}
                                 </Link>
