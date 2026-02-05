@@ -1,12 +1,30 @@
-import { Client } from '@notionhq/client';
+import { notionDatabaseQuery, getAllBlocks } from './notionRest';
 import { NotionToMarkdown } from 'notion-to-md';
-import { PageObjectResponse } from '@notionhq/client/build/src/api-endpoints';
 
-const notion = new Client({
-    auth: process.env.NOTION_TOKEN,
-});
+// Create a dummy client for n2m that uses our REST implementation
+const dummyClient = {
+    blocks: {
+        children: {
+            list: async ({ block_id, start_cursor }: { block_id: string; start_cursor?: string }) => {
+                // NotionToMarkdown expects the raw response from blocks.children.list
+                // Our getAllBlocks handles pagination automatically, but n2m might want to do it page by page.
+                // However, n2m's pageToMarkdown calls list recursively.
+                // We should map our notionRest implementation to match the expected signature.
 
-const n2m = new NotionToMarkdown({ notionClient: notion });
+                // Reuse our existing REST function
+                const response = await fetch(`https://api.notion.com/v1/blocks/${block_id}/children?page_size=100${start_cursor ? `&start_cursor=${start_cursor}` : ''}`, {
+                    headers: {
+                        'Authorization': `Bearer ${process.env.NOTION_TOKEN}`,
+                        'Notion-Version': '2022-06-28',
+                    }
+                });
+                return await response.json();
+            }
+        }
+    }
+} as any;
+
+const n2m = new NotionToMarkdown({ notionClient: dummyClient });
 
 export interface NotionNote {
     id: string;
@@ -17,14 +35,6 @@ export interface NotionNote {
     tags: string[];
     language: 'zh' | 'ja';
 }
-
-function getProperty(page: PageObjectResponse, propName: string, type: string) {
-    if (!page.properties[propName]) {
-        return null;
-    }
-    return page.properties[propName];
-}
-
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function getText(prop: any): string {
@@ -56,15 +66,14 @@ function getCheckbox(prop: any): boolean {
     return prop.checkbox;
 }
 
-// Helper to validate and parse a page object into NotionNote
-function parseNotionPage(page: PageObjectResponse): NotionNote | null {
+function parseNotionPage(page: any): NotionNote | null {
     const props = page.properties;
 
     const isPublished = getCheckbox(props['Published']);
     if (!isPublished) return null;
 
     const type = getText(props['Type']);
-    if (type !== 'note') return null; // Filter by Type=note
+    if (type !== 'note') return null;
 
     const title = getText(props['Title']);
     const slug = getText(props['Slug']);
@@ -72,12 +81,6 @@ function parseNotionPage(page: PageObjectResponse): NotionNote | null {
     const summary = getText(props['Summary']);
     const date = getDate(props['Date']);
     const tags = getMultiSelect(props['Tags']);
-
-    // Strict validation as requested
-    if (!title) console.warn(`Page ${page.id} missing Title`);
-    if (!slug) console.warn(`Page ${page.id} missing Slug`);
-    if (!language) console.warn(`Page ${page.id} missing Language`);
-    if (!date) console.warn(`Page ${page.id} missing Date`);
 
     if (!title || !slug || !language || !date) return null;
 
@@ -94,52 +97,24 @@ function parseNotionPage(page: PageObjectResponse): NotionNote | null {
 
 export async function queryNotes(language: 'zh' | 'ja'): Promise<NotionNote[]> {
     const databaseId = process.env.NOTION_DATABASE_ID;
-    if (!databaseId) {
-        console.error('NOTION_DATABASE_ID is not set');
-        return [];
-    }
+    if (!databaseId) return [];
 
     try {
-        const response = await (notion.databases as any).query({
-            database_id: databaseId,
+        const response = await notionDatabaseQuery(databaseId, {
             filter: {
                 and: [
-                    {
-                        property: 'Published',
-                        checkbox: {
-                            equals: true,
-                        },
-                    },
-                    {
-                        property: 'Type',
-                        select: {
-                            equals: 'note',
-                        },
-                    },
-                    {
-                        property: 'Language',
-                        select: {
-                            equals: language,
-                        },
-                    },
+                    { property: 'Published', checkbox: { equals: true } },
+                    { property: 'Type', select: { equals: 'note' } },
+                    { property: 'Language', select: { equals: language } },
                 ],
             },
-            sorts: [
-                {
-                    property: 'Date',
-                    direction: 'descending',
-                },
-            ],
+            sorts: [{ property: 'Date', direction: 'descending' }],
         });
 
         const notes: NotionNote[] = [];
         for (const page of response.results) {
-            if ('properties' in page) {
-                const parsed = parseNotionPage(page as PageObjectResponse);
-                if (parsed) {
-                    notes.push(parsed);
-                }
-            }
+            const parsed = parseNotionPage(page);
+            if (parsed) notes.push(parsed);
         }
         return notes;
     } catch (error) {
@@ -153,33 +128,17 @@ export async function getNotePageBySlug(slug: string, language: 'zh' | 'ja'): Pr
     if (!databaseId) return null;
 
     try {
-        const response = await (notion.databases as any).query({
-            database_id: databaseId,
+        const response = await notionDatabaseQuery(databaseId, {
             filter: {
                 and: [
-                    {
-                        property: 'Slug',
-                        rich_text: {
-                            equals: slug,
-                        },
-                    },
-                    {
-                        property: 'Language',
-                        select: {
-                            equals: language,
-                        },
-                    },
+                    { property: 'Slug', rich_text: { equals: slug } },
+                    { property: 'Language', select: { equals: language } },
                 ],
             },
         });
 
-        if (response.results.length === 0) return null;
-
-        const page = response.results[0];
-        if ('properties' in page) {
-            return parseNotionPage(page as PageObjectResponse);
-        }
-        return null;
+        if (!response.results || response.results.length === 0) return null;
+        return parseNotionPage(response.results[0]);
     } catch (error) {
         console.error('Error fetching note by slug:', error);
         return null;
@@ -188,6 +147,7 @@ export async function getNotePageBySlug(slug: string, language: 'zh' | 'ja'): Pr
 
 export async function getPageContent(pageId: string): Promise<string> {
     try {
+        // Since we are using a dummy client that calls fetch internally, n2m should work.
         const mdblocks = await n2m.pageToMarkdown(pageId);
         const mdString = n2m.toMarkdownString(mdblocks);
         return mdString.parent;

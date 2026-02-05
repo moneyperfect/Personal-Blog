@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@notionhq/client": "^5.9.0",
     "gray-matter": "^4.0.3",
     "next": "16.1.6",
     "next-intl": "^4.8.2",
