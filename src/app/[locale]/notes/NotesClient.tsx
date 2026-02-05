@@ -75,8 +75,15 @@ export function NotesClient({ notes, allTags }: NotesClientProps) {
                 </div>
 
                 {filteredNotes.length === 0 && (
-                    <div className="text-center py-16 text-surface-600">
-                        {locale === 'zh' ? '暂无文章' : '記事なし'}
+                    <div className="text-center py-16 text-surface-600 bg-surface-50 rounded-google-lg border border-surface-200">
+                        <p className="font-medium mb-2">
+                            {locale === 'zh' ? '暂无文章' : '記事なし'}
+                        </p>
+                        <p className="text-sm">
+                            {locale === 'zh'
+                                ? '请在 Notion 中勾选 Published 并确认 Language/Type/Slug 配置正确'
+                                : 'NotionでPublishedをチェックし、Language/Type/Slugの設定を確認してください'}
+                        </p>
                     </div>
                 )}
             </div>
