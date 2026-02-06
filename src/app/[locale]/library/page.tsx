@@ -1,7 +1,10 @@
 import { setRequestLocale } from 'next-intl/server';
 import { getAllLibraryItems, getAllTags } from '@/lib/mdx';
+import { queryNotes } from '@/lib/notion';
 import { Locale } from '@/i18n/routing';
 import { LibraryClient } from './LibraryClient';
+
+export const revalidate = 60; // Cache for 60 seconds
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -21,8 +24,12 @@ export default async function LibraryPage({ params }: Props) {
     const { locale } = await params;
     setRequestLocale(locale);
 
+    // Fetch MDX library items
     const items = getAllLibraryItems(locale as Locale);
     const allTags = getAllTags(items);
 
-    return <LibraryClient items={items} allTags={allTags} />;
+    // Fetch Notion notes
+    const notes = await queryNotes(locale as 'zh' | 'ja');
+
+    return <LibraryClient items={items} allTags={allTags} notes={notes} locale={locale} />;
 }
