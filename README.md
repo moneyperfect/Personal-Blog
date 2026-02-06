@@ -144,6 +144,43 @@ NOTION_DATABASE_ID=...
 目前 Products, Playbooks 等仍使用本地 MDX 文件管理。
 在 `content/` 目录下创建对应文件夹的 MDX 文件即可。
 
+### Google AdSense 广告集成
+
+#### 1. 获取 Publisher ID
+1. 访问 [Google AdSense](https://www.google.com/adsense/)
+2. 注册或登录账户
+3. 在"账号" > "账号信息"中找到 Publisher ID（格式：`ca-pub-XXXXXXXXXXXXXXXX`）
+
+#### 2. 配置环境变量
+```bash
+NEXT_PUBLIC_ADSENSE_CLIENT=ca-pub-XXXXXXXXXXXXXXXX
+NEXT_PUBLIC_ENABLE_ADSENSE=true  # 生产环境设为 true
+```
+
+#### 3. 验证 ads.txt
+部署后访问 `https://yourdomain.com/ads.txt`，确认内容：
+```
+google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+```
+
+#### 4. AdSense 审核注意事项
+- ✅ 网站需有足够内容（建议 10+ 页面）
+- ✅ 必须有隐私政策页面 (`/privacy`)
+- ✅ 必须有服务条款页面 (`/terms`)
+- ✅ 内容需原创且有价值
+- ✅ 网站需正常运行一段时间
+
+#### 5. 使用 AdUnit 组件（手动广告位）
+```tsx
+import { AdUnit, ArticleBottomAd } from '@/components/AdUnit';
+
+// Auto Ads（自动广告）已在 layout.tsx 配置，无需手动添加
+
+// 手动广告位（需在 AdSense 创建广告单元获取 slot ID）
+<AdUnit slot="1234567890" format="auto" responsive />
+<ArticleBottomAd slot="1234567890" />
+```
+
 ## 部署
 
 ### Vercel（推荐）

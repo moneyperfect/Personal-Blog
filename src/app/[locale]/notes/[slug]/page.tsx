@@ -3,6 +3,7 @@ import { setRequestLocale, getTranslations } from 'next-intl/server';
 import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
 import { getNotePageBySlug, getPageContent } from '@/lib/notion';
+// import { ArticleBottomAd } from '@/components/AdUnit'; // 取消注释以启用广告
 
 export const revalidate = 60; // Cache for 60 seconds
 
@@ -31,6 +32,10 @@ export default async function NoteDetailPage({ params }: Props) {
     const t = await getTranslations({ locale, namespace: 'notes' });
     const common = await getTranslations({ locale, namespace: 'common' });
 
+    // 广告位开关 - 设置为 true 并取消注释上方 import 以启用
+    const showAds = false;
+    const adSlot = "YOUR_AD_SLOT_ID"; // 从 AdSense 获取
+
     return (
         <div className="page-shell">
             <div className="page-container page-width-reading">
@@ -48,9 +53,12 @@ export default async function NoteDetailPage({ params }: Props) {
                     <h1 className="page-title">{note.title}</h1>
                     <p className="text-sm text-surface-500 mt-2">{note.date}</p>
                 </header>
-                <article className="prose max-w-none pb-12">
+                <article className="prose max-w-none pb-8">
                     <ReactMarkdown>{markdownContent}</ReactMarkdown>
                 </article>
+
+                {/* 文章底部广告位 - 取消注释以启用 */}
+                {/* {showAds && <ArticleBottomAd slot={adSlot} />} */}
             </div>
         </div>
     );

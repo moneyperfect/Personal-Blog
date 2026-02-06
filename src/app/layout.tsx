@@ -1,17 +1,18 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { GoogleAnalytics } from "@/lib/analytics";
 import { PwaRegister } from "@/components/PwaRegister";
 
 export const metadata: Metadata = {
   title: {
-    default: "Digital Product Studio",
-    template: "%s | Digital Product Studio",
+    default: "NAS Digital Products",
+    template: "%s | NAS Digital Products",
   },
   description: "High-quality digital products and resources to help you launch faster",
   keywords: ["digital products", "templates", "resources", "SaaS", "playbooks"],
-  authors: [{ name: "Digital Product Studio" }],
-  creator: "Digital Product Studio",
+  authors: [{ name: "NAS Digital Products" }],
+  creator: "NAS Digital Products",
   manifest: "/manifest.webmanifest",
   icons: {
     icon: [
@@ -23,13 +24,13 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Digital Product Studio",
+    title: "NAS Digital Products",
   },
   openGraph: {
     type: "website",
     locale: "zh_CN",
     alternateLocale: "ja_JP",
-    siteName: "Digital Product Studio",
+    siteName: "NAS Digital Products",
   },
   twitter: {
     card: "summary_large_image",
@@ -44,6 +45,11 @@ export const viewport: Viewport = {
   themeColor: "#1a73e8",
 };
 
+// AdSense configuration
+const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
+const enableAdsense = process.env.NEXT_PUBLIC_ENABLE_ADSENSE === 'true';
+const isProduction = process.env.NODE_ENV === 'production';
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -54,6 +60,16 @@ export default function RootLayout({
       <body className="antialiased">
         <GoogleAnalytics />
         <PwaRegister />
+
+        {/* Google AdSense - 仅在生产环境且启用时加载 */}
+        {isProduction && enableAdsense && adsenseClient && (
+          <Script
+            src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseClient}`}
+            strategy="afterInteractive"
+            crossOrigin="anonymous"
+          />
+        )}
+
         {children}
       </body>
     </html>
