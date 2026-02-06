@@ -1,6 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import { getAllLibraryItems, getAllTags } from '@/lib/mdx';
-import { queryNotes } from '@/lib/notion';
+import { queryLibraryByCategory, CategoryType } from '@/lib/notion';
 import { Locale } from '@/i18n/routing';
 import { LibraryClient } from './LibraryClient';
 
@@ -15,8 +15,8 @@ export async function generateMetadata({ params }: Props) {
     return {
         title: locale === 'zh' ? '资源库' : 'リソースライブラリ',
         description: locale === 'zh'
-            ? '免费模板、清单、Prompt 与 SOP'
-            : '無料のテンプレート、チェックリスト、Prompt、SOP',
+            ? '免费模板、清单、Prompt、SOP 与笔记'
+            : '無料のテンプレート、チェックリスト、Prompt、SOP、ノート',
     };
 }
 
@@ -24,12 +24,19 @@ export default async function LibraryPage({ params }: Props) {
     const { locale } = await params;
     setRequestLocale(locale);
 
-    // Fetch MDX library items
-    const items = getAllLibraryItems(locale as Locale);
-    const allTags = getAllTags(items);
+    // Fetch MDX library items (static resources)
+    const mdxItems = getAllLibraryItems(locale as Locale);
+    const allTags = getAllTags(mdxItems);
 
-    // Fetch Notion notes
-    const notes = await queryNotes(locale as 'zh' | 'ja');
+    // Fetch all Notion items for library (Published + Language filter)
+    const notionItems = await queryLibraryByCategory(locale as 'zh' | 'ja');
 
-    return <LibraryClient items={items} allTags={allTags} notes={notes} locale={locale} />;
+    return (
+        <LibraryClient
+            mdxItems={mdxItems}
+            notionItems={notionItems}
+            allTags={allTags}
+            locale={locale}
+        />
+    );
 }

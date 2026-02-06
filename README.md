@@ -90,39 +90,58 @@ personal-site/
 
 ## 内容管理
 
-### Notion CMS (Notes)
+### Notion CMS 
 
-Notes 模块已接入 Notion。按照以下步骤配置：
+网站使用 Notion 作为 CMS，支持资源库和笔记模块。
 
-1. **创建 Integration**
-   - 访问 [Notion My Integrations](https://www.notion.so/my-integrations)
-   - 创建新 Integration，获取 `Internal Integration Secret` (作为 `NOTION_TOKEN`)
+#### 1. 创建 Integration
+- 访问 [Notion My Integrations](https://www.notion.so/my-integrations)
+- 创建新 Integration，获取 `Internal Integration Secret` (作为 `NOTION_TOKEN`)
 
-2. **准备数据库**
-   - 复制 [Notion 模板](https://www.notion.so/...) (建议参考以下字段结构)
-   - 在数据库页面点击右上角 `...` > `Connect to` > 选择你的 Integration
-   - 获取 Database ID (URL 中 `https://www.notion.so/myworkspace/{database_id}?v=...`)
+#### 2. 准备数据库
+- 在数据库页面点击右上角 `...` > `Connect to` > 选择你的 Integration
+- 获取 Database ID (URL 中 `https://www.notion.so/myworkspace/{database_id}?v=...`)
 
-3. **数据库字段要求**
-   - `Title` (title): 文章标题
-   - `Slug` (text): URL 路径 (例如: `my-first-note`)
-   - `Language` (select): `zh` 或 `ja`
-   - `Type` (select): 固定为 `note`
-   - `Summary` (text): 文章摘要
-   - `Date` (date): 发布日期
-   - `Tags` (multi_select): 标签
-   - `Published` (checkbox): 勾选后才会显示
+#### 3. 数据库字段要求
 
-4. **环境变量**
-   在 `.env.local` 或 Vercel 中配置：
-   ```
-   NOTION_TOKEN=secret_...
-   NOTION_DATABASE_ID=...
-   ```
+| 字段名 | 类型 | 说明 |
+|--------|------|------|
+| `Title` | title | 标题 |
+| `Slug` | text | URL 路径 (例如: `my-first-note`) |
+| `Language` | select | `zh` 或 `ja` |
+| `Type` | select | `note` / `library` 等 |
+| `Category` | select | **资源库分类**（见下表） |
+| `Summary` | text | 摘要 |
+| `Date` | date | 发布日期 |
+| `Tags` | multi_select | 标签 |
+| `Published` | checkbox | 勾选后才会显示 |
+
+#### 4. Category 字段选项
+
+| Value | 中文显示 | 日文显示 | 说明 |
+|-------|----------|----------|------|
+| `template` | 模板 | テンプレート | 模板资源 |
+| `checklist` | 清单 | チェックリスト | 检查清单 |
+| `sop` | SOP | SOP | 标准操作流程 |
+| `prompt` | Prompt | Prompt | AI 提示词 |
+| `note` | 笔记 | ノート | 笔记文章 |
+
+**规则说明：**
+- **资源库页面** (`/library`): 按 Category 分类展示，点击"笔记"Tab 会显示 Category=note 的内容
+- **笔记页面** (`/notes`): 按 Type=note 展示所有笔记
+- 若 Category 未设置，内容会显示在"全部"Tab，并提示"未分类"
+
+#### 5. 环境变量
+
+在 `.env.local` 或 Vercel 中配置：
+```
+NOTION_TOKEN=secret_...
+NOTION_DATABASE_ID=...
+```
 
 ### 其他内容 (MDX)
 
-目前 Products, Library, Playbooks 等仍使用本地 MDX 文件管理。
+目前 Products, Playbooks 等仍使用本地 MDX 文件管理。
 在 `content/` 目录下创建对应文件夹的 MDX 文件即可。
 
 ## 部署

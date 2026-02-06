@@ -6,12 +6,6 @@ const dummyClient = {
     blocks: {
         children: {
             list: async ({ block_id, start_cursor }: { block_id: string; start_cursor?: string }) => {
-                // NotionToMarkdown expects the raw response from blocks.children.list
-                // Our getAllBlocks handles pagination automatically, but n2m might want to do it page by page.
-                // However, n2m's pageToMarkdown calls list recursively.
-                // We should map our notionRest implementation to match the expected signature.
-
-                // Reuse our existing REST function
                 const response = await fetch(`https://api.notion.com/v1/blocks/${block_id}/children?page_size=100${start_cursor ? `&start_cursor=${start_cursor}` : ''}`, {
                     headers: {
                         'Authorization': `Bearer ${process.env.NOTION_TOKEN}`,
@@ -26,6 +20,9 @@ const dummyClient = {
 
 const n2m = new NotionToMarkdown({ notionClient: dummyClient });
 
+// Category values for filtering
+export type CategoryType = 'template' | 'checklist' | 'sop' | 'prompt' | 'note' | '';
+
 export interface NotionNote {
     id: string;
     title: string;
@@ -34,6 +31,8 @@ export interface NotionNote {
     date: string;
     tags: string[];
     language: 'zh' | 'ja';
+    category: CategoryType;
+    type: string; // Original Type field for distinguishing notes
 }
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -72,29 +71,31 @@ function parseNotionPage(page: any): NotionNote | null {
     const isPublished = getCheckbox(props['Published']);
     if (!isPublished) return null;
 
-    const type = getText(props['Type']);
-    if (type !== 'note') return null;
-
     const title = getText(props['Title']);
     const slug = getText(props['Slug']);
     const language = getText(props['Language']) as 'zh' | 'ja';
     const summary = getText(props['Summary']);
     const date = getDate(props['Date']);
     const tags = getMultiSelect(props['Tags']);
+    const category = (getText(props['Category']) || '') as CategoryType;
+    const type = getText(props['Type']);
 
-    if (!title || !slug || !language || !date) return null;
+    if (!title || !slug || !language) return null;
 
     return {
         id: page.id,
         title,
         slug,
         summary,
-        date,
+        date: date || new Date().toISOString().split('T')[0],
         tags,
         language,
+        category,
+        type,
     };
 }
 
+// Query notes by Type=note (for /notes page)
 export async function queryNotes(language: 'zh' | 'ja'): Promise<NotionNote[]> {
     const databaseId = process.env.NOTION_DATABASE_ID;
     if (!databaseId) return [];
@@ -118,7 +119,45 @@ export async function queryNotes(language: 'zh' | 'ja'): Promise<NotionNote[]> {
         }
         return notes;
     } catch (error) {
-        console.error('Error querying Notion:', error);
+        console.error('Error querying Notion notes:', error);
+        return [];
+    }
+}
+
+// Query library items by Category (for /library page)
+export async function queryLibraryByCategory(
+    language: 'zh' | 'ja',
+    category?: CategoryType
+): Promise<NotionNote[]> {
+    const databaseId = process.env.NOTION_DATABASE_ID;
+    if (!databaseId) return [];
+
+    try {
+        // Build filter based on category
+        const baseFilter: any[] = [
+            { property: 'Published', checkbox: { equals: true } },
+            { property: 'Language', select: { equals: language } },
+        ];
+
+        if (category) {
+            // Filter by specific category
+            baseFilter.push({ property: 'Category', select: { equals: category } });
+        }
+        // If no category specified (All), just use Published + Language filter
+
+        const response = await notionDatabaseQuery(databaseId, {
+            filter: { and: baseFilter },
+            sorts: [{ property: 'Date', direction: 'descending' }],
+        });
+
+        const items: NotionNote[] = [];
+        for (const page of response.results) {
+            const parsed = parseNotionPage(page);
+            if (parsed) items.push(parsed);
+        }
+        return items;
+    } catch (error) {
+        console.error('Error querying Notion library:', error);
         return [];
     }
 }
@@ -147,7 +186,6 @@ export async function getNotePageBySlug(slug: string, language: 'zh' | 'ja'): Pr
 
 export async function getPageContent(pageId: string): Promise<string> {
     try {
-        // Since we are using a dummy client that calls fetch internally, n2m should work.
         const mdblocks = await n2m.pageToMarkdown(pageId);
         const mdString = n2m.toMarkdownString(mdblocks);
         return mdString.parent;

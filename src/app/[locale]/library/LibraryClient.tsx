@@ -1,49 +1,94 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { ResourceCard } from '@/components/cards';
 import { TagFilter, ChipButton } from '@/components/ui';
 import { LibraryFrontmatter, ContentItem } from '@/lib/mdx';
-import { NotionNote } from '@/lib/notion';
+import { NotionNote, CategoryType } from '@/lib/notion';
 
 interface LibraryClientProps {
-    items: ContentItem<LibraryFrontmatter>[];
+    mdxItems: ContentItem<LibraryFrontmatter>[];
+    notionItems: NotionNote[];
     allTags: string[];
-    notes: NotionNote[];
     locale: string;
 }
 
-export function LibraryClient({ items, allTags, notes, locale }: LibraryClientProps) {
+// Map category values to display labels
+const categoryLabels: Record<string, { zh: string; ja: string }> = {
+    template: { zh: '模板', ja: 'テンプレート' },
+    checklist: { zh: '清单', ja: 'チェックリスト' },
+    sop: { zh: 'SOP', ja: 'SOP' },
+    prompt: { zh: 'Prompt', ja: 'Prompt' },
+    note: { zh: '笔记', ja: 'ノート' },
+    uncategorized: { zh: '未分类', ja: '未分類' },
+};
+
+const categories: CategoryType[] = ['template', 'checklist', 'sop', 'prompt', 'note'];
+
+export function LibraryClient({ mdxItems, notionItems, allTags, locale }: LibraryClientProps) {
     const t = useTranslations('library');
     const common = useTranslations('common');
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
-    const [selectedType, setSelectedType] = useState<string>('');
+    const [selectedCategory, setSelectedCategory] = useState<CategoryType | 'all'>('all');
 
-    // Resource types (MDX-based)
-    const resourceTypes = ['template', 'checklist', 'sop', 'prompt'];
-    // All types including notes
-    const allTypes = [...resourceTypes, 'note'];
+    // Count uncategorized Notion items
+    const uncategorizedCount = useMemo(() =>
+        notionItems.filter(item => !item.category || !categories.includes(item.category)).length,
+        [notionItems]
+    );
 
-    // Filter MDX items
-    const filteredItems = items.filter((item) => {
-        const matchesTags = selectedTags.length === 0 ||
-            selectedTags.some((tag) => item.frontmatter.tags.includes(tag));
-        const matchesType = !selectedType || selectedType === 'note' ? false : item.frontmatter.type === selectedType;
-        // Show MDX items only when not viewing notes and type matches
-        return selectedType !== 'note' && matchesTags && (selectedType === '' || item.frontmatter.type === selectedType);
-    });
+    // Filter Notion items by category and tags
+    const filteredNotionItems = useMemo(() => {
+        return notionItems.filter(item => {
+            // Category filter
+            if (selectedCategory !== 'all') {
+                if (!item.category || item.category !== selectedCategory) return false;
+            }
 
-    // Filter notes when "note" type is selected
-    const filteredNotes = selectedType === 'note' ? notes.filter((note) => {
-        if (selectedTags.length === 0) return true;
-        return selectedTags.some((tag) => note.tags.includes(tag));
-    }) : [];
+            // Tag filter
+            if (selectedTags.length > 0) {
+                if (!selectedTags.some(tag => item.tags.includes(tag))) return false;
+            }
 
-    // Combine all tags from both MDX and notes for the filter
-    const noteTags = notes.flatMap(n => n.tags);
-    const combinedTags = Array.from(new Set([...allTags, ...noteTags])).sort();
+            return true;
+        });
+    }, [notionItems, selectedCategory, selectedTags]);
+
+    // Filter MDX items by category and tags (for backward compatibility)
+    const filteredMdxItems = useMemo(() => {
+        return mdxItems.filter(item => {
+            // If viewing a category that maps to MDX type
+            if (selectedCategory !== 'all' && selectedCategory !== 'note') {
+                if (item.frontmatter.type !== selectedCategory) return false;
+            } else if (selectedCategory === 'note') {
+                // Notes are from Notion, not MDX
+                return false;
+            }
+
+            // Tag filter
+            if (selectedTags.length > 0) {
+                if (!selectedTags.some(tag => item.frontmatter.tags.includes(tag))) return false;
+            }
+
+            return true;
+        });
+    }, [mdxItems, selectedCategory, selectedTags]);
+
+    // Combine all unique tags
+    const combinedTags = useMemo(() => {
+        const notionTags = notionItems.flatMap(n => n.tags);
+        return Array.from(new Set([...allTags, ...notionTags])).sort();
+    }, [allTags, notionItems]);
+
+    const getCategoryLabel = (cat: CategoryType | 'all' | 'uncategorized') => {
+        if (cat === 'all') return t('filterAll');
+        const labels = categoryLabels[cat];
+        return labels ? (locale === 'zh' ? labels.zh : labels.ja) : cat;
+    };
+
+    const isNotionNote = (item: NotionNote) => item.type === 'note' || item.category === 'note';
 
     return (
         <div className="page-shell">
@@ -58,103 +103,119 @@ export function LibraryClient({ items, allTags, notes, locale }: LibraryClientPr
                         <h2 className="section-title">{t('title')}</h2>
                     </div>
 
-                    {/* Type Filter Chips */}
+                    {/* Category Filter Chips */}
                     <div className="flex flex-wrap gap-2 mb-4">
                         <ChipButton
-                            onClick={() => setSelectedType('')}
-                            active={selectedType === ''}
-                            aria-pressed={selectedType === ''}
+                            onClick={() => setSelectedCategory('all')}
+                            active={selectedCategory === 'all'}
+                            aria-pressed={selectedCategory === 'all'}
                             type="button"
                         >
                             {t('filterAll')}
                         </ChipButton>
-                        {resourceTypes.map((type) => (
+                        {categories.map((cat) => (
                             <ChipButton
-                                key={type}
-                                onClick={() => setSelectedType(selectedType === type ? '' : type)}
-                                active={selectedType === type}
-                                aria-pressed={selectedType === type}
+                                key={cat}
+                                onClick={() => setSelectedCategory(selectedCategory === cat ? 'all' : cat)}
+                                active={selectedCategory === cat}
+                                aria-pressed={selectedCategory === cat}
                                 type="button"
                             >
-                                {t(`types.${type}`)}
+                                {getCategoryLabel(cat)}
                             </ChipButton>
                         ))}
-                        {/* Notes Tab */}
-                        <ChipButton
-                            onClick={() => setSelectedType(selectedType === 'note' ? '' : 'note')}
-                            active={selectedType === 'note'}
-                            aria-pressed={selectedType === 'note'}
-                            type="button"
-                        >
-                            {locale === 'zh' ? '笔记' : 'ノート'}
-                        </ChipButton>
                     </div>
+
+                    {/* Uncategorized warning */}
+                    {uncategorizedCount > 0 && (
+                        <div className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-google px-3 py-2 mb-4">
+                            {locale === 'zh'
+                                ? `有 ${uncategorizedCount} 条内容未设置 Category，请在 Notion 中完善分类`
+                                : `${uncategorizedCount}件のコンテンツにCategoryが設定されていません。Notionで分類を設定してください`}
+                        </div>
+                    )}
 
                     {/* Tag Filter */}
                     <div className="mb-6">
                         <TagFilter
-                            tags={selectedType === 'note' ? noteTags.filter((v, i, a) => a.indexOf(v) === i).sort() : allTags}
+                            tags={combinedTags}
                             selectedTags={selectedTags}
                             onChange={setSelectedTags}
                         />
                     </div>
 
-                    {/* Content Grid */}
-                    {selectedType !== 'note' ? (
-                        // MDX Resource Cards
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {filteredItems.map((item) => (
-                                <ResourceCard
-                                    key={item.slug}
-                                    slug={item.slug}
-                                    frontmatter={item.frontmatter}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        // Notion Notes as Article Cards
-                        <div className="space-y-4">
-                            {filteredNotes.map((note) => (
-                                <Link
-                                    key={note.id}
-                                    href={`/${locale}/notes/${note.slug}`}
-                                    className="group block bg-white rounded-google-lg border border-surface-300 p-6 hover:shadow-elevated-1 transition-all"
-                                >
-                                    <div className="flex flex-wrap gap-2 mb-2">
-                                        {note.tags.map((tag) => (
-                                            <span key={tag} className="text-xs text-surface-500 bg-surface-100 px-2 py-0.5 rounded-full">#{tag}</span>
-                                        ))}
-                                    </div>
-                                    <h3 className="text-xl font-semibold text-surface-900 group-hover:text-primary-600 mb-2">
-                                        {note.title}
-                                    </h3>
-                                    <p className="text-surface-600 line-clamp-2 mb-3">{note.summary}</p>
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-sm text-surface-500">{note.date}</span>
-                                        <span className="text-sm text-primary-600 group-hover:underline">
-                                            {locale === 'zh' ? '查看详情 →' : '詳細を見る →'}
+                    {/* Content Grid - Mixed MDX and Notion items */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {/* MDX Resource Cards */}
+                        {filteredMdxItems.map((item) => (
+                            <ResourceCard
+                                key={`mdx-${item.slug}`}
+                                slug={item.slug}
+                                frontmatter={item.frontmatter}
+                            />
+                        ))}
+
+                        {/* Notion Items as Cards */}
+                        {filteredNotionItems.map((item) => (
+                            <div
+                                key={`notion-${item.id}`}
+                                className="bg-white rounded-google-lg border border-surface-300 p-5 hover:shadow-elevated-1 transition-all flex flex-col"
+                            >
+                                {/* Category & Tags */}
+                                <div className="flex flex-wrap gap-2 mb-3">
+                                    {item.category && (
+                                        <span className="text-xs text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full font-medium">
+                                            {getCategoryLabel(item.category)}
                                         </span>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    )}
+                                    )}
+                                    {item.tags.slice(0, 3).map((tag) => (
+                                        <span key={tag} className="text-xs text-surface-500 bg-surface-100 px-2 py-0.5 rounded-full">
+                                            #{tag}
+                                        </span>
+                                    ))}
+                                </div>
+
+                                {/* Title */}
+                                <h3 className="text-lg font-semibold text-surface-900 mb-2 line-clamp-2">
+                                    {item.title}
+                                </h3>
+
+                                {/* Summary */}
+                                <p className="text-surface-600 text-sm line-clamp-2 mb-3 flex-grow">
+                                    {item.summary || (locale === 'zh' ? '暂无描述' : '説明なし')}
+                                </p>
+
+                                {/* Date & Action */}
+                                <div className="flex items-center justify-between mt-auto pt-3 border-t border-surface-100">
+                                    <span className="text-xs text-surface-500">{item.date}</span>
+                                    {isNotionNote(item) ? (
+                                        <Link
+                                            href={`/${locale}/notes/${item.slug}`}
+                                            className="text-sm font-medium text-primary-600 hover:text-primary-700 hover:underline"
+                                        >
+                                            {locale === 'zh' ? '查看详情 →' : '詳細を見る →'}
+                                        </Link>
+                                    ) : (
+                                        <Link
+                                            href={`/${locale}/notes/${item.slug}`}
+                                            className="text-sm font-medium text-primary-600 hover:text-primary-700 hover:underline"
+                                        >
+                                            {locale === 'zh' ? '查看 →' : '見る →'}
+                                        </Link>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
 
                     {/* Empty State */}
-                    {selectedType !== 'note' && filteredItems.length === 0 && (
-                        <div className="text-center py-16 text-surface-600">
-                            {common('notFound')}
-                        </div>
-                    )}
-                    {selectedType === 'note' && filteredNotes.length === 0 && (
+                    {filteredMdxItems.length === 0 && filteredNotionItems.length === 0 && (
                         <div className="text-center py-16 text-surface-600 bg-surface-50 rounded-google-lg border border-surface-200">
-                            <p className="font-medium mb-2">
-                                {locale === 'zh' ? '暂无笔记' : 'ノートがありません'}
-                            </p>
+                            <p className="font-medium mb-2">{common('notFound')}</p>
                             <p className="text-sm">
                                 {locale === 'zh'
-                                    ? '请在 Notion 中勾选 Published 并确认 Language/Type/Slug 配置正确'
-                                    : 'NotionでPublishedをチェックし、Language/Type/Slugの設定を確認してください'}
+                                    ? '请在 Notion 中确认 Published、Language、Category 配置正确'
+                                    : 'NotionでPublished、Language、Categoryの設定を確認してください'}
                             </p>
                         </div>
                     )}
