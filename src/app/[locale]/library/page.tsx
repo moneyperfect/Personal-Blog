@@ -1,6 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import { getAllLibraryItems, getAllTags } from '@/lib/mdx';
-import { queryLibraryByCategory, CategoryType } from '@/lib/notion';
+import { queryLibraryByCategory } from '@/lib/notion';
 import { Locale } from '@/i18n/routing';
 import { LibraryClient } from './LibraryClient';
 

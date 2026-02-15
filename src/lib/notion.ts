@@ -1,22 +1,63 @@
+import fs from 'fs';
+import path from 'path';
+import matter from 'gray-matter';
 import { notionDatabaseQuery, getAllBlocks } from './notionRest';
 import { NotionToMarkdown } from 'notion-to-md';
 
+// Type for dummy client to satisfy notion-to-md
+type NotionClientLike = {
+  blocks: {
+    children: {
+      list: (args: { block_id: string; start_cursor?: string }) => Promise<{
+        results: unknown[];
+        has_more: boolean;
+        next_cursor: string | null;
+      }>;
+    };
+  };
+};
+
+// Simple in-memory cache for page content
+const pageContentCache = new Map<
+  string,
+  { content: string; timestamp: number }
+>();
+const CACHE_TTL = 60 * 1000; // 60 seconds
+
 // Create a dummy client for n2m that uses our REST implementation
+const blockChildrenCache = new Map<string, unknown[]>(); // block_id -> all child blocks
 const dummyClient = {
     blocks: {
         children: {
             list: async ({ block_id, start_cursor }: { block_id: string; start_cursor?: string }) => {
-                const response = await fetch(`https://api.notion.com/v1/blocks/${block_id}/children?page_size=100${start_cursor ? `&start_cursor=${start_cursor}` : ''}`, {
-                    headers: {
-                        'Authorization': `Bearer ${process.env.NOTION_TOKEN}`,
-                        'Notion-Version': '2022-06-28',
-                    }
-                });
-                return await response.json();
-            }
+                // If we have cached all blocks for this block_id, return all blocks (ignore pagination)
+                if (blockChildrenCache.has(block_id)) {
+                    const cachedBlocks = blockChildrenCache.get(block_id);
+                    console.log(`Using cached blocks for ${block_id}, count: ${cachedBlocks?.length}`);
+                    return {
+                        results: cachedBlocks,
+                        has_more: false,
+                        next_cursor: null,
+                    };
+                }
+                // Otherwise fetch all blocks using getAllBlocks
+                console.log(`Fetching all blocks for ${block_id} via getAllBlocks`);
+                const start = Date.now();
+                const allBlocks = await getAllBlocks(block_id);
+                const end = Date.now();
+                console.log(`getAllBlocks for ${block_id} took ${end - start}ms, total blocks: ${allBlocks.length}`);
+                // Cache the result
+                blockChildrenCache.set(block_id, allBlocks);
+                // Return all blocks as a single page
+                    return {
+                        results: allBlocks as unknown[],
+                        has_more: false,
+                        next_cursor: null,
+                    };
+                }
         }
     }
-} as any;
+} as NotionClientLike;
 
 const n2m = new NotionToMarkdown({ notionClient: dummyClient });
 
@@ -73,12 +114,19 @@ function parseNotionPage(page: any): NotionNote | null {
 
     const title = getText(props['Title']);
     const slug = getText(props['Slug']);
-    const language = getText(props['Language']) as 'zh' | 'ja';
+    const languageRaw = getText(props['Language']);
+    const language = languageRaw.toLowerCase().trim() as 'zh' | 'ja';
     const summary = getText(props['Summary']);
     const date = getDate(props['Date']);
     const tags = getMultiSelect(props['Tags']);
-    const category = (getText(props['Category']) || '') as CategoryType;
-    const type = getText(props['Type']);
+    const categoryRaw = getText(props['Category']) || '';
+    // Normalize category: lowercase and trim
+    const category = (categoryRaw.toLowerCase().trim() as CategoryType) || '' as CategoryType;
+    if (categoryRaw && categoryRaw !== category) {
+        console.log(`Category normalized: "${categoryRaw}" -> "${category}"`);
+    }
+    const typeRaw = getText(props['Type']);
+    const type = typeRaw.toLowerCase().trim();
 
     if (!title || !slug || !language) return null;
 
@@ -95,8 +143,50 @@ function parseNotionPage(page: any): NotionNote | null {
     };
 }
 
+// Helper to get notes from local MDX files
+function getLocalNotes(language: 'zh' | 'ja'): NotionNote[] {
+    const notesDir = path.join(process.cwd(), 'content', 'notes');
+    if (!fs.existsSync(notesDir)) return [];
+    
+    const notes: NotionNote[] = [];
+    const files = fs.readdirSync(notesDir);
+    
+    for (const file of files) {
+        if (file.endsWith(`.${language}.mdx`)) {
+            const filePath = path.join(notesDir, file);
+            const fileContent = fs.readFileSync(filePath, 'utf8');
+            const { data: frontmatter } = matter(fileContent);
+            const slug = file.replace(`.${language}.mdx`, '');
+            
+            notes.push({
+                id: slug, // Use slug as ID for local notes
+                title: frontmatter.title || '',
+                slug,
+                summary: frontmatter.summary || '',
+                date: frontmatter.updatedAt || frontmatter.date || '',
+                tags: frontmatter.tags || [],
+                language: frontmatter.language as 'zh' | 'ja',
+                category: (frontmatter.category || '') as CategoryType,
+                type: frontmatter.type || 'note',
+            });
+        }
+    }
+    
+    // Sort by date descending
+    return notes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
 // Query notes by Type=note (for /notes page)
 export async function queryNotes(language: 'zh' | 'ja'): Promise<NotionNote[]> {
+    // First try to get notes from local MDX files
+    const localNotes = getLocalNotes(language);
+    if (localNotes.length > 0) {
+        console.log(`Using ${localNotes.length} local notes for ${language}`);
+        return localNotes;
+    }
+    
+    // Fallback to Notion API if no local notes found
+    console.log(`No local notes found for ${language}, querying Notion...`);
     const databaseId = process.env.NOTION_DATABASE_ID;
     if (!databaseId) return [];
 
@@ -134,7 +224,7 @@ export async function queryLibraryByCategory(
 
     try {
         // Build filter based on category
-        const baseFilter: any[] = [
+        const baseFilter: unknown[] = [
             { property: 'Published', checkbox: { equals: true } },
             { property: 'Language', select: { equals: language } },
         ];
@@ -185,12 +275,75 @@ export async function getNotePageBySlug(slug: string, language: 'zh' | 'ja'): Pr
 }
 
 export async function getPageContent(pageId: string): Promise<string> {
+    // Check cache first
+    const cached = pageContentCache.get(pageId);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+        console.log(`Cache hit for page ${pageId}`);
+        return cached.content;
+    }
+    console.log(`Cache miss for page ${pageId}, fetching from Notion`);
     try {
+        console.time(`getPageContent ${pageId}`);
         const mdblocks = await n2m.pageToMarkdown(pageId);
+        console.timeLog(`getPageContent ${pageId}`, 'pageToMarkdown done');
         const mdString = n2m.toMarkdownString(mdblocks);
-        return mdString.parent;
+        console.timeEnd(`getPageContent ${pageId}`);
+        const content = mdString.parent;
+        // Update cache
+        pageContentCache.set(pageId, { content, timestamp: Date.now() });
+        return content;
     } catch (error) {
         console.error('Error fetching page content:', error);
         return '';
+    }
+}
+
+// Get all note slugs for static generation
+export async function getAllNoteSlugs(): Promise<{ locale: string; slug: string }[]> {
+    // First try to get slugs from local MDX files
+    const notesDir = path.join(process.cwd(), 'content', 'notes');
+    if (fs.existsSync(notesDir)) {
+        const files = fs.readdirSync(notesDir);
+        const slugs: { locale: string; slug: string }[] = [];
+        for (const file of files) {
+            if (file.endsWith('.zh.mdx')) {
+                const slug = file.replace('.zh.mdx', '');
+                slugs.push({ locale: 'zh', slug });
+            } else if (file.endsWith('.ja.mdx')) {
+                const slug = file.replace('.ja.mdx', '');
+                slugs.push({ locale: 'ja', slug });
+            }
+        }
+        if (slugs.length > 0) {
+            console.log(`Using ${slugs.length} local note slugs for static generation`);
+            return slugs;
+        }
+    }
+    
+    // Fallback to Notion API if no local files found
+    console.log('No local note files found, querying Notion for slugs...');
+    const databaseId = process.env.NOTION_DATABASE_ID;
+    if (!databaseId) return [];
+    try {
+        // Query all published notes (both languages)
+        const response = await notionDatabaseQuery(databaseId, {
+            filter: {
+                and: [
+                    { property: 'Published', checkbox: { equals: true } },
+                    { property: 'Type', select: { equals: 'note' } },
+                ],
+            },
+        });
+        const slugs: { locale: string; slug: string }[] = [];
+        for (const page of response.results) {
+            const parsed = parseNotionPage(page);
+            if (parsed) {
+                slugs.push({ locale: parsed.language, slug: parsed.slug });
+            }
+        }
+        return slugs;
+    } catch (error) {
+        console.error('Error fetching all note slugs:', error);
+        return [];
     }
 }

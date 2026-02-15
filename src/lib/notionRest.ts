@@ -2,7 +2,7 @@ const NOTION_API_BASE = 'https://api.notion.com/v1';
 
 export async function notionDatabaseQuery(
     databaseId: string,
-    body: Record<string, any>
+    body: Record<string, unknown>
 ): Promise<any> {
     const token = process.env.NOTION_TOKEN;
     if (!token) throw new Error('Missing NOTION_TOKEN');
@@ -19,7 +19,7 @@ export async function notionDatabaseQuery(
 
     if (!res.ok) {
         const errorText = await res.text();
-        let errorMessage = `Notion API Error: ${res.status} ${res.statusText} - ${errorText}`;
+        let errorMessage = `Notion API Error: ${res.status} ${res.statusText} - ${errorText} `;
 
         if (res.status === 404) {
             errorMessage += '\n[HINT] 404 "object_not_found" usually means:\n1. The NOTION_DATABASE_ID is incorrect.\n2. The Integration (Token) has NOT been connected to the database.\n   --> Go to your Notion Database page > "..." menu > "Connect to" > Select your integration.';
@@ -38,7 +38,7 @@ export async function getPageBlocks(pageId: string, startCursor?: string): Promi
     const token = process.env.NOTION_TOKEN;
     if (!token) throw new Error('Missing NOTION_TOKEN');
 
-    let url = `${NOTION_API_BASE}/blocks/${pageId}/children?page_size=100`;
+    let url = `${NOTION_API_BASE} /blocks/${pageId}/children?page_size=100`;
     if (startCursor) {
         url += `&start_cursor=${startCursor}`;
     }

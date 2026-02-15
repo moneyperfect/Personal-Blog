@@ -2,10 +2,16 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
-import { getNotePageBySlug, getPageContent } from '@/lib/notion';
+import { getNotePageBySlug, getPageContent, getAllNoteSlugs, NotionNote } from '@/lib/notion';
+import { getNoteBySlug, convertLocalNoteToNotionNote } from '@/lib/mdx';
 // import { ArticleBottomAd } from '@/components/AdUnit'; // 取消注释以启用广告
 
 export const revalidate = 60; // Cache for 60 seconds
+
+export async function generateStaticParams() {
+    const slugs = await getAllNoteSlugs();
+    return slugs.map(({ locale, slug }) => ({ locale, slug }));
+}
 
 type Props = {
     params: Promise<{ locale: string; slug: string }>;
@@ -25,10 +31,22 @@ export default async function NoteDetailPage({ params }: Props) {
     const { locale, slug } = await params;
     setRequestLocale(locale);
 
-    const note = await getNotePageBySlug(slug, locale as 'zh' | 'ja');
-    if (!note) notFound();
+    let note: NotionNote | null = null;
+    let markdownContent = '';
+    const language = locale as 'zh' | 'ja';
 
-    const markdownContent = await getPageContent(note.id);
+    // Try to get note from local MDX files first
+    const localNote = getNoteBySlug(slug, language);
+    if (localNote) {
+        note = convertLocalNoteToNotionNote(localNote);
+        markdownContent = localNote.content;
+    } else {
+        // Fallback to Notion API
+        note = await getNotePageBySlug(slug, language);
+        if (!note) notFound();
+        markdownContent = await getPageContent(note.id);
+    }
+
     const t = await getTranslations({ locale, namespace: 'notes' });
     const common = await getTranslations({ locale, namespace: 'common' });
 

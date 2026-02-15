@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { ResourceCard } from '@/components/cards';
 import { TagFilter, ChipButton } from '@/components/ui';
@@ -33,18 +33,39 @@ export function LibraryClient({ mdxItems, notionItems, allTags, locale }: Librar
     const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<CategoryType | 'all'>('all');
 
+    // Debug: log Notion items for troubleshooting
+    useEffect(() => {
+        if (notionItems.length > 0) {
+            console.log('Notion items loaded:', notionItems.length);
+            notionItems.forEach((item, idx) => {
+                console.log(`  [${idx}] ${item.title}`, {
+                    category: item.category,
+                    type: item.type,
+                    language: item.language,
+                    tags: item.tags
+                });
+            });
+        }
+    }, [notionItems]);
+
     // Count uncategorized Notion items
     const uncategorizedCount = useMemo(() =>
-        notionItems.filter(item => !item.category || !categories.includes(item.category)).length,
+        notionItems.filter(item => {
+            if (!item.category) return true;
+            // Check if normalized category is in categories list
+            const normalizedCat = item.category.toLowerCase() as CategoryType;
+            return !categories.includes(normalizedCat);
+        }).length,
         [notionItems]
     );
 
     // Filter Notion items by category and tags
     const filteredNotionItems = useMemo(() => {
         return notionItems.filter(item => {
-            // Category filter
+            // Category filter (case-insensitive)
             if (selectedCategory !== 'all') {
-                if (!item.category || item.category !== selectedCategory) return false;
+                if (!item.category) return false;
+                if (item.category.toLowerCase() !== selectedCategory.toLowerCase()) return false;
             }
 
             // Tag filter
@@ -84,7 +105,9 @@ export function LibraryClient({ mdxItems, notionItems, allTags, locale }: Librar
 
     const getCategoryLabel = (cat: CategoryType | 'all' | 'uncategorized') => {
         if (cat === 'all') return t('filterAll');
-        const labels = categoryLabels[cat];
+        // Normalize category for label lookup
+        const normalizedCat = cat.toLowerCase();
+        const labels = categoryLabels[normalizedCat];
         return labels ? (locale === 'zh' ? labels.zh : labels.ja) : cat;
     };
 

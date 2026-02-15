@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { Locale } from '@/i18n/routing';
+import { NotionNote, CategoryType } from './notion';
 
 const contentDirectory = path.join(process.cwd(), 'content');
 
@@ -32,6 +33,11 @@ export interface ContentFrontmatter {
     tags: string[];
     updatedAt: string;
     language: string;
+}
+
+export interface NoteFrontmatter extends ContentFrontmatter {
+    category?: string;
+    type?: string;
 }
 
 export interface ContentItem<T = ContentFrontmatter> {
@@ -118,12 +124,29 @@ export function getCaseBySlug(slug: string, locale: Locale): ContentItem<Content
     return getContentBySlug<ContentFrontmatter>('cases', slug, locale);
 }
 
-export function getAllNotes(locale: Locale): ContentItem<ContentFrontmatter>[] {
-    return getAllContent<ContentFrontmatter>('notes', locale);
+export function getAllNotes(locale: Locale): ContentItem<NoteFrontmatter>[] {
+    return getAllContent<NoteFrontmatter>('notes', locale);
 }
 
-export function getNoteBySlug(slug: string, locale: Locale): ContentItem<ContentFrontmatter> | null {
-    return getContentBySlug<ContentFrontmatter>('notes', slug, locale);
+export function getNoteBySlug(slug: string, locale: Locale): ContentItem<NoteFrontmatter> | null {
+    return getContentBySlug<NoteFrontmatter>('notes', slug, locale);
+}
+
+// Convert local note to NotionNote format for compatibility
+export function convertLocalNoteToNotionNote(
+    localNote: ContentItem<NoteFrontmatter>
+): NotionNote {
+    return {
+        id: localNote.slug, // Use slug as ID for local notes
+        title: localNote.frontmatter.title,
+        slug: localNote.slug,
+        summary: localNote.frontmatter.summary,
+        date: localNote.frontmatter.updatedAt,
+        tags: localNote.frontmatter.tags,
+        language: localNote.frontmatter.language as 'zh' | 'ja',
+        category: (localNote.frontmatter.category || '') as CategoryType,
+        type: localNote.frontmatter.type || 'note',
+    };
 }
 
 export function getAllTags(items: ContentItem<ContentFrontmatter>[]): string[] {

@@ -46,14 +46,15 @@ export async function GET() {
     try {
         // 1. Unfiltered Query (Simple)
         console.log('Querying Notion via REST (unfiltered)...');
-        const response = await notionDatabaseQuery(dbId, { page_size: 5 });
+        const response = await notionDatabaseQuery(dbId, { page_size: 5 }) as any;
 
         const results = response.results || [];
         const unfilteredCount = results.length;
 
         const sampleTitles = results.map((page: any) => {
             if (!('properties' in page)) return '(not a page)';
-            return getPropValue(page, 'Title', 'title');
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            return getPropValue(page as any, 'Title', 'title');
         });
 
         // 2. Filtered Queries Sample (zh)
@@ -66,7 +67,7 @@ export async function GET() {
                 ],
             },
             page_size: 1
-        });
+        }) as any;
 
         return NextResponse.json({
             ok: true,
