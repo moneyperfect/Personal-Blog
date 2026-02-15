@@ -6,6 +6,7 @@
       "use": "@vercel/next"
     }
   ],
+  "installCommand": "npm install && git submodule update --init --recursive",
   "build": {
     "env": {
       "OBSIDIAN_NOTES_PATH": "./obsidian-notes"
