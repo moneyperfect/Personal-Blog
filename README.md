@@ -300,20 +300,77 @@ import { AdUnit, ArticleBottomAd } from '@/components/AdUnit';
 
 ### Vercel（推荐）
 
-1. 推送到 GitHub
-2. 在 Vercel 导入项目
-3. 配置环境变量
-4. 部署
+网站已配置为使用 Vercel 自动部署。只需将代码推送到 GitHub，Vercel 将自动构建和部署。
 
-### 其他平台
+#### 1. 连接 GitHub 仓库到 Vercel
 
-构建并导出：
+1. 访问 [Vercel Dashboard](https://vercel.com/dashboard)
+2. 点击 "Add New..." → "Project"
+3. 导入你的 GitHub 仓库 (`moneyperfect/Personal-Blog`)
+4. 保持默认设置，点击 "Deploy"
 
-```bash
-npm run build
+#### 2. 配置环境变量
+
+在 Vercel 项目设置中配置以下环境变量：
+
+**必需变量：**
+- `OBSIDIAN_NOTES_PATH`: `./obsidian-notes`（Obsidian 子模块路径）
+- `NEXT_PUBLIC_SITE_URL`: 你的网站域名（如 `https://yourdomain.com`）
+
+**可选变量（如果使用 Notion 作为备选源）：**
+- `NOTION_TOKEN`: Notion Integration Token
+- `NOTION_DATABASE_ID`: Notion 数据库 ID
+
+**广告相关（可选）：**
+- `NEXT_PUBLIC_GA_ID`: Google Analytics 4 测量 ID
+- `NEXT_PUBLIC_ADSENSE_CLIENT`: AdSense Publisher ID
+- `NEXT_PUBLIC_ENABLE_ADSENSE`: `true`（生产环境启用）
+
+#### 3. 自动部署流程
+
+- **推送到 main 分支** → 自动触发 Vercel 部署
+- **Obsidian 笔记同步** → 每6小时自动同步（通过 GitHub Actions）
+- **构建前预处理** → 自动转换 Obsidian 笔记为 MDX 格式
+
+#### 4. 验证部署
+
+部署完成后，访问 Vercel 提供的域名（如 `https://personal-blog.vercel.app`）检查：
+- 笔记页面 (`/zh/notes`) 是否正常显示
+- 资源库 (`/zh/library`) 分类是否正常
+- 各语言版本是否正常切换
+
+### GitHub Pages（静态导出）
+
+如需部署到 GitHub Pages，需要进行额外配置：
+
+#### 1. 启用静态导出
+修改 `next.config.ts`，添加 `output: 'export'`：
+```typescript
+const nextConfig: NextConfig = {
+  output: 'export',
+  trailingSlash: true,
+  images: { unoptimized: true }
+};
 ```
 
-将 `.next` 文件夹部署到你的托管平台。
+#### 2. 处理动态路由
+- 移除 `robots.ts` 和 `sitemap.ts`（或替换为静态版本）
+- 确保所有页面都支持静态生成（使用 `generateStaticParams`）
+
+#### 3. GitHub Actions 部署
+使用已配置的 `.github/workflows/deploy.yml`（需先完成上述修改）。
+
+### 手动构建与测试
+
+```bash
+# 本地构建测试
+npm run build
+
+# 本地预览
+npm start
+```
+
+构建产物位于 `.next` 文件夹，可部署到任何支持静态文件的托管平台。
 
 ## 许可证
 
