@@ -38,13 +38,17 @@ export default async function NoteDetailPage({ params }: Props) {
     // Try to get note from local MDX files first
     const localNote = getNoteBySlug(slug, language);
     if (localNote) {
+        console.log(`Note ${slug}.${language} found locally, content length: ${localNote.content.length}`);
         note = convertLocalNoteToNotionNote(localNote);
         markdownContent = localNote.content;
     } else {
+        console.log(`Note ${slug}.${language} not found locally, querying Notion...`);
         // Fallback to Notion API
         note = await getNotePageBySlug(slug, language);
         if (!note) notFound();
+        console.log(`Notion note found: ${note.id}, title: ${note.title}, fetching content...`);
         markdownContent = await getPageContent(note.id);
+        console.log(`Notion content length: ${markdownContent.length}`);
     }
 
     const t = await getTranslations({ locale, namespace: 'notes' });

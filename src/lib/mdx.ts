@@ -59,7 +59,14 @@ export function getContentBySlug<T = ContentFrontmatter>(
     slug: string,
     locale: Locale
 ): ContentItem<T> | null {
-    const filePath = path.join(contentDirectory, type, `${slug}.${locale}.mdx`);
+    // Decode URL-encoded slug if necessary
+    let decodedSlug = slug;
+    try {
+        decodedSlug = decodeURIComponent(slug);
+    } catch {
+        // If decoding fails, use original slug
+    }
+    const filePath = path.join(contentDirectory, type, `${decodedSlug}.${locale}.mdx`);
 
     if (!fs.existsSync(filePath)) {
         return null;

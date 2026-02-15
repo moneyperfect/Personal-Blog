@@ -1,0 +1,78 @@
+name: Sync Obsidian Notes
+
+on:
+  schedule:
+    # 每6小时自动同步
+    - cron: '0 */6 * * *'
+  # 支持手动触发
+  workflow_dispatch:
+  # 当推送到 main 分支时也运行（可选）
+  push:
+    branches: [ main ]
+    paths:
+      - 'obsidian-notes/**'  # 如果子模块有变化
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v4
+        with:
+          # 检出子模块
+          submodules: recursive
+          # 获取所有历史记录以便正确检测变化
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Update Obsidian submodule
+        run: |
+          git submodule update --remote --recursive
+          echo "Submodule updated at: $(git submodule status)"
+
+      - name: Convert Obsidian notes
+        run: npm run convert-obsidian
+        env:
+          OBSIDIAN_NOTES_PATH: ./obsidian-notes
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          # 检查 content/notes/ 目录是否有变化
+          git diff --exit-code --name-only content/notes/ || echo "changes=true" >> $GITHUB_OUTPUT
+
+      - name: Commit and push changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions"
+          git add content/notes/
+          git commit -m "chore: sync obsidian notes [skip ci]"
+          git push
+
+      - name: No changes message
+        if: steps.git-check.outputs.changes != 'true'
+        run: echo "No changes in Obsidian notes, skipping commit."
+
+      - name: Trigger Vercel deployment (optional)
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          echo "Changes committed, Vercel will automatically deploy."
+          # 如果需要手动触发 Vercel 部署，可以添加 webhook 调用
+          # curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK }}
+
+      - name: Summary
+        run: |
+          echo "同步完成！"
+          echo "📝 Obsidian 笔记已转换为网站格式"
+          echo "📁 输出目录: content/notes/"
+          echo "🚀 Vercel 将自动重新部署"

@@ -76,6 +76,13 @@ export interface NotionNote {
     type: string; // Original Type field for distinguishing notes
 }
 
+// Notion API response types
+interface NotionDatabaseQueryResponse {
+    results: unknown[];
+    has_more: boolean;
+    next_cursor: string | null;
+}
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 function getText(prop: any): string {
     if (!prop) return '';
@@ -200,7 +207,7 @@ export async function queryNotes(language: 'zh' | 'ja'): Promise<NotionNote[]> {
                 ],
             },
             sorts: [{ property: 'Date', direction: 'descending' }],
-        });
+        }) as NotionDatabaseQueryResponse;
 
         const notes: NotionNote[] = [];
         for (const page of response.results) {
@@ -238,7 +245,7 @@ export async function queryLibraryByCategory(
         const response = await notionDatabaseQuery(databaseId, {
             filter: { and: baseFilter },
             sorts: [{ property: 'Date', direction: 'descending' }],
-        });
+        }) as NotionDatabaseQueryResponse;
 
         const items: NotionNote[] = [];
         for (const page of response.results) {
@@ -264,7 +271,7 @@ export async function getNotePageBySlug(slug: string, language: 'zh' | 'ja'): Pr
                     { property: 'Language', select: { equals: language } },
                 ],
             },
-        });
+        }) as NotionDatabaseQueryResponse;
 
         if (!response.results || response.results.length === 0) return null;
         return parseNotionPage(response.results[0]);
@@ -289,11 +296,15 @@ export async function getPageContent(pageId: string): Promise<string> {
         const mdString = n2m.toMarkdownString(mdblocks);
         console.timeEnd(`getPageContent ${pageId}`);
         const content = mdString.parent;
+        console.log(`Page ${pageId} content length: ${content.length}`);
         // Update cache
         pageContentCache.set(pageId, { content, timestamp: Date.now() });
         return content;
     } catch (error) {
-        console.error('Error fetching page content:', error);
+        console.error('Error fetching page content for page', pageId, error);
+        if (error instanceof Error) {
+            console.error('Error details:', error.message, error.stack);
+        }
         return '';
     }
 }
@@ -333,7 +344,7 @@ export async function getAllNoteSlugs(): Promise<{ locale: string; slug: string 
                     { property: 'Type', select: { equals: 'note' } },
                 ],
             },
-        });
+        }) as NotionDatabaseQueryResponse;
         const slugs: { locale: string; slug: string }[] = [];
         for (const page of response.results) {
             const parsed = parseNotionPage(page);

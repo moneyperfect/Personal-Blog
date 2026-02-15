@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "sync-notes": "ts-node --esm scripts/sync-notion-notes.ts"
+    "sync-notes": "tsx scripts/sync-notion-notes.ts",
+    "convert-obsidian": "tsx scripts/convert-obsidian.ts",
+    "prebuild": "node scripts/prebuild.mjs"
   },
   "dependencies": {
     "gray-matter": "^4.0.3",
@@ -29,6 +31,7 @@
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

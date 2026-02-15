@@ -139,47 +139,67 @@ NOTION_TOKEN=secret_...
 NOTION_DATABASE_ID=...
 ```
 
-### Notion 笔记同步与性能优化
+### 内容来源选择
 
-Notion 笔记默认会实时调用 Notion API，可能导致页面加载较慢（3-6秒）。为了提高性能，已实现以下优化：
+网站支持两种内容来源：**Notion API** 和 **Obsidian 本地文件**。推荐使用 Obsidian 方案以获得最佳性能和完全控制。
 
-#### 1. 内存缓存
-- 笔记内容缓存 60 秒，重复访问同一笔记会瞬间加载
-- Notion 块数据缓存，避免重复 API 调用
+#### 方案一：Obsidian 本地文件（推荐）
 
-#### 2. 本地 MDX 同步（推荐）
-可以将 Notion 笔记同步到本地 MDX 文件，实现与模板笔记相同的即时加载速度：
+如果你已经在使用 Obsidian + GitHub 同步工作流，这是最佳选择：
 
-**同步方式（选择一种）：**
+**优势**：
+- ⚡ **瞬间加载**：纯静态文件，与模板笔记相同速度
+- 🔄 **完全控制**：直接在 Obsidian 中编辑，自动同步到网站
+- 🌐 **离线可用**：不依赖任何第三方 API
+- 📦 **数据安全**：所有内容在 Git 版本控制中
 
-**A. 使用 API 端点（开发环境）**
-1. 启动开发服务器：`npm run dev`
-2. 访问同步端点：`http://localhost:3000/api/sync-notes`
-   - GET 请求：直接访问链接
-   - POST 请求：需要设置 `Authorization: Bearer <SYNC_SECRET>` 头
-3. 在 `.env.local` 中可设置 `SYNC_SECRET` 保护端点
+**设置步骤**：
 
-**B. 使用命令行脚本**
-1. 安装依赖：已包含 `dotenv` 和 `ts-node`
-2. 运行同步：`npm run sync-notes`
-   - 或手动运行：`npx ts-node --transpile-only scripts/sync-notion-notes.ts`
-3. 确保 `.env.local` 中包含 `NOTION_TOKEN` 和 `NOTION_DATABASE_ID`
+1. **添加 Obsidian 子模块**：
+   ```bash
+   git submodule add <你的Obsidian仓库URL> obsidian-notes
+   git submodule update --init --recursive
+   ```
 
-**C. 集成到构建流程**
-在 `package.json` 中添加 prebuild 脚本：
-```json
-"prebuild": "npm run sync-notes",
-```
+2. **配置环境变量**（`.env.local`）：
+   ```bash
+   OBSIDIAN_NOTES_PATH=./obsidian-notes
+   ```
 
-**同步效果：**
-- 笔记保存到 `content/notes/<slug>.<locale>.mdx`
-- 支持增量更新，仅同步修改过的笔记
-- 自动清理已删除的笔记文件
-- 笔记页面优先使用本地文件，不存在时回退到 Notion API
+3. **首次转换**：
+   ```bash
+   npm run convert-obsidian
+   ```
 
-#### 3. 静态生成
-- 笔记页面支持静态生成（SSG），构建时预渲染
-- 列表页面使用本地文件生成，无需 API 调用
+4. **Obsidian 笔记规范**：
+   - 文件名：`笔记标题.zh.md` 或 `笔记标题.ja.md`
+   - Frontmatter 必须包含：`title`, `summary`, `tags`, `date`, `language`
+   - 可选字段：`category`, `type`, `slug`
+
+5. **自动同步**：
+   - GitHub Actions 每6小时自动同步（`.github/workflows/sync-obsidian.yml`）
+   - 或手动运行：`npm run convert-obsidian`
+
+**转换功能**：
+- `[[内部链接]]` → `[内部链接](/zh/notes/slug)`
+- `![[图片.png]]` → `![](/images/图片.png)`
+- `%%注释%%` → 自动移除
+
+#### 方案二：Notion API（备选）
+
+如果你仍想使用 Notion 作为 CMS：
+
+**性能优化**：
+- **内存缓存**：笔记内容缓存60秒
+- **本地同步**：可同步到 MDX 文件（`npm run sync-notes`）
+- **静态生成**：构建时预渲染页面
+
+**同步方式**：
+1. **API端点**：`GET /api/sync-notes`（开发环境）
+2. **命令行**：`npm run sync-notes`
+3. **GitHub Actions**：`.github/workflows/sync-notion-notes.yml`
+
+**注意**：Notion API 有速率限制，首次加载可能需要 3-6 秒。
 
 ### 其他内容 (MDX)
 

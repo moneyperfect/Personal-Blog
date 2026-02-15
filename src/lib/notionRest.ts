@@ -3,7 +3,7 @@ const NOTION_API_BASE = 'https://api.notion.com/v1';
 export async function notionDatabaseQuery(
     databaseId: string,
     body: Record<string, unknown>
-): Promise<any> {
+): Promise<unknown> {
     const token = process.env.NOTION_TOKEN;
     if (!token) throw new Error('Missing NOTION_TOKEN');
 
@@ -34,11 +34,11 @@ export async function notionDatabaseQuery(
     return res.json();
 }
 
-export async function getPageBlocks(pageId: string, startCursor?: string): Promise<any> {
+export async function getPageBlocks(pageId: string, startCursor?: string): Promise<unknown> {
     const token = process.env.NOTION_TOKEN;
     if (!token) throw new Error('Missing NOTION_TOKEN');
 
-    let url = `${NOTION_API_BASE} /blocks/${pageId}/children?page_size=100`;
+    let url = `${NOTION_API_BASE}/blocks/${pageId}/children?page_size=100`;
     if (startCursor) {
         url += `&start_cursor=${startCursor}`;
     }
@@ -59,13 +59,13 @@ export async function getPageBlocks(pageId: string, startCursor?: string): Promi
     return res.json();
 }
 
-export async function getAllBlocks(pageId: string): Promise<any[]> {
-    let allBlocks: any[] = [];
+export async function getAllBlocks(pageId: string): Promise<unknown[]> {
+    let allBlocks: unknown[] = [];
     let hasMore = true;
     let nextCursor: string | undefined = undefined;
 
     while (hasMore) {
-        const res = await getPageBlocks(pageId, nextCursor);
+        const res = await getPageBlocks(pageId, nextCursor) as any;
         allBlocks = [...allBlocks, ...res.results];
         hasMore = res.has_more;
         nextCursor = res.next_cursor;
