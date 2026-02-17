@@ -1,18 +1,23 @@
 import createMiddleware from 'next-intl/middleware';
 import { routing } from './i18n/routing';
+import { NextRequest, NextResponse } from 'next/server';
 
-export default createMiddleware(routing);
+const intlMiddleware = createMiddleware(routing);
+
+export default function middleware(request: NextRequest) {
+    const { pathname } = request.nextUrl;
+
+    // 跳过 /admin 和 /api 路径，不做 i18n 处理
+    if (pathname.startsWith('/admin') || pathname.startsWith('/api')) {
+        return NextResponse.next();
+    }
+
+    return intlMiddleware(request);
+}
 
 export const config = {
-    // Match all paths except:
-    // - /admin (admin panel)
-    // - /api (API routes)
-    // - /_next (Next.js internals)
-    // - /icons, /images, etc. (static files)
-    // - files with extensions (.ico, .png, .jpg, etc.)
     matcher: [
-        '/',
-        '/(zh|ja)/:path*',
-        '/((?!admin|api|_next|icons|images|.*\\..*).*)'
+        // Match all paths except Next.js internals and static files
+        '/((?!_next|icons|images|.*\\..*).*)'
     ]
 };
