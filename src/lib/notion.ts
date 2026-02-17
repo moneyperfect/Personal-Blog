@@ -6,21 +6,21 @@ import { NotionToMarkdown } from 'notion-to-md';
 
 // Type for dummy client to satisfy notion-to-md
 type NotionClientLike = {
-  blocks: {
-    children: {
-      list: (args: { block_id: string; start_cursor?: string }) => Promise<{
-        results: unknown[];
-        has_more: boolean;
-        next_cursor: string | null;
-      }>;
+    blocks: {
+        children: {
+            list: (args: { block_id: string; start_cursor?: string }) => Promise<{
+                results: unknown[];
+                has_more: boolean;
+                next_cursor: string | null;
+            }>;
+        };
     };
-  };
 };
 
 // Simple in-memory cache for page content
 const pageContentCache = new Map<
-  string,
-  { content: string; timestamp: number }
+    string,
+    { content: string; timestamp: number }
 >();
 const CACHE_TTL = 60 * 1000; // 60 seconds
 
@@ -49,12 +49,12 @@ const dummyClient = {
                 // Cache the result
                 blockChildrenCache.set(block_id, allBlocks);
                 // Return all blocks as a single page
-                    return {
-                        results: allBlocks as unknown[],
-                        has_more: false,
-                        next_cursor: null,
-                    };
-                }
+                return {
+                    results: allBlocks as unknown[],
+                    has_more: false,
+                    next_cursor: null,
+                };
+            }
         }
     }
 } as NotionClientLike;
@@ -62,7 +62,12 @@ const dummyClient = {
 const n2m = new NotionToMarkdown({ notionClient: dummyClient });
 
 // Category values for filtering
-export type CategoryType = 'template' | 'checklist' | 'sop' | 'prompt' | 'note' | '';
+export type CategoryType =
+    | 'template' | 'checklist' | 'sop' | 'prompt' | 'note'
+    | 'AI' | 'Bug修复' | 'MVP' | 'ai' | '上线' | '产品' | '代码审查'
+    | '写作' | '开发' | '效率' | '文案' | '检查清单' | '模板'
+    | '用户研究' | '竞品分析' | '编程' | '营销' | '访谈'
+    | '';
 
 export interface NotionNote {
     id: string;
@@ -154,17 +159,17 @@ function parseNotionPage(page: any): NotionNote | null {
 function getLocalNotes(language: 'zh' | 'ja'): NotionNote[] {
     const notesDir = path.join(process.cwd(), 'content', 'notes');
     if (!fs.existsSync(notesDir)) return [];
-    
+
     const notes: NotionNote[] = [];
     const files = fs.readdirSync(notesDir);
-    
+
     for (const file of files) {
         if (file.endsWith(`.${language}.mdx`)) {
             const filePath = path.join(notesDir, file);
             const fileContent = fs.readFileSync(filePath, 'utf8');
             const { data: frontmatter } = matter(fileContent);
             const slug = file.replace(`.${language}.mdx`, '');
-            
+
             notes.push({
                 id: slug, // Use slug as ID for local notes
                 title: frontmatter.title || '',
@@ -178,7 +183,7 @@ function getLocalNotes(language: 'zh' | 'ja'): NotionNote[] {
             });
         }
     }
-    
+
     // Sort by date descending
     return notes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 }
@@ -191,26 +196,37 @@ export async function queryNotes(language: 'zh' | 'ja'): Promise<NotionNote[]> {
         console.log(`Using ${localNotes.length} local notes for ${language}`);
         return localNotes;
     }
-    
+
     // Fallback to Notion API if no local notes found
     console.log(`No local notes found for ${language}, querying Notion...`);
     const databaseId = process.env.NOTION_DATABASE_ID;
     if (!databaseId) return [];
 
     try {
-        const response = await notionDatabaseQuery(databaseId, {
-            filter: {
-                and: [
-                    { property: 'Published', checkbox: { equals: true } },
-                    { property: 'Type', select: { equals: 'note' } },
-                    { property: 'Language', select: { equals: language } },
-                ],
-            },
-            sorts: [{ property: 'Date', direction: 'descending' }],
-        }) as NotionDatabaseQueryResponse;
+        let hasMore = true;
+        let startCursor: string | null = null;
+        const allResults: unknown[] = [];
+
+        while (hasMore) {
+            const response = await notionDatabaseQuery(databaseId, {
+                filter: {
+                    and: [
+                        { property: 'Published', checkbox: { equals: true } },
+                        { property: 'Type', select: { equals: 'note' } },
+                        { property: 'Language', select: { equals: language } },
+                    ],
+                },
+                sorts: [{ property: 'Date', direction: 'descending' }],
+                start_cursor: startCursor || undefined,
+            }) as NotionDatabaseQueryResponse;
+
+            allResults.push(...response.results);
+            hasMore = response.has_more;
+            startCursor = response.next_cursor;
+        }
 
         const notes: NotionNote[] = [];
-        for (const page of response.results) {
+        for (const page of allResults) {
             const parsed = parseNotionPage(page);
             if (parsed) notes.push(parsed);
         }
@@ -242,13 +258,24 @@ export async function queryLibraryByCategory(
         }
         // If no category specified (All), just use Published + Language filter
 
-        const response = await notionDatabaseQuery(databaseId, {
-            filter: { and: baseFilter },
-            sorts: [{ property: 'Date', direction: 'descending' }],
-        }) as NotionDatabaseQueryResponse;
+        let hasMore = true;
+        let startCursor: string | null = null;
+        const allResults: unknown[] = [];
+
+        while (hasMore) {
+            const response = await notionDatabaseQuery(databaseId, {
+                filter: { and: baseFilter },
+                sorts: [{ property: 'Date', direction: 'descending' }],
+                start_cursor: startCursor || undefined,
+            }) as NotionDatabaseQueryResponse;
+
+            allResults.push(...response.results);
+            hasMore = response.has_more;
+            startCursor = response.next_cursor;
+        }
 
         const items: NotionNote[] = [];
-        for (const page of response.results) {
+        for (const page of allResults) {
             const parsed = parseNotionPage(page);
             if (parsed) items.push(parsed);
         }
@@ -330,7 +357,7 @@ export async function getAllNoteSlugs(): Promise<{ locale: string; slug: string 
             return slugs;
         }
     }
-    
+
     // Fallback to Notion API if no local files found
     console.log('No local note files found, querying Notion for slugs...');
     const databaseId = process.env.NOTION_DATABASE_ID;

@@ -7,7 +7,7 @@ const intlMiddleware = createMiddleware(routing);
 export default function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
-    // 跳过 /admin 和 /api 路径，不做 i18n 处理
+    // Skip i18n processing for /admin and /api paths
     if (pathname.startsWith('/admin') || pathname.startsWith('/api')) {
         return NextResponse.next();
     }

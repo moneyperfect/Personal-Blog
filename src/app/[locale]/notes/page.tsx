@@ -1,5 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
-import { queryNotes } from '@/lib/notion';
+import { getAllNotes, getAllTags } from '@/lib/mdx';
+import { Locale } from '@/i18n/routing';
 import { NotesClient } from './NotesClient';
 
 export const revalidate = 60; // Cache for 60 seconds
@@ -19,10 +20,10 @@ export default async function NotesPage({ params }: Props) {
     const { locale } = await params;
     setRequestLocale(locale);
 
-    const notes = await queryNotes(locale as 'zh' | 'ja');
+    const notes = getAllNotes(locale as Locale);
 
     // Extract unique tags
-    const allTags = Array.from(new Set(notes.flatMap(note => note.tags))).sort();
+    const allTags = getAllTags(notes);
 
     return <NotesClient notes={notes} allTags={allTags} />;
 }

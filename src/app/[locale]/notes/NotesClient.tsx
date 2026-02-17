@@ -4,11 +4,11 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import Link from 'next/link';
 import { TagFilter } from '@/components/ui';
-import { NotionNote } from '@/lib/notion';
+import { NoteFrontmatter, ContentItem } from '@/lib/mdx';
 import { useLocale } from 'next-intl';
 
 interface NotesClientProps {
-    notes: NotionNote[];
+    notes: ContentItem<NoteFrontmatter>[];
     allTags: string[];
 }
 
@@ -21,7 +21,7 @@ export function NotesClient({ notes, allTags }: NotesClientProps) {
     const filteredNotes = selectedTags.length === 0
         ? notes
         : notes.filter((note) =>
-            selectedTags.some((tag) => note.tags.includes(tag))
+            selectedTags.some((tag) => note.frontmatter.tags.includes(tag))
         );
 
     return (
@@ -47,21 +47,21 @@ export function NotesClient({ notes, allTags }: NotesClientProps) {
                     <div className="space-y-4">
                         {filteredNotes.map((note) => (
                             <Link
-                                key={note.id}
+                                key={note.slug}
                                 href={`/${locale}/notes/${note.slug}`}
                                 className="group block list-card"
                             >
                                 <div className="flex flex-wrap gap-2 mb-2">
-                                    {note.tags.map((tag) => (
+                                    {note.frontmatter.tags.map((tag) => (
                                         <span key={tag} className="chip chip-muted text-[11px]">#{tag}</span>
                                     ))}
                                 </div>
                                 <h2 className="text-lg font-semibold text-surface-900 group-hover:text-primary-600 mb-2">
-                                    {note.title}
+                                    {note.frontmatter.title}
                                 </h2>
-                                <p className="text-surface-600 line-clamp-2">{note.summary}</p>
+                                <p className="text-surface-600 line-clamp-2">{note.frontmatter.summary}</p>
                                 <span className="text-sm text-surface-500 mt-2 block">
-                                    {note.date}
+                                    {new Date(note.frontmatter.updatedAt).toLocaleDateString()}
                                 </span>
                             </Link>
                         ))}

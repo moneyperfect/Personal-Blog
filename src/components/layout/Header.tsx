@@ -11,7 +11,6 @@ const navItems = [
     { key: 'products', href: '/products' },
     { key: 'saas', href: '/saas' },
     { key: 'library', href: '/library' },
-    { key: 'notes', href: '/notes' },
     { key: 'workWithMe', href: '/work-with-me' },
 ];
 

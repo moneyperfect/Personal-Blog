@@ -7,16 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "sync-notes": "tsx scripts/sync-notion-notes.ts",
     "convert-obsidian": "tsx scripts/convert-obsidian.ts",
     "prebuild": "node scripts/prebuild.mjs"
   },
   "dependencies": {
+    "@octokit/rest": "^22.0.1",
     "gray-matter": "^4.0.3",
     "next": "16.1.6",
     "next-intl": "^4.8.2",
     "next-mdx-remote": "^6.0.0",
-    "notion-to-md": "^3.1.9",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-markdown": "^10.1.0",

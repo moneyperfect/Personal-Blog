@@ -1,11 +1,8 @@
 {
-  "installCommand": "npm install && git submodule update --init --recursive",
+  "installCommand": "npm install",
   "build": {
     "env": {
       "OBSIDIAN_NOTES_PATH": "./obsidian-notes"
     }
-  },
-  "env": {
-    "NEXT_PUBLIC_SITE_URL": "@site_url"
   }
 }

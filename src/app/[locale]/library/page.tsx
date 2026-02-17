@@ -1,6 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
-import { getAllLibraryItems, getAllTags } from '@/lib/mdx';
-import { queryLibraryByCategory } from '@/lib/notion';
+import { getAllResources, getAllTags } from '@/lib/mdx';
 import { Locale } from '@/i18n/routing';
 import { LibraryClient } from './LibraryClient';
 
@@ -24,17 +23,13 @@ export default async function LibraryPage({ params }: Props) {
     const { locale } = await params;
     setRequestLocale(locale);
 
-    // Fetch MDX library items (static resources)
-    const mdxItems = getAllLibraryItems(locale as Locale);
-    const allTags = getAllTags(mdxItems);
-
-    // Fetch all Notion items for library (Published + Language filter)
-    const notionItems = await queryLibraryByCategory(locale as 'zh' | 'ja');
+    // Fetch all resources (MDX library items + Notes)
+    const resources = getAllResources(locale as Locale);
+    const allTags = getAllTags(resources);
 
     return (
         <LibraryClient
-            mdxItems={mdxItems}
-            notionItems={notionItems}
+            resources={resources}
             allTags={allTags}
             locale={locale}
         />

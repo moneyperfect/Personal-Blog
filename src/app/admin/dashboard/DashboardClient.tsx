@@ -2,21 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  PieChart,
-  Pie,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
 
 interface Note {
   id: string;
@@ -39,11 +24,9 @@ interface Stats {
   topCategory: string;
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
-
 export default function DashboardClient() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'overview' | 'notes' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'notes'>('notes');
   const [notes, setNotes] = useState<Note[]>([]);
   const [stats, setStats] = useState<Stats>({
     totalNotes: 0,
@@ -55,31 +38,10 @@ export default function DashboardClient() {
   });
   const [loading, setLoading] = useState(true);
 
-  // 图表数据状态
-  const [trafficData, setTrafficData] = useState<{ date: string; visits: number; pageviews: number }[]>([
-    { date: '1月1日', visits: 4000, pageviews: 2400 },
-    { date: '1月2日', visits: 3000, pageviews: 1398 },
-    { date: '1月3日', visits: 2000, pageviews: 9800 },
-    { date: '1月4日', visits: 2780, pageviews: 3908 },
-    { date: '1月5日', visits: 1890, pageviews: 4800 },
-    { date: '1月6日', visits: 2390, pageviews: 3800 },
-    { date: '1月7日', visits: 3490, pageviews: 4300 },
-  ]);
-
-  const [categoryData, setCategoryData] = useState<{ name: string; value: number }[]>([]);
-  const [topNotesData, setTopNotesData] = useState<{ name: string; views: number }[]>([]);
-
   useEffect(() => {
     fetchNotes();
     fetchStats();
-    updateChartData();
   }, []);
-
-  // 根据笔记数据更新图表
-  const updateChartData = () => {
-    // 当notes数据加载后，这个函数会被调用
-    // 实际的更新会在fetchNotes完成后进行
-  };
 
   const fetchNotes = async () => {
     try {
@@ -90,37 +52,9 @@ export default function DashboardClient() {
       const data = await response.json();
       const notesData = data.notes || [];
       setNotes(notesData);
-      
-      // 更新基于笔记数据的图表
-      updateChartsFromNotes(notesData);
     } catch (error) {
       console.error('获取笔记失败:', error);
     }
-  };
-
-  // 根据笔记数据更新图表
-  const updateChartsFromNotes = (notesData: Note[]) => {
-    // 更新分类分布图
-    const categoryCount: Record<string, number> = {};
-    notesData.forEach(note => {
-      const category = note.category || '未分类';
-      categoryCount[category] = (categoryCount[category] || 0) + 1;
-    });
-
-    const newCategoryData = Object.entries(categoryCount).map(([name, value]) => ({
-      name: name === '' ? '未分类' : name,
-      value,
-    }));
-    setCategoryData(newCategoryData);
-
-    // 更新热门笔记图（模拟视图数据）
-    const newTopNotesData = notesData
-      .slice(0, 5) // 取前5个
-      .map(note => ({
-        name: note.title.length > 10 ? note.title.substring(0, 10) + '...' : note.title,
-        views: Math.floor(Math.random() * 10000) + 1000, // 模拟视图数
-      }));
-    setTopNotesData(newTopNotesData);
   };
 
   const fetchStats = async () => {
@@ -129,7 +63,7 @@ export default function DashboardClient() {
       const notes = await fetchNotesForStats();
       const publishedNotes = notes.filter(note => note.enabled).length;
       const draftNotes = notes.filter(note => !note.enabled).length;
-      
+
       // 计算类别分布
       const categoryCount: Record<string, number> = {};
       notes.forEach(note => {
@@ -147,16 +81,12 @@ export default function DashboardClient() {
         }
       }
 
-      // 模拟视图数据（后续应该从Google Analytics获取）
-      const totalViews = notes.length * 100;
-      const viewsGrowth = 12.5;
-
       setStats({
         totalNotes: notes.length,
         publishedNotes,
         draftNotes,
-        totalViews,
-        viewsGrowth,
+        totalViews: 0,
+        viewsGrowth: 0,
         topCategory: topCategory === '' ? '未分类' : topCategory,
       });
     } catch (error) {
@@ -190,31 +120,50 @@ export default function DashboardClient() {
     }
   };
 
-  const toggleNoteEnabled = async (id: string) => {
+  // Switch to GitHub API for updating published status
+  const toggleNoteEnabled = async (note: Note) => {
     try {
-      const response = await fetch('/api/admin/notes', {
+      const filePath = `content/notes/${note.slug}.${note.language}.mdx`;
+      const res = await fetch(`/api/admin/github?path=${filePath}`);
+      if (!res.ok) throw new Error('Failed to fetch file for toggling');
+      const data = await res.json();
+
+      let content = data.content as string;
+      const sha = data.sha;
+
+      let newPublishedState = !note.enabled;
+
+      // Update frontmatter regex
+      if (/published:\s*(true|false)/.test(content)) {
+        content = content.replace(/published:\s*(true|false)/, `published: ${newPublishedState}`);
+      } else {
+        // Fallback: try to insert after ---
+        content = content.replace(/^---\s*\n/, `---\npublished: ${newPublishedState}\n`);
+      }
+
+      const saveRes = await fetch('/api/admin/github', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'toggle-enabled',
-          slug: id,
-        }),
+          path: filePath,
+          content: content,
+          sha: sha,
+          message: `Update published status for ${note.title} to ${newPublishedState}`
+        })
       });
 
-      if (response.ok) {
-        // 更新本地状态
-        setNotes(notes.map(note => 
-          note.id === id ? { ...note, enabled: !note.enabled } : note
-        ));
-        // 刷新统计数据
-        fetchStats();
-      } else {
-        console.error('更新笔记状态失败');
-      }
+      if (!saveRes.ok) throw new Error('Failed to update published status');
+
+      // Optimistic update
+      setNotes(notes.map(n =>
+        n.id === note.id ? { ...n, enabled: newPublishedState } : n
+      ));
+
+      alert(newPublishedState ? '已发布 (可能需要1分钟生效)' : '已取消发布 (可能需要1分钟生效)');
+
     } catch (error) {
-      console.error('更新笔记状态失败:', error);
+      console.error('Toggle failed:', error);
+      alert('Failed to toggle status on GitHub.');
     }
   };
 
@@ -233,11 +182,9 @@ export default function DashboardClient() {
       });
 
       if (response.ok) {
-        // 更新本地状态
-        setNotes(notes.map(note => 
+        setNotes(notes.map(note =>
           note.id === id ? { ...note, category } : note
         ));
-        // 刷新统计数据
         fetchStats();
       } else {
         console.error('更新笔记分类失败');
@@ -270,34 +217,22 @@ export default function DashboardClient() {
               </div>
               <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                 <button
-                  onClick={() => setActiveTab('overview')}
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                    activeTab === 'overview'
-                      ? 'border-primary-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  }`}
-                >
-                  概览
-                </button>
-                <button
                   onClick={() => setActiveTab('notes')}
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                    activeTab === 'notes'
-                      ? 'border-primary-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  }`}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${activeTab === 'notes'
+                    ? 'border-primary-500 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    }`}
                 >
                   笔记管理
                 </button>
                 <button
-                  onClick={() => setActiveTab('analytics')}
-                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${
-                    activeTab === 'analytics'
-                      ? 'border-primary-500 text-gray-900'
-                      : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
-                  }`}
+                  onClick={() => setActiveTab('overview')}
+                  className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium ${activeTab === 'overview'
+                    ? 'border-primary-500 text-gray-900'
+                    : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
+                    }`}
                 >
-                  流量分析
+                  概览
                 </button>
               </div>
             </div>
@@ -316,7 +251,6 @@ export default function DashboardClient() {
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         {activeTab === 'overview' && (
           <div>
-            {/* 统计卡片 */}
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
               <div className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="p-5">
@@ -335,7 +269,6 @@ export default function DashboardClient() {
                   </div>
                 </div>
               </div>
-
               <div className="bg-white overflow-hidden shadow rounded-lg">
                 <div className="p-5">
                   <div className="flex items-center">
@@ -353,106 +286,6 @@ export default function DashboardClient() {
                   </div>
                 </div>
               </div>
-
-              <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <div className="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                        <span className="text-yellow-600 text-lg">📊</span>
-                      </div>
-                    </div>
-                    <div className="ml-5 w-0 flex-1">
-                      <dl>
-                        <dt className="text-sm font-medium text-gray-500 truncate">总访问量</dt>
-                        <dd className="text-lg font-medium text-gray-900">{stats.totalViews.toLocaleString()}</dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-white overflow-hidden shadow rounded-lg">
-                <div className="p-5">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0">
-                      <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                        <span className="text-purple-600 text-lg">📈</span>
-                      </div>
-                    </div>
-                    <div className="ml-5 w-0 flex-1">
-                      <dl>
-                        <dt className="text-sm font-medium text-gray-500 truncate">增长</dt>
-                        <dd className="text-lg font-medium text-gray-900">{stats.viewsGrowth}%</dd>
-                      </dl>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* 图表区域 */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-              {/* 流量趋势图 */}
-              <div className="bg-white shadow rounded-lg p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">流量趋势</h3>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={trafficData}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="date" />
-                      <YAxis />
-                      <Tooltip />
-                      <Legend />
-                      <Line type="monotone" dataKey="visits" stroke="#8884d8" activeDot={{ r: 8 }} />
-                      <Line type="monotone" dataKey="pageviews" stroke="#82ca9d" />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              {/* 分类分布图 */}
-              <div className="bg-white shadow rounded-lg p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">笔记分类分布</h3>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                       <Pie
-                        data={categoryData}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        {categoryData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-
-            {/* 热门笔记 */}
-            <div className="bg-white shadow rounded-lg p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">热门笔记</h3>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={topNotesData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" angle={-45} textAnchor="end" height={80} />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="views" fill="#8884d8" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
             </div>
           </div>
         )}
@@ -468,24 +301,12 @@ export default function DashboardClient() {
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        标题
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        分类
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        语言
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        日期
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        状态
-                      </th>
-                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        操作
-                      </th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">标题</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">分类</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">语言</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">日期</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
+                      <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
@@ -502,11 +323,25 @@ export default function DashboardClient() {
                             className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
                           >
                             <option value="">未分类</option>
-                            <option value="template">模板</option>
-                            <option value="checklist">清单</option>
-                            <option value="sop">SOP</option>
-                            <option value="prompt">Prompt</option>
-                            <option value="note">笔记</option>
+                            <option value="AI">AI</option>
+                            <option value="Bug修复">Bug修复</option>
+                            <option value="MVP">MVP</option>
+                            <option value="SOP">SOP</option>
+                            <option value="ai">ai</option>
+                            <option value="上线">上线</option>
+                            <option value="产品">产品</option>
+                            <option value="代码审查">代码审查</option>
+                            <option value="写作">写作</option>
+                            <option value="开发">开发</option>
+                            <option value="效率">效率</option>
+                            <option value="文案">文案</option>
+                            <option value="检查清单">检查清单</option>
+                            <option value="模板">模板</option>
+                            <option value="用户研究">用户研究</option>
+                            <option value="竞品分析">竞品分析</option>
+                            <option value="编程">编程</option>
+                            <option value="营销">营销</option>
+                            <option value="访谈">访谈</option>
                           </select>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -516,117 +351,25 @@ export default function DashboardClient() {
                           {note.date}
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            note.enabled
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${note.enabled
+                            ? 'bg-green-100 text-green-800'
+                            : 'bg-red-100 text-red-800'
+                            }`}>
                             {note.enabled ? '已发布' : '未发布'}
                           </span>
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <button
-                            onClick={() => toggleNoteEnabled(note.id)}
-                            className={`mr-3 ${
-                              note.enabled
-                                ? 'text-red-600 hover:text-red-900'
-                                : 'text-green-600 hover:text-green-900'
-                            }`}
+                            onClick={() => toggleNoteEnabled(note)}
+                            className={`text-sm ${note.enabled ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}`}
                           >
                             {note.enabled ? '取消发布' : '发布'}
-                          </button>
-                          <button className="text-primary-600 hover:text-primary-900">
-                            编辑
                           </button>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'analytics' && (
-          <div className="space-y-8">
-            {/* 实时流量 */}
-            <div className="bg-white shadow rounded-lg p-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">实时流量监控</h3>
-              <div className="h-96">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={trafficData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="visits" 
-                      stroke="#8884d8" 
-                      strokeWidth={2}
-                      dot={{ r: 4 }}
-                      activeDot={{ r: 6 }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* 访问来源 */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="bg-white shadow rounded-lg p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">访问来源</h3>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                       <Pie
-                        data={[
-                          { name: '直接访问', value: 400 },
-                          { name: '搜索引擎', value: 300 },
-                          { name: '社交媒体', value: 300 },
-                          { name: '引荐链接', value: 200 },
-                        ]}
-                        cx="50%"
-                        cy="50%"
-                        labelLine={false}
-                        label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
-                        outerRadius={80}
-                        fill="#8884d8"
-                        dataKey="value"
-                      >
-                        <Cell fill="#0088FE" />
-                        <Cell fill="#00C49F" />
-                        <Cell fill="#FFBB28" />
-                        <Cell fill="#FF8042" />
-                      </Pie>
-                      <Tooltip />
-                      <Legend />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              <div className="bg-white shadow rounded-lg p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">设备分布</h3>
-                <div className="h-80">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={[
-                        { name: '桌面端', value: 4000 },
-                        { name: '移动端', value: 3000 },
-                        { name: '平板', value: 2000 },
-                      ]}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip />
-                      <Bar dataKey="value" fill="#8884d8" />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
               </div>
             </div>
           </div>

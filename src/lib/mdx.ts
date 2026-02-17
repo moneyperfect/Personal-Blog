@@ -1,8 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { Locale } from '@/i18n/routing';
-import { NotionNote, CategoryType } from './notion';
+
 
 const contentDirectory = path.join(process.cwd(), 'content');
 
@@ -139,22 +138,7 @@ export function getNoteBySlug(slug: string, locale: Locale): ContentItem<NoteFro
     return getContentBySlug<NoteFrontmatter>('notes', slug, locale);
 }
 
-// Convert local note to NotionNote format for compatibility
-export function convertLocalNoteToNotionNote(
-    localNote: ContentItem<NoteFrontmatter>
-): NotionNote {
-    return {
-        id: localNote.slug, // Use slug as ID for local notes
-        title: localNote.frontmatter.title,
-        slug: localNote.slug,
-        summary: localNote.frontmatter.summary,
-        date: localNote.frontmatter.updatedAt,
-        tags: localNote.frontmatter.tags,
-        language: localNote.frontmatter.language as 'zh' | 'ja',
-        category: (localNote.frontmatter.category || '') as CategoryType,
-        type: localNote.frontmatter.type || 'note',
-    };
-}
+
 
 export function getAllTags(items: ContentItem<ContentFrontmatter>[]): string[] {
     const tagSet = new Set<string>();
@@ -162,6 +146,24 @@ export function getAllTags(items: ContentItem<ContentFrontmatter>[]): string[] {
         item.frontmatter.tags.forEach((tag) => tagSet.add(tag));
     });
     return Array.from(tagSet).sort();
+}
+
+export function getAllResources(locale: Locale): ContentItem<LibraryFrontmatter | NoteFrontmatter>[] {
+    const libraryItems = getAllLibraryItems(locale);
+    const notes = getAllNotes(locale);
+
+    // Map notes to look like library items where compatible
+    const notesAsResources = notes.map(note => ({
+        ...note, // Keep the structure, just override frontmatter type
+        frontmatter: {
+            ...note.frontmatter,
+            type: 'note' as const
+        }
+    }));
+
+    return [...libraryItems, ...notesAsResources].sort((a, b) =>
+        new Date(b.frontmatter.updatedAt).getTime() - new Date(a.frontmatter.updatedAt).getTime()
+    );
 }
 
 export function getAllSlugs(type: string, locale: Locale): string[] {
