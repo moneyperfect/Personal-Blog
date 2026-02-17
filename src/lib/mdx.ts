@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 
+type Locale = 'zh' | 'ja';
+
 
 const contentDirectory = path.join(process.cwd(), 'content');
 
