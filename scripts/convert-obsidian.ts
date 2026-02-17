@@ -10,8 +10,8 @@ const __dirname = path.dirname(__filename);
 const OBSIDIAN_PATH = process.env.OBSIDIAN_NOTES_PATH || '../obsidian-notes'; // 相对路径或绝对路径
 const OUTPUT_PATH = path.join(__dirname, '..', 'content', 'notes');
 
-// 支持的分类
-const VALID_CATEGORIES = ['template', 'checklist', 'sop', 'prompt', 'note'];
+// 支持的分类（与网站 CategoryType 保持一致）
+const VALID_CATEGORIES = ['template', 'checklist', 'sop', 'prompt', 'note', ''];
 
 interface ObsidianFrontmatter {
   title?: string;
@@ -191,9 +191,10 @@ async function convertObsidianNotes() {
       const slug = obsidianMeta.slug || generateSlug(filename, title);
       
       // 验证分类
-      const normalizedCategory = category.toLowerCase();
-      if (!VALID_CATEGORIES.includes(normalizedCategory)) {
-        console.warn(`⚠️  ${filename}: 无效分类 "${category}"，使用默认值 "note"`);
+      let finalCategory = category.toLowerCase();
+      if (!VALID_CATEGORIES.includes(finalCategory)) {
+        console.warn(`⚠️  ${filename}: 无效分类 "${category}"，使用空值 ""`);
+        finalCategory = ''; // 使用空字符串表示未分类
       }
       
       // 转换 Obsidian 语法
@@ -206,7 +207,7 @@ async function convertObsidianNotes() {
         tags,
         updatedAt: date,
         language,
-        category: normalizedCategory,
+        category: finalCategory,
         type,
       };
       
