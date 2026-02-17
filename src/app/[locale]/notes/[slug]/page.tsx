@@ -2,29 +2,12 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import ReactMarkdown from 'react-markdown';
 import Link from 'next/link';
-import { getAllNoteSlugs } from '@/lib/notion'; // Still using this for static params? Check this.
-import { getNoteBySlug } from '@/lib/mdx';
+import { getAllSlugs, getNoteBySlug } from '@/lib/mdx';
 // import { ArticleBottomAd } from '@/components/AdUnit'; // 取消注释以启用广告
 
 export const revalidate = 60; // Cache for 60 seconds
 
-// We can probably update this to use local slugs too, but getAllNoteSlugs might already be hybrid?
-// Let's check imports. getAllNoteSlugs is from notion.ts. 
-// I should probably switch this to getAllSlugs from mdx.ts if possible.
-// But for now, let's look at the implementation of getAllNoteSlugs in notion.ts (it was hybrid).
-// Ideally, use getAllSlugs from mdx.ts.
-
 export async function generateStaticParams() {
-    // This was importing from notion.ts which was hybrid. 
-    // Let's rely on dynamic rendering or standard revalidation if we don't fully migrate this content yet.
-    // CAUTION: changing generateStaticParams might affect build.
-    // For now, let's just make the PAGE CONTENT local-only.
-    // Actually, checking notion.ts again... getAllNoteSlugs *does* check local files first.
-    // So keeping it is "okay" but better to be pure.
-    // Let's stick to cleaning the page logic first.
-
-    // Changing to use local slugs source
-    const { getAllSlugs } = await import('@/lib/mdx');
     const zhSlugs = getAllSlugs('notes', 'zh');
     const jaSlugs = getAllSlugs('notes', 'ja');
 
