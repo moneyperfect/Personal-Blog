@@ -5,6 +5,7 @@ import { GoogleAnalytics } from "@/lib/analytics";
 import { PwaRegister } from "@/components/PwaRegister";
 import { getSiteUrl } from "@/lib/seo";
 import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
+import { PageViewTracker } from "@/components/analytics/PageViewTracker";
 
 const siteUrl = getSiteUrl();
 
@@ -75,6 +76,7 @@ export default function RootLayout({
     <html>
       <body className="antialiased">
         <GoogleAnalytics />
+        <PageViewTracker />
         <WebVitalsReporter />
         <PwaRegister />
 

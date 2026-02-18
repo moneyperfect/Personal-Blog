@@ -141,6 +141,7 @@ export async function getAllNotes(locale: Locale): Promise<ContentItem<NoteFront
         .from('posts')
         .select('*')
         .eq('published', true) // Only fetch published notes for public view
+        .eq('lang', locale)
         .order('date', { ascending: false });
 
     if (!posts) return [];
@@ -169,6 +170,7 @@ export async function getNoteBySlug(slug: string, locale: Locale): Promise<Conte
         .from('posts')
         .select('*')
         .eq('slug', slug)
+        .eq('lang', locale)
         .single();
 
     if (!post) return null;
@@ -226,6 +228,7 @@ export async function getAllSlugs(type: string, locale: Locale): Promise<string[
             .from('posts')
             .select('slug')
             .eq('published', true)
+            .eq('lang', locale)
 
         if (!posts) return [];
         return posts.map(post => post.slug);

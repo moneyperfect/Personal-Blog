@@ -65,7 +65,11 @@ export async function POST(request: NextRequest) {
         const notes = await getAllNotesMetadata();
         const note = notes.find(n => n.slug === slug);
         if (note) {
-          success = await updateNoteMetadata(slug, { enabled: !note.enabled });
+          const nextEnabled = !note.enabled;
+          success = await updateNoteMetadata(slug, {
+            enabled: nextEnabled,
+            lifecycleStatus: nextEnabled ? 'published' : 'draft',
+          });
         }
         break;
 
@@ -77,6 +81,19 @@ export async function POST(request: NextRequest) {
           );
         }
         success = await updateNoteMetadata(slug, { category: updates.category });
+        break;
+
+      case 'update-status':
+        if (!updates?.lifecycleStatus) {
+          return NextResponse.json(
+            { error: '缺少状态参数' },
+            { status: 400 }
+          );
+        }
+        success = await updateNoteMetadata(slug, {
+          lifecycleStatus: updates.lifecycleStatus,
+          enabled: updates.lifecycleStatus === 'published',
+        });
         break;
 
       case 'update':

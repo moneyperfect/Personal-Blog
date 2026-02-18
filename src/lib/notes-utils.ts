@@ -9,6 +9,7 @@ export interface NoteMetadata {
   language: string;
   date: string;
   enabled: boolean;
+  lifecycleStatus?: 'draft' | 'review' | 'published';
   source: 'obsidian' | 'supabase'; // Changed from 'notion' | 'local' to reflect new reality
   tags?: string[];
   summary?: string;
@@ -39,6 +40,7 @@ export async function getAllNotesMetadata(): Promise<NoteMetadata[]> {
       language: post.lang || 'zh',
       date: post.date,
       enabled: post.published,
+      lifecycleStatus: post.lifecycle_status || (post.published ? 'published' : 'draft'),
       source: 'supabase',
       tags: post.tags || [],
       summary: post.excerpt || '',
@@ -61,6 +63,10 @@ export async function updateNoteMetadata(
     const dbUpdates: any = {};
     // Map frontend 'enabled' to DB 'published'
     if (updates.enabled !== undefined) dbUpdates.published = updates.enabled;
+    if (updates.lifecycleStatus !== undefined) {
+      dbUpdates.lifecycle_status = updates.lifecycleStatus;
+      dbUpdates.published = updates.lifecycleStatus === 'published';
+    }
     if (updates.category !== undefined) dbUpdates.category = updates.category;
     if (updates.title !== undefined) dbUpdates.title = updates.title;
     if (updates.summary !== undefined) dbUpdates.excerpt = updates.summary;

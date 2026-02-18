@@ -39,10 +39,10 @@ export default async function EditNotePage({ params }: PageProps) {
         coverImage: post.cover_image || '',
         seoTitle: post.seo_title || '',
         seoDescription: post.seo_description || '',
+        lifecycleStatus: post.lifecycle_status || (post.published ? 'published' : 'draft'),
         published: post.published,
         lang: post.lang || 'zh',
-        source: 'supabase'
     };
 
-    return <Editor initialNote={note as any} isNew={false} />;
+    return <Editor initialNote={note} isNew={false} />;
 }

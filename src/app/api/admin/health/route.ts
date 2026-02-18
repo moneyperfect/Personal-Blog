@@ -1,22 +1,28 @@
 import { NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/admin-auth';
 import { hasSupabaseConfig, supabase } from '@/lib/supabase';
+import { createRequestContext, logError, logInfo } from '@/lib/server-observability';
+import { NextRequest } from 'next/server';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+    const ctx = createRequestContext(request, '/api/admin/health');
     const isAuthenticated = await verifyAdminAuth();
     if (!isAuthenticated) {
+        logInfo(ctx, 'auth_required');
         return NextResponse.json(
-            { ok: false, error: '未授权访问', code: 'AUTH_REQUIRED' },
+            { ok: false, error: '未授权访问', code: 'AUTH_REQUIRED', requestId: ctx.requestId },
             { status: 401 }
         );
     }
 
     if (!hasSupabaseConfig) {
+        logError(ctx, 'config_missing', 'supabase_config_missing');
         return NextResponse.json(
             {
                 ok: false,
                 code: 'DB_CONFIG_MISSING',
                 message: 'Supabase 环境变量未配置完整。',
+                requestId: ctx.requestId,
                 checks: {
                     config: false,
                     database: false,
@@ -56,11 +62,17 @@ export async function GET() {
     }
 
     const ok = database && storage;
+    if (!ok) {
+        logError(ctx, 'health_failed', details || 'unknown', { database, storage });
+    } else {
+        logInfo(ctx, 'health_ok');
+    }
     return NextResponse.json(
         {
             ok,
             code: ok ? 'OK' : 'HEALTH_CHECK_FAILED',
             message: ok ? '服务连接正常。' : '服务连接异常，请检查 Supabase 配置或网络。',
+            requestId: ctx.requestId,
             checks: {
                 config: true,
                 database,
