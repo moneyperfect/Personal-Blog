@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/i18n/routing.ts"],"sourcesContent":["import { defineRouting } from 'next-intl/routing';\r\n\r\nexport const routing = defineRouting({\r\n    locales: ['zh', 'ja'],\r\n    defaultLocale: 'zh',\r\n    localePrefix: 'always'\r\n});\r\n\r\nexport type Locale = (typeof routing.locales)[number];\r\n"],"names":[],"mappings":";;;;AAAA;;AAEO,MAAM,UAAU,IAAA,2PAAa,EAAC;IACjC,SAAS;QAAC;QAAM;KAAK;IACrB,eAAe;IACf,cAAc;AAClB"}},
+    {"offset": {"line": 34, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/src/middleware.ts"],"sourcesContent":["import createMiddleware from 'next-intl/middleware';\r\nimport { routing } from './i18n/routing';\r\n\r\nexport default createMiddleware(routing);\r\n\r\nexport const config = {\r\n    matcher: ['/', '/(zh|ja)/:path*']\r\n};\r\n"],"names":[],"mappings":";;;;;;AAAA;AACA;;;uCAEe,IAAA,yMAAgB,EAAC,yIAAO;AAEhC,MAAM,SAAS;IAClB,SAAS;QAAC;QAAK;KAAkB;AACrC"}}]
+}

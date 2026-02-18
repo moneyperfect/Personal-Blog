@@ -1,0 +1,3 @@
+module.exports=[86678,a=>{"use strict";var b=a.i(87924),c=a.i(25438);function d({slug:a,title:d,purchaseUrl:e,locale:f,large:g=!1}){return(0,b.jsxs)("a",{href:e,target:"_blank",rel:"noopener noreferrer",onClick:()=>{(0,c.trackPurchaseClick)(a,d)},className:`btn btn-primary ${g?"px-8 py-4 text-base sm:text-lg":"px-6 py-3"}`,children:["zh"===f?"立即购买":"今すぐ購入",(0,b.jsx)("svg",{className:"w-5 h-5",fill:"none",viewBox:"0 0 24 24",stroke:"currentColor",children:(0,b.jsx)("path",{strokeLinecap:"round",strokeLinejoin:"round",strokeWidth:2,d:"M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"})})]})}a.s(["ProductDetailClient",()=>d])}];
+
+//# sourceMappingURL=src_app_%5Blocale%5D_products_%5Bslug%5D_ProductDetailClient_tsx_a9250048._.js.map

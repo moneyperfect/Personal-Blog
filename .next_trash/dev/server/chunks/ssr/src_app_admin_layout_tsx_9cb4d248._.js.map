@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 4, "column": 0}, "map": {"version":3,"sources":["file:///E:/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/personal-site/src/app/admin/layout.tsx"],"sourcesContent":["import { ReactNode } from 'react';\n\ninterface AdminLayoutProps {\n  children: ReactNode;\n}\n\nexport default function AdminLayout({ children }: AdminLayoutProps) {\n  // 不在这里保护，由各个页面自己处理\n  return (\n    <div className=\"admin-layout\">\n      {children}\n    </div>\n  );\n}"],"names":[],"mappings":";;;;;;AAMe,SAAS,YAAY,EAAE,QAAQ,EAAoB;IAChE,mBAAmB;IACnB,qBACE,8OAAC;QAAI,WAAU;kBACZ;;;;;;AAGP"}}]
+}
