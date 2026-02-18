@@ -4,12 +4,11 @@ import { useTranslations } from 'next-intl';
 import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import { ResourceCard } from '@/components/cards';
-import { TagFilter, ChipButton } from '@/components/ui';
+import { ChipButton } from '@/components/ui';
 import { LibraryFrontmatter, ContentItem, NoteFrontmatter } from '@/lib/mdx';
 
 interface LibraryClientProps {
     resources: ContentItem<LibraryFrontmatter | NoteFrontmatter>[];
-    allTags: string[];
     locale: string;
 }
 
@@ -22,10 +21,9 @@ const rawCategories = [
 // Deduplicate and filter
 const categories = Array.from(new Set(rawCategories.map(c => c.trim()))).sort();
 
-export function LibraryClient({ resources, allTags, locale }: LibraryClientProps) {
+export function LibraryClient({ resources, locale }: LibraryClientProps) {
     const t = useTranslations('library');
     const common = useTranslations('common');
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<string | 'all'>('all');
 
     const filteredItems = useMemo(() => {
@@ -44,14 +42,9 @@ export function LibraryClient({ resources, allTags, locale }: LibraryClientProps
                 if (!categoryMatch && !typeMatch) return false;
             }
 
-            // Tag filter
-            if (selectedTags.length > 0) {
-                if (!selectedTags.some(tag => item.frontmatter.tags.includes(tag))) return false;
-            }
-
             return true;
         });
-    }, [resources, selectedCategory, selectedTags]);
+    }, [resources, selectedCategory]);
 
     const getCategoryLabel = (cat: string) => {
         if (cat === 'all') return t('filterAll');
@@ -92,15 +85,6 @@ export function LibraryClient({ resources, allTags, locale }: LibraryClientProps
                                 {cat}
                             </ChipButton>
                         ))}
-                    </div>
-
-                    {/* Tag Filter */}
-                    <div className="mb-6">
-                        <TagFilter
-                            tags={allTags}
-                            selectedTags={selectedTags}
-                            onChange={setSelectedTags}
-                        />
                     </div>
 
                     {/* Content Grid */}

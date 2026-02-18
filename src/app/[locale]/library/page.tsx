@@ -1,5 +1,5 @@
 import { setRequestLocale } from 'next-intl/server';
-import { getAllResources, getAllTags } from '@/lib/mdx';
+import { getAllResources } from '@/lib/mdx';
 import { Locale } from '@/i18n/routing';
 import { LibraryClient } from './LibraryClient';
 
@@ -25,12 +25,10 @@ export default async function LibraryPage({ params }: Props) {
 
     // Fetch all resources (MDX library items + Notes)
     const resources = await getAllResources(locale as Locale);
-    const allTags = getAllTags(resources);
 
     return (
         <LibraryClient
             resources={resources}
-            allTags={allTags}
             locale={locale}
         />
     );
