@@ -21,7 +21,9 @@
     @apply text-surface-900;
   }
 
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     letter-spacing: -0.01em;
   }
 }
@@ -99,7 +101,8 @@ html {
   line-height: 1.8;
 }
 
-.prose ul, .prose ol {
+.prose ul,
+.prose ol {
   margin-bottom: 1rem;
   padding-left: 1.5rem;
 }
@@ -217,7 +220,7 @@ html {
   }
 
   .chip {
-    @apply inline-flex items-center gap-1 rounded-pill border border-surface-200 bg-surface-50 px-3 py-1 text-xs font-medium text-surface-700 transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2;
+    @apply inline-flex items-center gap-1 rounded-pill border border-surface-200 bg-surface-50 px-3 py-1 text-xs font-medium text-surface-700 transition-colors focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 whitespace-nowrap;
   }
 
   .chip-active {

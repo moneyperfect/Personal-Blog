@@ -1,78 +1,68 @@
 import { Octokit } from '@octokit/rest';
 
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const REPO_OWNER = 'moneyperfect';
-const REPO_NAME = 'Personal-Blog';
-const BRANCH = 'main'; // Adjust if using a different branch
-
-if (!GITHUB_TOKEN) {
-    console.warn('GITHUB_TOKEN is not set. GitHub API features will not work.');
-}
-
-const octokit = new Octokit({
-    auth: GITHUB_TOKEN,
-});
-
-export interface GitHubFile {
-    content: string;
-    sha: string;
-    path: string;
-}
-
-export async function getFileContent(filePath: string): Promise<GitHubFile | null> {
-    try {
-        const response = await octokit.repos.getContent({
-            owner: REPO_OWNER,
-            repo: REPO_NAME,
-            path: filePath,
-            ref: BRANCH,
-        });
-
-        // The response can be an array (directory) or an object (file)
-        if (Array.isArray(response.data)) {
-            throw new Error('Path points to a directory, not a file.');
-        }
-
-        const fileData = response.data as { content: string; sha: string; path: string; encoding: string };
-
-        if (fileData.encoding === 'base64') {
-            return {
-                content: Buffer.from(fileData.content, 'base64').toString('utf-8'),
-                sha: fileData.sha,
-                path: fileData.path,
-            };
-        }
-
-        return {
-            content: fileData.content,
-            sha: fileData.sha,
-            path: fileData.path,
-        };
-    } catch (error) {
-        console.error(`Error fetching file ${filePath} from GitHub:`, error);
-        return null;
+// Initialize Octokit
+const getOctokit = () => {
+    const token = process.env.GITHUB_TOKEN;
+    if (!token) {
+        throw new Error('GITHUB_TOKEN is not defined');
     }
-}
+    return new Octokit({ auth: token });
+};
 
-export async function updateFile(
-    filePath: string,
-    content: string,
-    sha: string,
-    message: string
-): Promise<{ success: boolean; error?: string }> {
+// Configuration
+const REPO_OWNER = process.env.REPO_OWNER;
+const REPO_NAME = process.env.REPO_NAME;
+const CONFIG_PATH = 'config/ignored-notes.json';
+
+export async function addToIgnoreList(slug: string) {
+    if (!REPO_OWNER || !REPO_NAME) {
+        throw new Error('REPO_OWNER or REPO_NAME is not defined');
+    }
+
+    const octokit = getOctokit();
+
     try {
-        await octokit.repos.createOrUpdateFileContents({
-            owner: REPO_OWNER,
-            repo: REPO_NAME,
-            path: filePath,
-            message: message,
-            content: Buffer.from(content).toString('base64'),
-            sha: sha,
-            branch: BRANCH,
-        });
-        return { success: true };
-    } catch (error: any) {
-        console.error(`Error updating file ${filePath} on GitHub:`, error);
-        return { success: false, error: error.message };
+        // 1. Try to get existing file
+        let currentContent: string[] = [];
+        let sha: string | undefined;
+
+        try {
+            const { data } = await octokit.repos.getContent({
+                owner: REPO_OWNER,
+                repo: REPO_NAME,
+                path: CONFIG_PATH,
+            });
+
+            if ('content' in data && !Array.isArray(data)) {
+                const decoded = Buffer.from(data.content, 'base64').toString('utf-8');
+                currentContent = JSON.parse(decoded);
+                sha = data.sha;
+            }
+        } catch (e: any) {
+            if (e.status !== 404) throw e;
+            // File doesn't exist, start with empty array
+            console.log('ignored-notes.json not found, creating new one.');
+        }
+
+        // 2. Add slug if not exists
+        if (!currentContent.includes(slug)) {
+            currentContent.push(slug);
+
+            // 3. Update/Create file
+            await octokit.repos.createOrUpdateFileContents({
+                owner: REPO_OWNER,
+                repo: REPO_NAME,
+                path: CONFIG_PATH,
+                message: `chore: unpublish note ${slug}`,
+                content: Buffer.from(JSON.stringify(currentContent, null, 2)).toString('base64'),
+                sha,
+            });
+            return true;
+        }
+
+        return false; // Already ignored
+    } catch (error) {
+        console.error('GitHub API Error:', error);
+        throw error;
     }
 }

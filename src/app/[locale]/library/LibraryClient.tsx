@@ -14,11 +14,13 @@ interface LibraryClientProps {
 }
 
 // Categories mix of Library types and Note categories
-const categories = [
-    'AI', 'Bug修复', 'MVP', 'SOP', 'ai', '上线', '产品', '代码审查',
+const rawCategories = [
+    'AI', 'Bug修复', 'MVP', 'SOP', '上线', '产品', '代码审查',
     '写作', '开发', '效率', '文案', '检查清单', '模板', '用户研究',
     '竞品分析', '编程', '营销', '访谈'
 ];
+// Deduplicate and filter
+const categories = Array.from(new Set(rawCategories.map(c => c.trim()))).sort();
 
 export function LibraryClient({ resources, allTags, locale }: LibraryClientProps) {
     const t = useTranslations('library');
@@ -70,7 +72,7 @@ export function LibraryClient({ resources, allTags, locale }: LibraryClientProps
                     </div>
 
                     {/* Category Filter Chips */}
-                    <div className="flex flex-wrap gap-2 mb-4">
+                    <div className="flex flex-wrap gap-3 mb-8 leading-relaxed">
                         <ChipButton
                             onClick={() => setSelectedCategory('all')}
                             active={selectedCategory === 'all'}
