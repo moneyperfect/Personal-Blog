@@ -121,10 +121,43 @@ export default function DashboardClient() {
   };
 
   const toggleNoteEnabled = async (note: Note) => {
-    // ... existing toggle logic ...
+    try {
+      console.log('Toggling note:', note.slug, note.enabled);
+      const response = await fetch('/api/admin/notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'toggle-enabled',
+          slug: note.slug,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        setNotes(notes.map(n =>
+          n.id === note.id ? { ...n, enabled: !n.enabled } : n
+        ));
+        fetchStats();
+      } else {
+        console.error('Toggle failed:', data.error);
+        alert(`操作失败: ${data.error || '未知错误'}`);
+      }
+    } catch (error) {
+      console.error('Toggle error:', error);
+      alert('请求失败，请检查网络');
+    }
   };
 
   const handleUnpublish = async (note: Note) => {
+    console.log('Requesting unpublish for:', note);
+    if (!note.slug) {
+      alert('错误：无法获取笔记标识 (Slug)');
+      return;
+    }
+
     if (!confirm(`确定要断开 "${note.title}" 的连接吗？\n这将从网站上移除该笔记，但保留 Obsidian 中的源文件。\n此操作不可逆（需要手动修改配置才能恢复）。`)) {
       return;
     }
