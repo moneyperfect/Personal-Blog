@@ -4,7 +4,7 @@ import { getAllSlugs } from '@/lib/mdx';
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com';
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const routes = [
         '',
         '/products',
@@ -32,8 +32,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     const dynamicPages: MetadataRoute.Sitemap = [];
 
     // Products
-    routing.locales.forEach((locale) => {
-        const slugs = getAllSlugs('products', locale);
+    for (const locale of routing.locales) {
+        const slugs = await getAllSlugs('products', locale);
         slugs.forEach((slug) => {
             dynamicPages.push({
                 url: `${baseUrl}/${locale}/products/${slug}`,
@@ -42,11 +42,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
                 priority: 0.7,
             });
         });
-    });
+    }
 
     // Library
-    routing.locales.forEach((locale) => {
-        const slugs = getAllSlugs('library', locale);
+    for (const locale of routing.locales) {
+        const slugs = await getAllSlugs('library', locale);
         slugs.forEach((slug) => {
             dynamicPages.push({
                 url: `${baseUrl}/${locale}/library/${slug}`,
@@ -55,11 +55,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
                 priority: 0.6,
             });
         });
-    });
+    }
 
     // Playbooks
-    routing.locales.forEach((locale) => {
-        const slugs = getAllSlugs('playbooks', locale);
+    for (const locale of routing.locales) {
+        const slugs = await getAllSlugs('playbooks', locale);
         slugs.forEach((slug) => {
             dynamicPages.push({
                 url: `${baseUrl}/${locale}/playbooks/${slug}`,
@@ -68,11 +68,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
                 priority: 0.7,
             });
         });
-    });
+    }
 
     // Cases
-    routing.locales.forEach((locale) => {
-        const slugs = getAllSlugs('cases', locale);
+    for (const locale of routing.locales) {
+        const slugs = await getAllSlugs('cases', locale);
         slugs.forEach((slug) => {
             dynamicPages.push({
                 url: `${baseUrl}/${locale}/cases/${slug}`,
@@ -81,11 +81,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
                 priority: 0.5,
             });
         });
-    });
+    }
 
     // Notes
-    routing.locales.forEach((locale) => {
-        const slugs = getAllSlugs('notes', locale);
+    for (const locale of routing.locales) {
+        const slugs = await getAllSlugs('notes', locale);
         slugs.forEach((slug) => {
             dynamicPages.push({
                 url: `${baseUrl}/${locale}/notes/${slug}`,
@@ -94,7 +94,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
                 priority: 0.5,
             });
         });
-    });
+    }
 
     return [...staticPages, ...dynamicPages];
 }

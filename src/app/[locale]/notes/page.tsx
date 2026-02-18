@@ -20,7 +20,7 @@ export default async function NotesPage({ params }: Props) {
     const { locale } = await params;
     setRequestLocale(locale);
 
-    const notes = getAllNotes(locale as Locale);
+    const notes = await getAllNotes(locale as Locale);
 
     // Extract unique tags
     const allTags = getAllTags(notes);

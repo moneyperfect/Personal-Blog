@@ -1,6 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
+import { supabase } from '@/lib/supabase';
 
 export interface NoteMetadata {
   id: string;
@@ -11,67 +9,41 @@ export interface NoteMetadata {
   language: string;
   date: string;
   enabled: boolean;
-  source: 'obsidian' | 'notion' | 'local';
+  source: 'obsidian' | 'supabase'; // Changed from 'notion' | 'local' to reflect new reality
   tags?: string[];
   summary?: string;
   updatedAt?: string;
 }
-
-// 笔记元数据存储文件路径
-const NOTES_METADATA_PATH = path.join(process.cwd(), 'content', 'notes-metadata.json');
 
 /**
  * 获取所有笔记的元数据
  */
 export async function getAllNotesMetadata(): Promise<NoteMetadata[]> {
   try {
-    // 读取笔记元数据文件（如果存在）
-    let metadataMap: Record<string, Partial<NoteMetadata>> = {};
-    if (fs.existsSync(NOTES_METADATA_PATH)) {
-      const metadataContent = fs.readFileSync(NOTES_METADATA_PATH, 'utf8');
-      metadataMap = JSON.parse(metadataContent);
+    const { data: posts, error } = await supabase
+      .from('posts')
+      .select('*')
+      .order('date', { ascending: false });
+
+    if (error) {
+      console.error('从 Supabase 获取笔记失败:', error);
+      return [];
     }
 
-    const notesDir = path.join(process.cwd(), 'content', 'notes');
-    const files = fs.readdirSync(notesDir).filter(file => file.endsWith('.mdx'));
-
-    const notes: NoteMetadata[] = [];
-
-    for (const file of files) {
-      try {
-        const filePath = path.join(notesDir, file);
-        const fileContent = fs.readFileSync(filePath, 'utf8');
-        const { data: frontmatter } = matter(fileContent);
-
-        // 从文件名提取slug和语言
-        const match = file.match(/^(.+)\.(zh|ja)\.mdx$/);
-        const slug = match ? match[1] : file.replace('.mdx', '');
-        const language = (match ? match[2] : 'zh') as 'zh' | 'ja';
-
-        // 获取该笔记的元数据（如果存在）
-        const noteMetadata = metadataMap[slug] || {};
-        
-        notes.push({
-          id: slug,
-          title: (frontmatter.title as string) || slug,
-          slug,
-          category: (frontmatter.category as string) || '',
-          type: (frontmatter.type as string) || 'note',
-          language,
-          date: (frontmatter.updatedAt as string) || new Date().toISOString().split('T')[0],
-          enabled: noteMetadata.enabled !== undefined ? noteMetadata.enabled : true, // 默认启用
-          source: 'obsidian',
-          tags: frontmatter.tags as string[] || [],
-          summary: frontmatter.summary as string || '',
-          updatedAt: frontmatter.updatedAt as string,
-        });
-      } catch (error) {
-        console.error(`解析笔记文件 ${file} 失败:`, error);
-      }
-    }
-
-    // 按日期倒序排序
-    return notes.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return posts.map(post => ({
+      id: post.slug, // Use slug as ID for compatibility
+      title: post.title,
+      slug: post.slug,
+      category: post.category || '',
+      type: 'note',
+      language: post.lang || 'zh',
+      date: post.date,
+      enabled: post.published,
+      source: 'supabase',
+      tags: post.tags || [],
+      summary: post.excerpt || '',
+      updatedAt: post.updated_at,
+    }));
   } catch (error) {
     console.error('获取笔记元数据失败:', error);
     return [];
@@ -86,21 +58,25 @@ export async function updateNoteMetadata(
   updates: Partial<NoteMetadata>
 ): Promise<boolean> {
   try {
-    // 读取现有的元数据
-    let metadataMap: Record<string, Partial<NoteMetadata>> = {};
-    if (fs.existsSync(NOTES_METADATA_PATH)) {
-      const metadataContent = fs.readFileSync(NOTES_METADATA_PATH, 'utf8');
-      metadataMap = JSON.parse(metadataContent);
+    const dbUpdates: any = {};
+    // Map frontend 'enabled' to DB 'published'
+    if (updates.enabled !== undefined) dbUpdates.published = updates.enabled;
+    if (updates.category !== undefined) dbUpdates.category = updates.category;
+    if (updates.title !== undefined) dbUpdates.title = updates.title;
+    if (updates.summary !== undefined) dbUpdates.excerpt = updates.summary;
+    if (updates.tags !== undefined) dbUpdates.tags = updates.tags;
+
+    dbUpdates.updated_at = new Date().toISOString();
+
+    const { error } = await supabase
+      .from('posts')
+      .update(dbUpdates)
+      .eq('slug', slug);
+
+    if (error) {
+      console.error('更新 Supabase 笔记失败:', error);
+      return false;
     }
-
-    // 更新指定笔记的元数据
-    metadataMap[slug] = {
-      ...metadataMap[slug],
-      ...updates,
-    };
-
-    // 写回文件
-    fs.writeFileSync(NOTES_METADATA_PATH, JSON.stringify(metadataMap, null, 2), 'utf8');
     return true;
   } catch (error) {
     console.error('更新笔记元数据失败:', error);
@@ -115,23 +91,11 @@ export async function batchUpdateNotesMetadata(
   updates: Record<string, Partial<NoteMetadata>>
 ): Promise<boolean> {
   try {
-    // 读取现有的元数据
-    let metadataMap: Record<string, Partial<NoteMetadata>> = {};
-    if (fs.existsSync(NOTES_METADATA_PATH)) {
-      const metadataContent = fs.readFileSync(NOTES_METADATA_PATH, 'utf8');
-      metadataMap = JSON.parse(metadataContent);
-    }
-
-    // 批量更新
+    // Supabase doesn't have a direct "update multiple rows with different values" easily without RPC or loop.
+    // For now, loop is acceptable for small batches.
     for (const [slug, update] of Object.entries(updates)) {
-      metadataMap[slug] = {
-        ...metadataMap[slug],
-        ...update,
-      };
+      await updateNoteMetadata(slug, update);
     }
-
-    // 写回文件
-    fs.writeFileSync(NOTES_METADATA_PATH, JSON.stringify(metadataMap, null, 2), 'utf8');
     return true;
   } catch (error) {
     console.error('批量更新笔记元数据失败:', error);
@@ -151,7 +115,7 @@ export async function getNotesStats(): Promise<{
   topCategory: string;
 }> {
   const notes = await getAllNotesMetadata();
-  
+
   // 计算类别分布
   const categoryCount: Record<string, number> = {};
   notes.forEach(note => {

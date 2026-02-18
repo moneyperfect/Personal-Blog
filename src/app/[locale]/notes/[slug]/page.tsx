@@ -8,8 +8,8 @@ import { getAllSlugs, getNoteBySlug } from '@/lib/mdx';
 export const revalidate = 60; // Cache for 60 seconds
 
 export async function generateStaticParams() {
-    const zhSlugs = getAllSlugs('notes', 'zh');
-    const jaSlugs = getAllSlugs('notes', 'ja');
+    const zhSlugs = await getAllSlugs('notes', 'zh');
+    const jaSlugs = await getAllSlugs('notes', 'ja');
 
     return [
         ...zhSlugs.map(slug => ({ locale: 'zh', slug })),
@@ -23,7 +23,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
     const { locale, slug } = await params;
-    const note = getNoteBySlug(slug, locale as 'zh' | 'ja');
+    const note = await getNoteBySlug(slug, locale as 'zh' | 'ja');
     if (!note) return { title: 'Note Not Found' };
     return {
         title: note.frontmatter.title,
@@ -36,7 +36,7 @@ export default async function NoteDetailPage({ params }: Props) {
     setRequestLocale(locale);
 
     const language = locale as 'zh' | 'ja';
-    const localNote = getNoteBySlug(slug, language);
+    const localNote = await getNoteBySlug(slug, language);
 
     if (!localNote) {
         notFound();

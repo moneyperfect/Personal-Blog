@@ -12,7 +12,7 @@ interface Note {
   language: string;
   date: string;
   enabled: boolean;
-  source: 'obsidian' | 'notion' | 'local';
+  source: 'obsidian' | 'supabase';
 }
 
 interface Stats {
@@ -151,43 +151,6 @@ export default function DashboardClient() {
     }
   };
 
-  const handleUnpublish = async (note: Note) => {
-    console.log('Requesting unpublish for:', note);
-    if (!note.slug) {
-      alert('错误：无法获取笔记标识 (Slug)');
-      return;
-    }
-
-    if (!confirm(`确定要断开 "${note.title}" 的连接吗？\n这将从网站上移除该笔记，但保留 Obsidian 中的源文件。\n此操作不可逆（需要手动修改配置才能恢复）。`)) {
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/admin/unpublish', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ slug: note.slug }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok && data.success) {
-        alert('已断开连接。请稍候等待 Vercel 自动重新构建。');
-        // Optimistically remove from list or mark as disabled
-        setNotes(notes.filter(n => n.id !== note.id));
-        fetchStats();
-      } else {
-        console.error('Unpublish failed:', data.error);
-        alert(`断开连接失败: ${data.error}`);
-      }
-    } catch (error) {
-      console.error('Unpublish error:', error);
-      alert('断开连接请求失败，请检查控制台日志。');
-    }
-  };
-
   const updateNoteCategory = async (id: string, category: string) => {
     try {
       const response = await fetch('/api/admin/notes', {
@@ -313,9 +276,17 @@ export default function DashboardClient() {
 
         {activeTab === 'notes' && (
           <div className="bg-white shadow rounded-lg">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg font-medium text-gray-900">笔记管理</h3>
-              <p className="mt-1 text-sm text-gray-500">管理所有笔记的发布状态和分类</p>
+            <div className="px-4 py-5 sm:px-6 flex justify-between items-center">
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">笔记管理</h3>
+                <p className="mt-1 text-sm text-gray-500">管理所有笔记的发布状态和分类</p>
+              </div>
+              <button
+                onClick={() => router.push('/admin/editor')}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+              >
+                新建笔记
+              </button>
             </div>
             <div className="border-t border-gray-200">
               <div className="overflow-x-auto">
@@ -382,17 +353,16 @@ export default function DashboardClient() {
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                           <div className="flex justify-end space-x-3">
                             <button
+                              onClick={() => router.push(`/admin/editor/${note.slug}`)}
+                              className="text-primary-600 hover:text-primary-900"
+                            >
+                              编辑
+                            </button>
+                            <button
                               onClick={() => toggleNoteEnabled(note)}
                               className={`text-sm ${note.enabled ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'}`}
                             >
                               {note.enabled ? '下架' : '上架'}
-                            </button>
-                            <button
-                              onClick={() => handleUnpublish(note)}
-                              className="text-sm text-red-600 hover:text-red-900"
-                              title="从网站彻底移除（保留源文件）"
-                            >
-                              断开连接
                             </button>
                           </div>
                         </td>

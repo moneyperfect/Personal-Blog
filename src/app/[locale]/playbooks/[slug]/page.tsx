@@ -13,7 +13,7 @@ export async function generateStaticParams() {
     const params: { locale: string; slug: string }[] = [];
 
     for (const locale of routing.locales) {
-        const slugs = getAllSlugs('playbooks', locale);
+        const slugs = await getAllSlugs('playbooks', locale);
         for (const slug of slugs) {
             params.push({ locale, slug });
         }

@@ -12,7 +12,7 @@ type Props = {
 export async function generateStaticParams() {
     const params: { locale: string; slug: string }[] = [];
     for (const locale of routing.locales) {
-        const slugs = getAllSlugs('cases', locale);
+        const slugs = await getAllSlugs('cases', locale);
         for (const slug of slugs) {
             params.push({ locale, slug });
         }

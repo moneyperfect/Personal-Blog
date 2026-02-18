@@ -132,12 +132,54 @@ export function getCaseBySlug(slug: string, locale: Locale): ContentItem<Content
     return getContentBySlug<ContentFrontmatter>('cases', slug, locale);
 }
 
-export function getAllNotes(locale: Locale): ContentItem<NoteFrontmatter>[] {
-    return getAllContent<NoteFrontmatter>('notes', locale);
+export async function getAllNotes(locale: Locale): Promise<ContentItem<NoteFrontmatter>[]> {
+    const { supabase } = await import('./supabase');
+    const { data: posts } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('published', true) // Only fetch published notes for public view
+        .order('date', { ascending: false });
+
+    if (!posts) return [];
+
+    return posts.map((post) => ({
+        slug: post.slug,
+        frontmatter: {
+            title: post.title,
+            summary: post.excerpt || '',
+            tags: post.tags || [],
+            updatedAt: post.date, // mapping date to updatedAt
+            language: post.lang || 'zh',
+            category: post.category,
+            type: 'note', // default type
+        },
+        content: post.content || '',
+    }));
 }
 
-export function getNoteBySlug(slug: string, locale: Locale): ContentItem<NoteFrontmatter> | null {
-    return getContentBySlug<NoteFrontmatter>('notes', slug, locale);
+export async function getNoteBySlug(slug: string, locale: Locale): Promise<ContentItem<NoteFrontmatter> | null> {
+    const { supabase } = await import('./supabase');
+    const { data: post } = await supabase
+        .from('posts')
+        .select('*')
+        .eq('slug', slug)
+        .single();
+
+    if (!post) return null;
+
+    return {
+        slug: post.slug,
+        frontmatter: {
+            title: post.title,
+            summary: post.excerpt || '',
+            tags: post.tags || [],
+            updatedAt: post.date,
+            language: post.lang || 'zh',
+            category: post.category,
+            type: 'note',
+        },
+        content: post.content || '',
+    };
 }
 
 
@@ -150,9 +192,9 @@ export function getAllTags(items: ContentItem<ContentFrontmatter>[]): string[] {
     return Array.from(tagSet).sort();
 }
 
-export function getAllResources(locale: Locale): ContentItem<LibraryFrontmatter | NoteFrontmatter>[] {
+export async function getAllResources(locale: Locale): Promise<ContentItem<LibraryFrontmatter | NoteFrontmatter>[]> {
     const libraryItems = getAllLibraryItems(locale);
-    const notes = getAllNotes(locale);
+    const notes = await getAllNotes(locale);
 
     // Map notes to look like library items where compatible
     const notesAsResources = notes.map(note => ({
@@ -168,7 +210,17 @@ export function getAllResources(locale: Locale): ContentItem<LibraryFrontmatter 
     );
 }
 
-export function getAllSlugs(type: string, locale: Locale): string[] {
+export async function getAllSlugs(type: string, locale: Locale): Promise<string[]> {
+    if (type === 'notes') {
+        const { supabase } = await import('./supabase');
+        const { data: posts } = await supabase
+            .from('posts')
+            .select('slug')
+            .eq('published', true)
+
+        if (!posts) return [];
+        return posts.map(post => post.slug);
+    }
     const files = getContentFiles(type, locale);
     return files.map((file) => file.replace(`.${locale}.mdx`, ''));
 }

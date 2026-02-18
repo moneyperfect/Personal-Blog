@@ -24,7 +24,7 @@ export default async function LibraryPage({ params }: Props) {
     setRequestLocale(locale);
 
     // Fetch all resources (MDX library items + Notes)
-    const resources = getAllResources(locale as Locale);
+    const resources = await getAllResources(locale as Locale);
     const allTags = getAllTags(resources);
 
     return (
