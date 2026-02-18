@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/admin-auth';
-import { supabase } from '@/lib/supabase';
+import { hasSupabaseConfig, supabase } from '@/lib/supabase';
 
-function classifySaveError(error: unknown): { code: string; message: string } {
+function classifySaveError(error: unknown, isCloudRuntime: boolean): { code: string; message: string } {
     const raw = typeof error === 'string'
         ? error
         : JSON.stringify(error ?? {});
@@ -11,7 +11,9 @@ function classifySaveError(error: unknown): { code: string; message: string } {
     if (lower.includes('fetch failed') || lower.includes('eacces') || lower.includes('enotfound')) {
         return {
             code: 'DB_NETWORK_ERROR',
-            message: '数据库连接失败，请检查本机网络/代理后重试。',
+            message: isCloudRuntime
+                ? '数据库连接失败（服务端网络异常），请稍后重试或检查部署环境配置。'
+                : '数据库连接失败，请检查本机网络或代理设置后重试。',
         };
     }
 
@@ -46,7 +48,21 @@ function removeUnsupportedColumns(
 }
 
 export async function POST(request: NextRequest) {
+    const isCloudRuntime = process.env.VERCEL === '1' || Boolean(request.headers.get('x-vercel-id'));
+
     try {
+        if (!hasSupabaseConfig) {
+            return NextResponse.json(
+                {
+                    error: isCloudRuntime
+                        ? '数据库配置缺失，请在部署平台补充 Supabase 环境变量。'
+                        : '本地缺少 Supabase 环境变量，请检查 .env.local。',
+                    code: 'DB_CONFIG_MISSING',
+                },
+                { status: 500 }
+            );
+        }
+
         // 验证权限
         const isAuthenticated = await verifyAdminAuth();
         if (!isAuthenticated) {
@@ -95,7 +111,7 @@ export async function POST(request: NextRequest) {
                 .from('posts')
                 .select('slug')
                 .eq('slug', note.slug)
-                .single();
+                .maybeSingle();
 
             if (existing) {
                 return NextResponse.json(
@@ -143,7 +159,7 @@ export async function POST(request: NextRequest) {
 
         if (error) {
             console.error('Save error:', error);
-            const classified = classifySaveError(error);
+            const classified = classifySaveError(error, isCloudRuntime);
             return NextResponse.json(
                 { error: classified.message, code: classified.code },
                 { status: 500 }
@@ -158,7 +174,7 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
         console.error('Save API error:', error);
-        const classified = classifySaveError(error);
+        const classified = classifySaveError(error, isCloudRuntime);
         return NextResponse.json(
             { error: classified.message, code: classified.code },
             { status: 500 }

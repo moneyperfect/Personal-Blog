@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/admin-auth';
-import { supabase } from '@/lib/supabase';
+import { hasSupabaseConfig, supabase } from '@/lib/supabase';
 
-function classifyUploadError(error: unknown): { code: string; message: string } {
+function classifyUploadError(error: unknown, isCloudRuntime: boolean): { code: string; message: string } {
     const raw = typeof error === 'string'
         ? error
         : JSON.stringify(error ?? {});
@@ -11,7 +11,9 @@ function classifyUploadError(error: unknown): { code: string; message: string } 
     if (lower.includes('fetch failed') || lower.includes('eacces') || lower.includes('enotfound')) {
         return {
             code: 'STORAGE_NETWORK_ERROR',
-            message: '存储服务连接失败，请检查网络/代理后重试。',
+            message: isCloudRuntime
+                ? '存储服务连接失败（服务端网络异常），请稍后重试或检查部署环境配置。'
+                : '存储服务连接失败，请检查本机网络或代理设置后重试。',
         };
     }
 
@@ -22,7 +24,21 @@ function classifyUploadError(error: unknown): { code: string; message: string } 
 }
 
 export async function POST(request: NextRequest) {
+    const isCloudRuntime = process.env.VERCEL === '1' || Boolean(request.headers.get('x-vercel-id'));
+
     try {
+        if (!hasSupabaseConfig) {
+            return NextResponse.json(
+                {
+                    error: isCloudRuntime
+                        ? '存储配置缺失，请在部署平台补充 Supabase 环境变量。'
+                        : '本地缺少 Supabase 环境变量，请检查 .env.local。',
+                    code: 'STORAGE_CONFIG_MISSING',
+                },
+                { status: 500 }
+            );
+        }
+
         // 验证权限
         const isAuthenticated = await verifyAdminAuth();
         if (!isAuthenticated) {
@@ -62,7 +78,7 @@ export async function POST(request: NextRequest) {
 
         if (error) {
             console.error('Supabase upload error:', error);
-            const classified = classifyUploadError(error);
+            const classified = classifyUploadError(error, isCloudRuntime);
             return NextResponse.json(
                 { error: classified.message, code: classified.code },
                 { status: 500 }
@@ -82,7 +98,7 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
         console.error('Upload API error:', error);
-        const classified = classifyUploadError(error);
+        const classified = classifyUploadError(error, isCloudRuntime);
         return NextResponse.json(
             { error: classified.message, code: classified.code },
             { status: 500 }

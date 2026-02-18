@@ -24,6 +24,16 @@ interface Stats {
   topCategory: string;
 }
 
+interface HealthStatus {
+  ok: boolean;
+  message: string;
+  checks?: {
+    config?: boolean;
+    database?: boolean;
+    storage?: boolean;
+  };
+}
+
 export default function DashboardClient() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'overview' | 'notes'>('notes');
@@ -37,11 +47,30 @@ export default function DashboardClient() {
     topCategory: '',
   });
   const [loading, setLoading] = useState(true);
+  const [health, setHealth] = useState<HealthStatus | null>(null);
 
   useEffect(() => {
     fetchNotes();
     fetchStats();
+    fetchHealth();
   }, []);
+
+  const fetchHealth = async () => {
+    try {
+      const response = await fetch('/api/admin/health');
+      const data = await response.json();
+      setHealth({
+        ok: response.ok && data.ok,
+        message: data.message || '健康检查失败',
+        checks: data.checks,
+      });
+    } catch {
+      setHealth({
+        ok: false,
+        message: '无法获取服务健康状态',
+      });
+    }
+  };
 
   const fetchNotes = async () => {
     try {
@@ -233,6 +262,32 @@ export default function DashboardClient() {
       </nav>
 
       <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        {health && (
+          <div className={`mb-5 rounded-lg border px-4 py-3 text-sm ${health.ok
+            ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+            : 'border-amber-200 bg-amber-50 text-amber-800'
+            }`}>
+            <div className="flex items-center justify-between gap-3">
+              <span>{health.ok ? '服务状态正常' : '服务状态异常'}：{health.message}</span>
+              {!health.ok && (
+                <button
+                  onClick={fetchHealth}
+                  className="rounded border border-amber-300 px-2 py-1 text-xs hover:bg-amber-100"
+                >
+                  重新检查
+                </button>
+              )}
+            </div>
+            {health.checks && (
+              <div className="mt-2 flex flex-wrap gap-3 text-xs">
+                <span>配置: {health.checks.config ? 'OK' : 'FAIL'}</span>
+                <span>数据库: {health.checks.database ? 'OK' : 'FAIL'}</span>
+                <span>存储: {health.checks.storage ? 'OK' : 'FAIL'}</span>
+              </div>
+            )}
+          </div>
+        )}
+
         {activeTab === 'overview' && (
           <div>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
