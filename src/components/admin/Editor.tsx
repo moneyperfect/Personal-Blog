@@ -39,6 +39,7 @@ interface ApiResponse {
         config?: boolean;
         database?: boolean;
         storage?: boolean;
+        schema?: boolean;
     };
 }
 
@@ -62,6 +63,7 @@ interface HealthState {
         config?: boolean;
         database?: boolean;
         storage?: boolean;
+        schema?: boolean;
     };
 }
 
@@ -597,7 +599,7 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                                 重新检查
                             </button>
                         </div>
-                        <div className="grid grid-cols-3 gap-2 text-xs">
+                        <div className="grid grid-cols-2 gap-2 text-xs">
                             <div className="rounded border px-2 py-1">
                                 配置: {health?.checks?.config ? 'OK' : 'FAIL'}
                             </div>
@@ -606,6 +608,9 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                             </div>
                             <div className="rounded border px-2 py-1">
                                 存储: {health?.checks?.storage ? 'OK' : 'FAIL'}
+                            </div>
+                            <div className="rounded border px-2 py-1">
+                                表结构: {health?.checks?.schema ? 'OK' : 'FAIL'}
                             </div>
                         </div>
                         {health?.requestId && (

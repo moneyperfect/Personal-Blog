@@ -74,10 +74,24 @@ export async function updateNoteMetadata(
 
     dbUpdates.updated_at = new Date().toISOString();
 
-    const { error } = await supabase
+    let { error } = await supabase
       .from('posts')
       .update(dbUpdates)
       .eq('slug', slug);
+
+    if (error) {
+      const text = JSON.stringify(error).toLowerCase();
+      if (text.includes('lifecycle_status') && Object.prototype.hasOwnProperty.call(dbUpdates, 'lifecycle_status')) {
+        // Compatibility fallback: if old schema lacks lifecycle_status, still allow publish/unpublish via published field.
+        const retryUpdates = { ...dbUpdates };
+        delete retryUpdates.lifecycle_status;
+
+        ({ error } = await supabase
+          .from('posts')
+          .update(retryUpdates)
+          .eq('slug', slug));
+      }
+    }
 
     if (error) {
       console.error('更新 Supabase 笔记失败:', error);

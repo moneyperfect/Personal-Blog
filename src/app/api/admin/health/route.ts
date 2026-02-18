@@ -27,6 +27,7 @@ export async function GET(request: NextRequest) {
                     config: false,
                     database: false,
                     storage: false,
+                    schema: false,
                 },
             },
             { status: 500 }
@@ -35,6 +36,7 @@ export async function GET(request: NextRequest) {
 
     let database = false;
     let storage = false;
+    let schema = false;
     let details = '';
 
     try {
@@ -61,9 +63,22 @@ export async function GET(request: NextRequest) {
         }
     }
 
-    const ok = database && storage;
+    try {
+        const { error } = await supabase.from('posts').select('slug,source,lifecycle_status').limit(1);
+        if (!error) {
+            schema = true;
+        } else if (!details) {
+            details = `schema:${error.message}`;
+        }
+    } catch (error) {
+        if (!details) {
+            details = `schema:${String(error)}`;
+        }
+    }
+
+    const ok = database && storage && schema;
     if (!ok) {
-        logError(ctx, 'health_failed', details || 'unknown', { database, storage });
+        logError(ctx, 'health_failed', details || 'unknown', { database, storage, schema });
     } else {
         logInfo(ctx, 'health_ok');
     }
@@ -77,6 +92,7 @@ export async function GET(request: NextRequest) {
                 config: true,
                 database,
                 storage,
+                schema,
             },
             details,
         },

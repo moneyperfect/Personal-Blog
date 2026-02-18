@@ -3,6 +3,8 @@ import { verifyAdminAuth } from '@/lib/admin-auth';
 import { hasSupabaseConfig, supabase } from '@/lib/supabase';
 import { createRequestContext, logError, logInfo } from '@/lib/server-observability';
 
+const OPTIONAL_WRITE_COLUMNS = ['seo_title', 'seo_description', 'source', 'cover_image', 'lifecycle_status'] as const;
+
 function classifySaveError(error: unknown, runtime: 'cloud' | 'local'): { code: string; message: string } {
     const raw = typeof error === 'string'
         ? error
@@ -31,21 +33,22 @@ function classifySaveError(error: unknown, runtime: 'cloud' | 'local'): { code: 
     };
 }
 
-function removeUnsupportedColumns(
+function removeUnsupportedColumnsOnce(
     input: Record<string, unknown>,
     error: unknown
-): Record<string, unknown> {
+): { next: Record<string, unknown>; removedColumns: string[] } {
     const text = JSON.stringify(error ?? {}).toLowerCase();
-    const optionalColumns = ['seo_title', 'seo_description', 'source', 'cover_image', 'lifecycle_status'];
     const next = { ...input };
+    const removedColumns: string[] = [];
 
-    optionalColumns.forEach((column) => {
+    OPTIONAL_WRITE_COLUMNS.forEach((column) => {
         if (text.includes(column)) {
             delete next[column];
+            removedColumns.push(column);
         }
     });
 
-    return next;
+    return { next, removedColumns };
 }
 
 async function writePostHistory(
@@ -69,6 +72,39 @@ async function writePostHistory(
         ]);
 
     return error;
+}
+
+async function upsertPostWithFallback(
+    isNew: boolean,
+    slug: string,
+    postData: Record<string, unknown>
+) {
+    let payload = { ...postData };
+    let data: unknown = null;
+    let error: unknown = null;
+    const removedColumns: string[] = [];
+
+    for (let i = 0; i <= OPTIONAL_WRITE_COLUMNS.length; i += 1) {
+        if (isNew) {
+            ({ data, error } = await supabase.from('posts').insert([payload]).select());
+        } else {
+            ({ data, error } = await supabase.from('posts').update(payload).eq('slug', slug).select());
+        }
+
+        if (!error) {
+            return { data, error: null, removedColumns };
+        }
+
+        const fallback = removeUnsupportedColumnsOnce(payload, error);
+        if (fallback.removedColumns.length === 0) {
+            break;
+        }
+
+        payload = fallback.next;
+        removedColumns.push(...fallback.removedColumns);
+    }
+
+    return { data, error, removedColumns };
 }
 
 export async function POST(request: NextRequest) {
@@ -134,6 +170,7 @@ export async function POST(request: NextRequest) {
 
         let data: unknown = null;
         let error: unknown = null;
+        let removedColumns: string[] = [];
 
         if (isNew) {
             // Check if slug exists
@@ -151,41 +188,15 @@ export async function POST(request: NextRequest) {
                 );
             }
 
-            // Insert
-            ({ data, error } = await supabase
-                .from('posts')
-                .insert([postData])
-                .select());
+            const result = await upsertPostWithFallback(true, note.slug, postData);
+            data = result.data;
+            error = result.error;
+            removedColumns = result.removedColumns;
         } else {
-            // Update
-            // Security check: ensure we are updating the correct record
-            // Ideally we should use ID, but slug is the key here.
-
-            ({ data, error } = await supabase
-                .from('posts')
-                .update(postData)
-                .eq('slug', note.slug) // Note: if slug calls change, this might be tricky. Ideally use ID.
-                .select());
-        }
-
-        if (error) {
-            const fallbackPostData = removeUnsupportedColumns(postData, error);
-            const hasFallback = Object.keys(fallbackPostData).length !== Object.keys(postData).length;
-
-            if (hasFallback) {
-                if (isNew) {
-                    ({ data, error } = await supabase
-                        .from('posts')
-                        .insert([fallbackPostData])
-                        .select());
-                } else {
-                    ({ data, error } = await supabase
-                        .from('posts')
-                        .update(fallbackPostData)
-                        .eq('slug', note.slug)
-                        .select());
-                }
-            }
+            const result = await upsertPostWithFallback(false, note.slug, postData);
+            data = result.data;
+            error = result.error;
+            removedColumns = result.removedColumns;
         }
 
         if (error) {
@@ -198,7 +209,11 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        logInfo(ctx, 'save_success', { slug: note.slug, isNew: Boolean(isNew) });
+        logInfo(ctx, 'save_success', {
+            slug: note.slug,
+            isNew: Boolean(isNew),
+            removedColumns,
+        });
 
         const historyError = await writePostHistory(
             note.slug,

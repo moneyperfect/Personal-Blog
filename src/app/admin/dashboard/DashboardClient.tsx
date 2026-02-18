@@ -33,6 +33,7 @@ interface HealthStatus {
     config?: boolean;
     database?: boolean;
     storage?: boolean;
+    schema?: boolean;
   };
 }
 
@@ -357,6 +358,7 @@ export default function DashboardClient() {
                 <span>配置: {health.checks.config ? 'OK' : 'FAIL'}</span>
                 <span>数据库: {health.checks.database ? 'OK' : 'FAIL'}</span>
                 <span>存储: {health.checks.storage ? 'OK' : 'FAIL'}</span>
+                <span>表结构: {health.checks.schema ? 'OK' : 'FAIL'}</span>
                 {health.requestId && <span>请求ID: {health.requestId}</span>}
               </div>
             )}
