@@ -120,50 +120,38 @@ export default function DashboardClient() {
     }
   };
 
-  // Switch to GitHub API for updating published status
   const toggleNoteEnabled = async (note: Note) => {
+    // ... existing toggle logic ...
+  };
+
+  const handleUnpublish = async (note: Note) => {
+    if (!confirm(`确定要断开 "${note.title}" 的连接吗？\n这将从网站上移除该笔记，但保留 Obsidian 中的源文件。\n此操作不可逆（需要手动修改配置才能恢复）。`)) {
+      return;
+    }
+
     try {
-      const filePath = `content/notes/${note.slug}.${note.language}.mdx`;
-      const res = await fetch(`/api/admin/github?path=${filePath}`);
-      if (!res.ok) throw new Error('Failed to fetch file for toggling');
-      const data = await res.json();
-
-      let content = data.content as string;
-      const sha = data.sha;
-
-      let newPublishedState = !note.enabled;
-
-      // Update frontmatter regex
-      if (/published:\s*(true|false)/.test(content)) {
-        content = content.replace(/published:\s*(true|false)/, `published: ${newPublishedState}`);
-      } else {
-        // Fallback: try to insert after ---
-        content = content.replace(/^---\s*\n/, `---\npublished: ${newPublishedState}\n`);
-      }
-
-      const saveRes = await fetch('/api/admin/github', {
+      const response = await fetch('/api/admin/unpublish', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          path: filePath,
-          content: content,
-          sha: sha,
-          message: `Update published status for ${note.title} to ${newPublishedState}`
-        })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ slug: note.slug }),
       });
 
-      if (!saveRes.ok) throw new Error('Failed to update published status');
+      const data = await response.json();
 
-      // Optimistic update
-      setNotes(notes.map(n =>
-        n.id === note.id ? { ...n, enabled: newPublishedState } : n
-      ));
-
-      alert(newPublishedState ? '已发布 (可能需要1分钟生效)' : '已取消发布 (可能需要1分钟生效)');
-
+      if (response.ok && data.success) {
+        alert('已断开连接。请稍候等待 Vercel 自动重新构建。');
+        // Optimistically remove from list or mark as disabled
+        setNotes(notes.filter(n => n.id !== note.id));
+        fetchStats();
+      } else {
+        console.error('Unpublish failed:', data.error);
+        alert(`断开连接失败: ${data.error}`);
+      }
     } catch (error) {
-      console.error('Toggle failed:', error);
-      alert('Failed to toggle status on GitHub.');
+      console.error('Unpublish error:', error);
+      alert('断开连接请求失败，请检查控制台日志。');
     }
   };
 
@@ -359,12 +347,21 @@ export default function DashboardClient() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button
-                            onClick={() => toggleNoteEnabled(note)}
-                            className={`text-sm ${note.enabled ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}`}
-                          >
-                            {note.enabled ? '取消发布' : '发布'}
-                          </button>
+                          <div className="flex justify-end space-x-3">
+                            <button
+                              onClick={() => toggleNoteEnabled(note)}
+                              className={`text-sm ${note.enabled ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'}`}
+                            >
+                              {note.enabled ? '下架' : '上架'}
+                            </button>
+                            <button
+                              onClick={() => handleUnpublish(note)}
+                              className="text-sm text-red-600 hover:text-red-900"
+                              title="从网站彻底移除（保留源文件）"
+                            >
+                              断开连接
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     ))}
