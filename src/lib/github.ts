@@ -14,6 +14,52 @@ const REPO_OWNER = process.env.REPO_OWNER;
 const REPO_NAME = process.env.REPO_NAME;
 const CONFIG_PATH = 'config/ignored-notes.json';
 
+// Generic helper to get file content
+export async function getFileContent(path: string) {
+    if (!REPO_OWNER || !REPO_NAME) {
+        throw new Error('REPO_OWNER or REPO_NAME is not defined');
+    }
+    const octokit = getOctokit();
+    try {
+        const { data } = await octokit.repos.getContent({
+            owner: REPO_OWNER,
+            repo: REPO_NAME,
+            path,
+        });
+
+        if ('content' in data && !Array.isArray(data)) {
+            return Buffer.from(data.content, 'base64').toString('utf-8');
+        }
+        return null;
+    } catch (e: any) {
+        if (e.status === 404) return null;
+        throw e;
+    }
+}
+
+// Generic helper to update file content
+export async function updateFile(path: string, content: string, sha: string | undefined, message: string) {
+    if (!REPO_OWNER || !REPO_NAME) {
+        throw new Error('REPO_OWNER or REPO_NAME is not defined');
+    }
+    const octokit = getOctokit();
+
+    try {
+        await octokit.repos.createOrUpdateFileContents({
+            owner: REPO_OWNER,
+            repo: REPO_NAME,
+            path,
+            message,
+            content: Buffer.from(content).toString('base64'),
+            sha,
+        });
+        return { success: true };
+    } catch (error: any) {
+        console.error('Error updating file:', error);
+        return { success: false, error: error.message };
+    }
+}
+
 export async function addToIgnoreList(slug: string) {
     if (!REPO_OWNER || !REPO_NAME) {
         throw new Error('REPO_OWNER or REPO_NAME is not defined');
