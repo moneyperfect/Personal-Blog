@@ -94,6 +94,7 @@ export default function DashboardClient() {
   const [analytics, setAnalytics] = useState<AnalyticsSummary>(EMPTY_ANALYTICS);
   const [topNotes, setTopNotes] = useState<TopNote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
 
   const computeStats = (nextNotes: Note[]) => {
     const publishedNotes = nextNotes.filter((note) => normalizeStatus(note) === 'published').length;
@@ -264,6 +265,47 @@ export default function DashboardClient() {
     } catch (error) {
       console.error('更新状态失败:', error);
       alert('请求失败，请检查网络');
+    }
+  };
+
+  const deleteNote = async (note: Note) => {
+    const status = normalizeStatus(note);
+    const confirmed = window.confirm(
+      `确认删除「${note.title}」吗？\n状态：${STATUS_META[status].label}\n\n删除后不可恢复。`
+    );
+
+    if (!confirmed) return;
+
+    setDeletingSlug(note.slug);
+    try {
+      const response = await fetch('/api/admin/notes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'delete',
+          slug: note.slug,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok || !data.success) {
+        alert(`删除失败: ${data.error || '未知错误'}`);
+        return;
+      }
+
+      setNotes((prev) => {
+        const next = prev.filter((item) => item.slug !== note.slug);
+        computeStats(next);
+        return next;
+      });
+      fetchAnalytics();
+    } catch (error) {
+      console.error('删除笔记失败:', error);
+      alert('请求失败，请检查网络');
+    } finally {
+      setDeletingSlug(null);
     }
   };
 
@@ -494,6 +536,13 @@ export default function DashboardClient() {
                                 className={`text-sm ${status === 'published' ? 'text-orange-600 hover:text-orange-900' : 'text-green-600 hover:text-green-900'}`}
                               >
                                 {status === 'published' ? '撤回' : '发布'}
+                              </button>
+                              <button
+                                onClick={() => deleteNote(note)}
+                                disabled={deletingSlug === note.slug}
+                                className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                {deletingSlug === note.slug ? '删除中...' : '删除'}
                               </button>
                             </div>
                           </td>

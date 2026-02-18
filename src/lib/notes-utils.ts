@@ -124,6 +124,28 @@ export async function batchUpdateNotesMetadata(
 }
 
 /**
+ * 删除笔记
+ */
+export async function deleteNoteBySlug(slug: string): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('posts')
+      .delete()
+      .eq('slug', slug);
+
+    if (error) {
+      console.error('删除 Supabase 笔记失败:', error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error('删除笔记失败:', error);
+    return false;
+  }
+}
+
+/**
  * 获取统计数据
  */
 export async function getNotesStats(): Promise<{
