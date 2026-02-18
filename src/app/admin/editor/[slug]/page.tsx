@@ -36,6 +36,9 @@ export default async function EditNotePage({ params }: PageProps) {
         content: post.content || '',
         tags: post.tags || [],
         excerpt: post.excerpt || '',
+        coverImage: post.cover_image || '',
+        seoTitle: post.seo_title || '',
+        seoDescription: post.seo_description || '',
         published: post.published,
         lang: post.lang || 'zh',
         source: 'supabase'

@@ -3,8 +3,13 @@ import Script from "next/script";
 import "./globals.css";
 import { GoogleAnalytics } from "@/lib/analytics";
 import { PwaRegister } from "@/components/PwaRegister";
+import { getSiteUrl } from "@/lib/seo";
+import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
+
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
+  metadataBase: new URL(siteUrl),
   title: {
     default: "NAS Digital Products",
     template: "%s | NAS Digital Products",
@@ -28,12 +33,23 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
+    url: siteUrl,
     locale: "zh_CN",
     alternateLocale: "ja_JP",
     siteName: "NAS Digital Products",
+    images: [
+      {
+        url: "/icons/icon-512.png",
+        width: 512,
+        height: 512,
+        alt: "NAS Digital Products",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
+    creator: "@nas",
+    images: ["/icons/icon-512.png"],
   },
   robots: {
     index: true,
@@ -59,6 +75,7 @@ export default function RootLayout({
     <html>
       <body className="antialiased">
         <GoogleAnalytics />
+        <WebVitalsReporter />
         <PwaRegister />
 
         {/* Google AdSense - 仅在生产环境且启用时加载 */}

@@ -1,8 +1,9 @@
 import { MetadataRoute } from 'next';
 import { routing } from '@/i18n/routing';
 import { getAllSlugs } from '@/lib/mdx';
+import { getSiteUrl } from '@/lib/seo';
 
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://example.com';
+const baseUrl = getSiteUrl();
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const routes = [
@@ -13,6 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/playbooks',
         '/cases',
         '/notes',
+        '/topics',
         '/about',
         '/privacy',
         '/terms',

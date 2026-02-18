@@ -5,6 +5,8 @@ create table public.posts (
   title text not null,
   content text,     -- Markdown content
   excerpt text,
+  seo_title text,
+  seo_description text,
   category text,
   tags text[],
   cover_image text,

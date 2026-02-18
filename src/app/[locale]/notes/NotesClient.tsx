@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { TagFilter } from '@/components/ui';
 import { NoteFrontmatter, ContentItem } from '@/lib/mdx';
@@ -10,26 +10,39 @@ import { useLocale } from 'next-intl';
 interface NotesClientProps {
     notes: ContentItem<NoteFrontmatter>[];
     allTags: string[];
+    initialTag?: string;
 }
 
-export function NotesClient({ notes, allTags }: NotesClientProps) {
+export function NotesClient({ notes, allTags, initialTag }: NotesClientProps) {
     const locale = useLocale();
     const t = useTranslations('notes');
     const common = useTranslations('common');
-    const [selectedTags, setSelectedTags] = useState<string[]>([]);
+    const [selectedTags, setSelectedTags] = useState<string[]>(initialTag ? [initialTag] : []);
 
-    const filteredNotes = selectedTags.length === 0
-        ? notes
-        : notes.filter((note) =>
+    const filteredNotes = useMemo(() => {
+        if (selectedTags.length === 0) return notes;
+
+        return notes.filter((note) =>
             selectedTags.some((tag) => note.frontmatter.tags.includes(tag))
         );
+    }, [notes, selectedTags]);
 
     return (
         <div className="page-shell">
             <div className="page-container page-width">
                 <header className="page-header">
-                    <h1 className="page-title">{t('title')}</h1>
-                    <p className="page-description">{t('description')}</p>
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <h1 className="page-title">{t('title')}</h1>
+                            <p className="page-description">{t('description')}</p>
+                        </div>
+                        <Link
+                            href={`/${locale}/topics`}
+                            className="text-sm font-medium text-primary-600 hover:text-primary-700"
+                        >
+                            {locale === 'zh' ? 'Browse topics' : 'Topics'}
+                        </Link>
+                    </div>
                 </header>
 
                 <section className="section">

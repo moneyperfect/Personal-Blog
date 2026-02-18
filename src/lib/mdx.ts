@@ -39,6 +39,9 @@ export interface ContentFrontmatter {
 export interface NoteFrontmatter extends ContentFrontmatter {
     category?: string;
     type?: string;
+    coverImage?: string;
+    seoTitle?: string;
+    seoDescription?: string;
 }
 
 export interface ContentItem<T = ContentFrontmatter> {
@@ -152,6 +155,9 @@ export async function getAllNotes(locale: Locale): Promise<ContentItem<NoteFront
             language: post.lang || 'zh',
             category: post.category,
             type: 'note', // default type
+            coverImage: post.cover_image || '',
+            seoTitle: post.seo_title || '',
+            seoDescription: post.seo_description || '',
         },
         content: post.content || '',
     }));
@@ -177,6 +183,9 @@ export async function getNoteBySlug(slug: string, locale: Locale): Promise<Conte
             language: post.lang || 'zh',
             category: post.category,
             type: 'note',
+            coverImage: post.cover_image || '',
+            seoTitle: post.seo_title || '',
+            seoDescription: post.seo_description || '',
         },
         content: post.content || '',
     };

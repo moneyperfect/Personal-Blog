@@ -2,13 +2,32 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/admin-auth';
 import { supabase } from '@/lib/supabase';
 
+function classifyUploadError(error: unknown): { code: string; message: string } {
+    const raw = typeof error === 'string'
+        ? error
+        : JSON.stringify(error ?? {});
+    const lower = raw.toLowerCase();
+
+    if (lower.includes('fetch failed') || lower.includes('eacces') || lower.includes('enotfound')) {
+        return {
+            code: 'STORAGE_NETWORK_ERROR',
+            message: '存储服务连接失败，请检查网络/代理后重试。',
+        };
+    }
+
+    return {
+        code: 'STORAGE_UPLOAD_FAILED',
+        message: '上传失败，请稍后重试。',
+    };
+}
+
 export async function POST(request: NextRequest) {
     try {
         // 验证权限
         const isAuthenticated = await verifyAdminAuth();
         if (!isAuthenticated) {
             return NextResponse.json(
-                { error: '未授权访问' },
+                { error: '未授权访问，请重新登录。', code: 'AUTH_REQUIRED' },
                 { status: 401 }
             );
         }
@@ -18,7 +37,7 @@ export async function POST(request: NextRequest) {
 
         if (!file) {
             return NextResponse.json(
-                { error: '未找到文件' },
+                { error: '未找到文件。', code: 'NO_FILE' },
                 { status: 400 }
             );
         }
@@ -43,8 +62,9 @@ export async function POST(request: NextRequest) {
 
         if (error) {
             console.error('Supabase upload error:', error);
+            const classified = classifyUploadError(error);
             return NextResponse.json(
-                { error: '上传失败: ' + error.message },
+                { error: classified.message, code: classified.code },
                 { status: 500 }
             );
         }
@@ -62,8 +82,9 @@ export async function POST(request: NextRequest) {
 
     } catch (error) {
         console.error('Upload API error:', error);
+        const classified = classifyUploadError(error);
         return NextResponse.json(
-            { error: '服务器内部错误' },
+            { error: classified.message, code: classified.code },
             { status: 500 }
         );
     }
