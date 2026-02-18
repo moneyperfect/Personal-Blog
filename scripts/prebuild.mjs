@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
 
 import fs from 'fs';
 import path from 'path';
@@ -7,79 +7,75 @@ import { execSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const projectRoot = path.join(__dirname, '..');
 
 async function runPrebuild() {
-  console.log('🚀 开始构建前预处理...\n');
+  console.log('[prebuild] start');
+
+  const useSupabaseNotes = (process.env.USE_SUPABASE_NOTES ?? 'true').toLowerCase() !== 'false';
+  if (useSupabaseNotes) {
+    console.log('[prebuild] USE_SUPABASE_NOTES=true -> skip legacy Obsidian/Notion sync');
+    return;
+  }
 
   const obsidianPath = process.env.OBSIDIAN_NOTES_PATH || './obsidian-notes';
-  const obsidianAbsPath = path.isAbsolute(obsidianPath) 
-    ? obsidianPath 
+  const obsidianAbsPath = path.isAbsolute(obsidianPath)
+    ? obsidianPath
     : path.join(projectRoot, obsidianPath);
 
   const hasObsidian = fs.existsSync(obsidianAbsPath);
-  const hasNotionToken = process.env.NOTION_TOKEN && process.env.NOTION_DATABASE_ID;
+  const hasNotionToken = Boolean(process.env.NOTION_TOKEN && process.env.NOTION_DATABASE_ID);
 
-  console.log('📊 环境检测:');
-  console.log(`  Obsidian 目录: ${obsidianAbsPath} ${hasObsidian ? '✅ 存在' : '❌ 不存在'}`);
-  console.log(`  Notion 配置: ${hasNotionToken ? '✅ 已配置' : '❌ 未配置'}`);
+  console.log(`[prebuild] Obsidian path: ${obsidianAbsPath} (${hasObsidian ? 'exists' : 'missing'})`);
+  console.log(`[prebuild] Notion config: ${hasNotionToken ? 'configured' : 'not configured'}`);
 
-  // 优先使用 Obsidian
   if (hasObsidian) {
-    console.log('\n🔄 检测到 Obsidian 目录，开始转换笔记...');
+    console.log('[prebuild] run Obsidian conversion');
     try {
-      execSync('npm run convert-obsidian', { 
+      execSync('npm run convert-obsidian', {
         stdio: 'inherit',
-        cwd: projectRoot 
+        cwd: projectRoot,
       });
-      console.log('✅ Obsidian 笔记转换完成');
+      console.log('[prebuild] Obsidian conversion done');
       return;
     } catch (error) {
-      console.error('❌ Obsidian 转换失败:', error.message);
-      console.log('⚠️  尝试使用 Notion 同步...');
+      console.error('[prebuild] Obsidian conversion failed:', error.message);
+      console.log('[prebuild] fallback to Notion sync');
     }
   }
 
-  // 回退到 Notion
   if (hasNotionToken) {
-    console.log('\n🔄 使用 Notion 同步...');
+    console.log('[prebuild] run Notion sync');
     try {
-      execSync('npm run sync-notes', { 
+      execSync('npm run sync-notes', {
         stdio: 'inherit',
-        cwd: projectRoot 
+        cwd: projectRoot,
       });
-      console.log('✅ Notion 笔记同步完成');
+      console.log('[prebuild] Notion sync done');
       return;
     } catch (error) {
-      console.error('❌ Notion 同步失败:', error.message);
+      console.error('[prebuild] Notion sync failed:', error.message);
     }
   }
 
-  // 两者都不可用
-  console.log('\n⚠️  警告:');
-  console.log('  未检测到可用的内容来源');
-  console.log('  请选择以下方案之一:');
-  console.log('  1. 设置 Obsidian 集成:');
-  console.log('     - 添加 Git 子模块: git submodule add <repo> obsidian-notes');
-  console.log('     - 或设置 OBSIDIAN_NOTES_PATH 环境变量');
-  console.log('  2. 配置 Notion 同步:');
-  console.log('     - 设置 NOTION_TOKEN 和 NOTION_DATABASE_ID 环境变量');
-  console.log('  3. 手动管理笔记:');
-  console.log('     - 直接在 content/notes/ 目录创建 .mdx 文件');
-  
+  console.log('[prebuild] no content source available');
+  console.log('[prebuild] options:');
+  console.log('  1) configure OBSIDIAN_NOTES_PATH / add obsidian-notes submodule');
+  console.log('  2) configure NOTION_TOKEN + NOTION_DATABASE_ID');
+  console.log('  3) create .mdx files in content/notes');
+
   const notesDir = path.join(projectRoot, 'content', 'notes');
-  const hasExistingNotes = fs.existsSync(notesDir) && 
-    fs.readdirSync(notesDir).filter(f => f.endsWith('.mdx')).length > 0;
-  
+  const hasExistingNotes = fs.existsSync(notesDir)
+    && fs.readdirSync(notesDir).some((f) => f.endsWith('.mdx'));
+
   if (hasExistingNotes) {
-    console.log('\n📝 检测到现有笔记文件，继续构建...');
+    console.log('[prebuild] existing notes found, continue build');
   } else {
-    console.log('\n📝 未找到笔记文件，网站将显示空笔记列表');
+    console.log('[prebuild] no local notes found, notes pages may be empty');
   }
 }
 
-runPrebuild().catch(error => {
-  console.error('构建前预处理失败:', error);
+runPrebuild().catch((error) => {
+  console.error('[prebuild] failed:', error);
   process.exit(1);
 });
