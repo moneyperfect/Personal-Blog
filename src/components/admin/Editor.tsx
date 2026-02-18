@@ -132,16 +132,10 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
     const checklistPassed = publishChecklist.filter((item) => item.ok).length;
     const checklistComplete = checklistPassed === publishChecklist.length;
     const isPublishing = note.lifecycleStatus === 'published';
-    const publishBlockedReason = isPublishing
-        ? (!checklistComplete
-            ? '发布检查清单未完成，请先补齐必填内容。'
-            : healthLoading
-                ? '正在检查服务健康状态，请稍候...'
-                : !health?.ok
-                    ? `服务健康检查未通过：${health?.message || '请稍后重试。'}`
-                    : null)
+    const publishChecklistHint = isPublishing && !checklistComplete
+        ? '提示：发布清单未全部完成，仍可继续发布。'
         : null;
-    const saveDisabled = saving || Boolean(publishBlockedReason);
+    const saveDisabled = saving;
 
     const handleChange = (field: keyof Note, value: string | boolean | string[]) => {
         setNote((prev) => {
@@ -335,11 +329,6 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
 
         if (!note.title.trim() || !note.slug.trim()) {
             setNotice({ type: 'error', text: '标题和 Slug 必填。' });
-            return;
-        }
-
-        if (publishBlockedReason) {
-            setNotice({ type: 'error', text: publishBlockedReason });
             return;
         }
 
@@ -635,8 +624,8 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                                 </li>
                             ))}
                         </ul>
-                        {isPublishing && publishBlockedReason && (
-                            <p className="mt-3 text-xs text-amber-700">{publishBlockedReason}</p>
+                        {publishChecklistHint && (
+                            <p className="mt-3 text-xs text-amber-700">{publishChecklistHint}</p>
                         )}
                     </div>
                 </div>
