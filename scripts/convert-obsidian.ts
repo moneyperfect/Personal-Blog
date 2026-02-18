@@ -131,15 +131,46 @@ async function convertObsidianNotes() {
   }
 
   // 检查 Obsidian 目录是否存在
-  const obsidianAbsPath = path.isAbsolute(OBSIDIAN_PATH)
-    ? OBSIDIAN_PATH
-    : path.join(__dirname, OBSIDIAN_PATH);
+  let obsidianAbsPath = '';
 
-  if (!fs.existsSync(obsidianAbsPath)) {
-    console.error(`❌ Obsidian 目录不存在: ${obsidianAbsPath}`);
-    console.log('请设置环境变量 OBSIDIAN_NOTES_PATH 或使用默认路径 ../obsidian-notes');
-    console.log('也可以添加 Git 子模块: git submodule add <your-repo> obsidian-notes');
+  // 1. Try environment variable if set
+  if (process.env.OBSIDIAN_NOTES_PATH) {
+    const envPath = path.isAbsolute(process.env.OBSIDIAN_NOTES_PATH)
+      ? process.env.OBSIDIAN_NOTES_PATH
+      : path.join(process.cwd(), process.env.OBSIDIAN_NOTES_PATH);
+
+    if (fs.existsSync(envPath)) {
+      obsidianAbsPath = envPath;
+    } else {
+      console.warn(`⚠️  Environment variable OBSIDIAN_NOTES_PATH is set to '${process.env.OBSIDIAN_NOTES_PATH}' but path does not exist: ${envPath}`);
+    }
+  }
+
+  // 2. Try default submodule location (relative to project root)
+  if (!obsidianAbsPath) {
+    const localSubmodulePath = path.join(process.cwd(), 'obsidian-notes');
+    if (fs.existsSync(localSubmodulePath)) {
+      obsidianAbsPath = localSubmodulePath;
+      console.log(`ℹ️  Found obsidian-notes at default location: ${localSubmodulePath}`);
+    }
+  }
+
+  // 3. Try sibling directory (local dev fallback)
+  if (!obsidianAbsPath) {
+    const siblingPath = path.join(process.cwd(), '../obsidian-notes');
+    if (fs.existsSync(siblingPath)) {
+      obsidianAbsPath = siblingPath;
+      console.log(`ℹ️  Found obsidian-notes at sibling location: ${siblingPath}`);
+    }
+  }
+
+  if (!obsidianAbsPath || !fs.existsSync(obsidianAbsPath)) {
+    console.error(`❌ Obsidian 目录不存在. Tried env var, 'obsidian-notes', and '../obsidian-notes'.`);
+    console.log('Current Configured Path:', OBSIDIAN_PATH);
+    console.log('Current CWD:', process.cwd());
     process.exit(1);
+  } else {
+    console.log(`✅ Using Obsidian path: ${obsidianAbsPath}`);
   }
 
   // 查找所有 Markdown 文件
