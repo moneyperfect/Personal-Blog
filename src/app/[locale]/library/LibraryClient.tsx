@@ -28,7 +28,6 @@ export function LibraryClient({ resources, locale }: LibraryClientProps) {
 
     const filteredItems = useMemo(() => {
         return resources.filter(item => {
-            const isNote = item.frontmatter.type === 'note' || (item.frontmatter as NoteFrontmatter).category;
             const itemType = item.frontmatter.type;
             const itemCategory = (item.frontmatter as NoteFrontmatter).category;
 

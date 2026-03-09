@@ -9,7 +9,6 @@ interface ProductDetailClientProps {
   title: string;
   locale: string;
   price?: string;
-  purchaseUrl?: string;
   large?: boolean;
 }
 
@@ -18,7 +17,6 @@ export function ProductDetailClient({
   title,
   locale,
   price,
-  purchaseUrl,
   large = false,
 }: ProductDetailClientProps) {
   const [showManualPayment, setShowManualPayment] = useState(false);
@@ -26,13 +24,6 @@ export function ProductDetailClient({
 
   const handleClick = () => {
     trackPurchaseClick(slug, title);
-
-    if (purchaseUrl) {
-      const target = purchaseUrl.startsWith('http') ? '_blank' : '_self';
-      window.open(purchaseUrl, target, target === '_blank' ? 'noopener,noreferrer' : undefined);
-      return;
-    }
-
     setShowManualPayment(true);
   };
 

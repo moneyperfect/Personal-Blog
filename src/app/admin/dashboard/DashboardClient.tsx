@@ -16,7 +16,7 @@ interface Note {
   date: string;
   enabled: boolean;
   lifecycleStatus?: LifecycleStatus;
-  source: 'obsidian' | 'supabase';
+  source: 'supabase';
 }
 
 interface Stats {

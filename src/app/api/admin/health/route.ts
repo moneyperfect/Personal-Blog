@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/admin-auth';
+import { isOfficialPaymentsEnabled } from '@/lib/payments';
 import { hasSupabaseAdminConfig, supabaseAdmin } from '@/lib/supabase';
 import { createRequestContext, logError, logInfo } from '@/lib/server-observability';
 
@@ -49,11 +50,15 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  const officialPaymentsEnabled = isOfficialPaymentsEnabled();
+
   const [postsCheck, postsSchemaCheck, productsCheck, ordersCheck] = await Promise.all([
     checkTable(supabaseAdmin.from('posts').select('slug').limit(1), 'posts'),
     checkTable(supabaseAdmin.from('posts').select('slug,source,lifecycle_status').limit(1), 'posts_schema'),
     checkTable(supabaseAdmin.from('products').select('slug,published,featured').limit(1), 'products'),
-    checkTable(supabaseAdmin.from('product_orders').select('order_no,payment_status').limit(1), 'product_orders'),
+    officialPaymentsEnabled
+      ? checkTable(supabaseAdmin.from('product_orders').select('order_no,payment_status').limit(1), 'product_orders')
+      : Promise.resolve({ ok: true, detail: '' }),
   ]);
 
   let storage = false;
@@ -101,6 +106,7 @@ export async function GET(request: NextRequest) {
         storage,
         schema,
       },
+      paymentMode: officialPaymentsEnabled ? 'official' : 'manual',
       details,
     },
     { status: ok ? 200 : 500 }

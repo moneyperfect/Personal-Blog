@@ -91,7 +91,6 @@ export default async function ProductDetailPage({ params }: Props) {
                             slug={slug}
                             title={product.frontmatter.title}
                             price={product.frontmatter.price}
-                            purchaseUrl={product.frontmatter.purchaseUrl}
                             locale={locale}
                         />
                     </div>
@@ -110,7 +109,6 @@ export default async function ProductDetailPage({ params }: Props) {
                         slug={slug}
                         title={product.frontmatter.title}
                         price={product.frontmatter.price}
-                        purchaseUrl={product.frontmatter.purchaseUrl}
                         locale={locale}
                         large
                     />

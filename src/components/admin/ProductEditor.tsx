@@ -36,7 +36,13 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
   };
 
   const handleTagsChange = (value: string) => {
-    handleChange('tags', value.split(',').map((tag) => tag.trim()).filter(Boolean));
+    handleChange(
+      'tags',
+      value
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter(Boolean)
+    );
   };
 
   const handlePaymentMethodToggle = (method: string) => {
@@ -103,7 +109,7 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
     }
 
     if (!product.title.trim() || !product.slug.trim()) {
-      setNotice({ type: 'error', text: '标题和 Slug 必填。' });
+      setNotice({ type: 'error', text: '标题和 Slug 为必填项。' });
       return;
     }
 
@@ -134,11 +140,12 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
     }
   };
 
-  const noticeClassName = notice?.type === 'error'
-    ? 'border-red-200 bg-red-50 text-red-700'
-    : notice?.type === 'success'
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
-      : 'border-blue-200 bg-blue-50 text-blue-700';
+  const noticeClassName =
+    notice?.type === 'error'
+      ? 'border-red-200 bg-red-50 text-red-700'
+      : notice?.type === 'success'
+        ? 'border-emerald-200 bg-emerald-50 text-emerald-700'
+        : 'border-blue-200 bg-blue-50 text-blue-700';
 
   return (
     <div className="admin-shell">
@@ -147,7 +154,7 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
           <div className="admin-header-copy">
             <p className="admin-kicker">Products</p>
             <h1 className="page-title">{isNew ? '新建产品' : '编辑产品'}</h1>
-            <p className="page-description">维护产品内容、价格、展示信息与临时支付配置。</p>
+            <p className="page-description">维护产品内容、价格、展示信息，以及当前阶段的手动收款配置。</p>
           </div>
           <div className="admin-toolbar">
             <button
@@ -174,7 +181,7 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <div className="admin-card space-y-4">
               <div>
@@ -188,7 +195,7 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-surface-700">Slug</label>
                   <input
@@ -223,7 +230,7 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <label className="block text-sm font-medium text-surface-700">价格展示文案</label>
                   <input
@@ -231,7 +238,7 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
                     value={product.priceDisplay}
                     onChange={(event) => handleChange('priceDisplay', event.target.value)}
                     className="mt-1 admin-input"
-                    placeholder="¥199"
+                    placeholder="￥199"
                   />
                 </div>
                 <div>
@@ -248,13 +255,31 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
               </div>
 
               <div>
-                <div className="flex items-center justify-between gap-3 mb-2">
+                <div className="mb-2 flex items-center justify-between gap-3">
                   <label className="block text-sm font-medium text-surface-700">正文（Markdown）</label>
                   <div className="flex flex-wrap gap-2">
-                    <button type="button" onClick={() => insertText('**粗体**')} className="btn btn-text !px-2 !py-1 text-xs">B</button>
-                    <button type="button" onClick={() => insertText('*斜体*')} className="btn btn-text !px-2 !py-1 text-xs">I</button>
-                    <button type="button" onClick={() => insertText('[链接](url)')} className="btn btn-text !px-2 !py-1 text-xs">Link</button>
-                    <label className="btn btn-text !px-2 !py-1 text-xs cursor-pointer">
+                    <button
+                      type="button"
+                      onClick={() => insertText('**粗体**')}
+                      className="btn btn-text !px-2 !py-1 text-xs"
+                    >
+                      B
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertText('*斜体*')}
+                      className="btn btn-text !px-2 !py-1 text-xs"
+                    >
+                      I
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => insertText('[链接](url)')}
+                      className="btn btn-text !px-2 !py-1 text-xs"
+                    >
+                      Link
+                    </button>
+                    <label className="btn btn-text cursor-pointer !px-2 !py-1 text-xs">
                       Image
                       <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                     </label>
@@ -296,6 +321,9 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
 
               <div>
                 <label className="block text-sm font-medium text-surface-700">支付方式</label>
+                <p className="mt-2 text-xs text-surface-500">
+                  当前线上版本固定展示微信与支付宝收款码。这里的支付方式配置会继续保留在产品数据中，作为二期官方支付接入时的预留字段。
+                </p>
                 <div className="mt-2 space-y-2">
                   {PAYMENT_OPTIONS.map((option) => (
                     <label key={option.value} className="flex items-center gap-2 text-sm text-surface-700">
@@ -317,8 +345,11 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
                   value={product.fulfillmentUrl}
                   onChange={(event) => handleChange('fulfillmentUrl', event.target.value)}
                   className="mt-1 admin-input"
-                  placeholder="支付成功后展示的下载或交付链接"
+                  placeholder="未来用于自动交付的下载或跳转链接"
                 />
+                <p className="mt-2 text-xs text-surface-500">
+                  当前阶段仍以手动确认付款和人工交付为主，这个字段先作为二期自动交付的预留配置。
+                </p>
               </div>
             </div>
 

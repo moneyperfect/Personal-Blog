@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createPendingOrder, updateOrderPaymentPayload } from '@/lib/orders';
-import { createProviderCheckout, isPaymentProviderConfigured } from '@/lib/payments';
+import { createProviderCheckout, isOfficialPaymentsEnabled, isPaymentProviderConfigured } from '@/lib/payments';
 
 interface CheckoutPayload {
   slug?: unknown;
@@ -15,6 +15,17 @@ function toStringValue(input: unknown) {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isOfficialPaymentsEnabled()) {
+      return NextResponse.json(
+        {
+          ok: false,
+          code: 'OFFICIAL_PAYMENTS_DISABLED',
+          error: '当前站点使用人工确认收款码方案，官方直连支付入口暂未启用。',
+        },
+        { status: 410 }
+      );
+    }
+
     const body = (await request.json()) as CheckoutPayload;
     const slug = toStringValue(body.slug);
     const locale = toStringValue(body.locale) === 'ja' ? 'ja' : 'zh';

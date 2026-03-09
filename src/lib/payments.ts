@@ -48,6 +48,10 @@ function normalizePem(value: string | undefined) {
   return value ? value.replace(/\\n/g, '\n') : '';
 }
 
+export function isOfficialPaymentsEnabled() {
+  return process.env.ENABLE_OFFICIAL_PAYMENTS === 'true';
+}
+
 function getWechatPayConfig(): WechatPayConfig | null {
   const appId = process.env.WECHAT_PAY_APP_ID;
   const merchantId = process.env.WECHAT_PAY_MCH_ID;
@@ -182,6 +186,10 @@ function decryptWechatNotification(resource: WechatNotificationResource, apiV3Ke
 }
 
 export function isPaymentProviderConfigured(provider: PaymentProvider) {
+  if (!isOfficialPaymentsEnabled()) {
+    return false;
+  }
+
   return provider === 'wechat' ? Boolean(getWechatPayConfig()) : Boolean(getAlipayConfig());
 }
 

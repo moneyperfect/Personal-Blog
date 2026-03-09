@@ -10,7 +10,7 @@ export interface NoteMetadata {
   date: string;
   enabled: boolean;
   lifecycleStatus?: 'draft' | 'review' | 'published';
-  source: 'obsidian' | 'supabase'; // Changed from 'notion' | 'local' to reflect new reality
+  source: 'supabase';
   tags?: string[];
   summary?: string;
   updatedAt?: string;
