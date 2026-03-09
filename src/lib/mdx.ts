@@ -15,6 +15,15 @@ export interface ProductFrontmatter {
     language: string;
     price: string;
     purchaseUrl: string;
+    priceAmount?: number;
+    currency?: string;
+    coverImage?: string;
+    seoTitle?: string;
+    seoDescription?: string;
+    paymentMethods?: string[];
+    fulfillmentUrl?: string;
+    featured?: boolean;
+    published?: boolean;
 }
 
 export interface LibraryFrontmatter {
@@ -136,8 +145,8 @@ export function getCaseBySlug(slug: string, locale: Locale): ContentItem<Content
 }
 
 export async function getAllNotes(locale: Locale): Promise<ContentItem<NoteFrontmatter>[]> {
-    const { supabase } = await import('./supabase');
-    const { data: posts } = await supabase
+    const { supabasePublic } = await import('./supabase');
+    const { data: posts } = await supabasePublic
         .from('posts')
         .select('*')
         .eq('published', true) // Only fetch published notes for public view
@@ -165,12 +174,13 @@ export async function getAllNotes(locale: Locale): Promise<ContentItem<NoteFront
 }
 
 export async function getNoteBySlug(slug: string, locale: Locale): Promise<ContentItem<NoteFrontmatter> | null> {
-    const { supabase } = await import('./supabase');
-    const { data: post } = await supabase
+    const { supabasePublic } = await import('./supabase');
+    const { data: post } = await supabasePublic
         .from('posts')
         .select('*')
         .eq('slug', slug)
         .eq('lang', locale)
+        .eq('published', true)
         .single();
 
     if (!post) return null;
@@ -223,8 +233,8 @@ export async function getAllResources(locale: Locale): Promise<ContentItem<Libra
 
 export async function getAllSlugs(type: string, locale: Locale): Promise<string[]> {
     if (type === 'notes') {
-        const { supabase } = await import('./supabase');
-        const { data: posts } = await supabase
+        const { supabasePublic } = await import('./supabase');
+        const { data: posts } = await supabasePublic
             .from('posts')
             .select('slug')
             .eq('published', true)

@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { routing } from '@/i18n/routing';
 import { getAllSlugs } from '@/lib/mdx';
+import { getAllProductSlugs } from '@/lib/products';
 import { getSiteUrl } from '@/lib/seo';
 
 const baseUrl = getSiteUrl();
@@ -35,7 +36,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Products
     for (const locale of routing.locales) {
-        const slugs = await getAllSlugs('products', locale);
+        const slugs = await getAllProductSlugs(locale);
         slugs.forEach((slug) => {
             dynamicPages.push({
                 url: `${baseUrl}/${locale}/products/${slug}`,

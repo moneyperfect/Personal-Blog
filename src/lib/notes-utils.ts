@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 
 export interface NoteMetadata {
   id: string;
@@ -21,7 +21,7 @@ export interface NoteMetadata {
  */
 export async function getAllNotesMetadata(): Promise<NoteMetadata[]> {
   try {
-    const { data: posts, error } = await supabase
+    const { data: posts, error } = await supabaseAdmin
       .from('posts')
       .select('*')
       .order('date', { ascending: false });
@@ -60,7 +60,7 @@ export async function updateNoteMetadata(
   updates: Partial<NoteMetadata>
 ): Promise<boolean> {
   try {
-    const dbUpdates: any = {};
+    const dbUpdates: Record<string, unknown> = {};
     // Map frontend 'enabled' to DB 'published'
     if (updates.enabled !== undefined) dbUpdates.published = updates.enabled;
     if (updates.lifecycleStatus !== undefined) {
@@ -74,7 +74,7 @@ export async function updateNoteMetadata(
 
     dbUpdates.updated_at = new Date().toISOString();
 
-    let { error } = await supabase
+    let { error } = await supabaseAdmin
       .from('posts')
       .update(dbUpdates)
       .eq('slug', slug);
@@ -86,7 +86,7 @@ export async function updateNoteMetadata(
         const retryUpdates = { ...dbUpdates };
         delete retryUpdates.lifecycle_status;
 
-        ({ error } = await supabase
+        ({ error } = await supabaseAdmin
           .from('posts')
           .update(retryUpdates)
           .eq('slug', slug));
@@ -128,7 +128,7 @@ export async function batchUpdateNotesMetadata(
  */
 export async function deleteNoteBySlug(slug: string): Promise<boolean> {
   try {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
       .from('posts')
       .delete()
       .eq('slug', slug);

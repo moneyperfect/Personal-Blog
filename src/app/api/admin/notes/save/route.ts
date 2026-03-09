@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/admin-auth';
-import { hasSupabaseConfig, supabase } from '@/lib/supabase';
+import { hasSupabaseAdminConfig, supabaseAdmin } from '@/lib/supabase';
 import { createRequestContext, logError, logInfo } from '@/lib/server-observability';
 
 const OPTIONAL_WRITE_COLUMNS = ['seo_title', 'seo_description', 'source', 'cover_image', 'lifecycle_status'] as const;
@@ -57,7 +57,7 @@ async function writePostHistory(
     requestId: string,
     metadata: Record<string, unknown>
 ) {
-    const { error } = await supabase
+    const { error } = await supabaseAdmin
         .from('post_history')
         .insert([
             {
@@ -86,9 +86,9 @@ async function upsertPostWithFallback(
 
     for (let i = 0; i <= OPTIONAL_WRITE_COLUMNS.length; i += 1) {
         if (isNew) {
-            ({ data, error } = await supabase.from('posts').insert([payload]).select());
+            ({ data, error } = await supabaseAdmin.from('posts').insert([payload]).select());
         } else {
-            ({ data, error } = await supabase.from('posts').update(payload).eq('slug', slug).select());
+            ({ data, error } = await supabaseAdmin.from('posts').update(payload).eq('slug', slug).select());
         }
 
         if (!error) {
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
     const ctx = createRequestContext(request, '/api/admin/notes/save');
 
     try {
-        if (!hasSupabaseConfig) {
+        if (!hasSupabaseAdminConfig) {
             logError(ctx, 'config_missing', 'supabase_config_missing');
             return NextResponse.json(
                 {
@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
 
         if (isNew) {
             // Check if slug exists
-            const { data: existing } = await supabase
+            const { data: existing } = await supabaseAdmin
                 .from('posts')
                 .select('slug')
                 .eq('slug', note.slug)

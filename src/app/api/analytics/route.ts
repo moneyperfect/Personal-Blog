@@ -1,5 +1,5 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
-import { hasSupabaseConfig, supabase } from '@/lib/supabase';
+import { hasSupabaseAdminConfig, supabaseAdmin } from '@/lib/supabase';
 import { createRequestContext, logError, logInfo } from '@/lib/server-observability';
 
 interface AnalyticsPayload {
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     const ctx = createRequestContext(request, '/api/analytics');
 
     try {
-        if (!hasSupabaseConfig) {
+        if (!hasSupabaseAdminConfig) {
             logError(ctx, 'config_missing', 'supabase_config_missing');
             return NextResponse.json(
                 { ok: false, code: 'ANALYTICS_CONFIG_MISSING', message: 'Analytics backend not configured.' },
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
         const value = toOptionalNumber(payload.value);
         const metadata = toMetadata(payload.metadata);
 
-        const { error } = await supabase.from('analytics_events').insert([
+        const { error } = await supabaseAdmin.from('analytics_events').insert([
             {
                 session_id: sessionId,
                 event_name: eventName,

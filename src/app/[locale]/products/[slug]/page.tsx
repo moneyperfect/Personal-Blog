@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
-import { getProductBySlug, getAllSlugs } from '@/lib/mdx';
+import { getAllProductSlugs, getProductBySlug } from '@/lib/products';
 import { Locale, routing } from '@/i18n/routing';
 import { ProductDetailClient } from './ProductDetailClient';
 
@@ -10,11 +10,13 @@ type Props = {
     params: Promise<{ locale: string; slug: string }>;
 };
 
+export const revalidate = 60;
+
 export async function generateStaticParams() {
     const params: { locale: string; slug: string }[] = [];
 
     for (const locale of routing.locales) {
-        const slugs = await getAllSlugs('products', locale);
+        const slugs = await getAllProductSlugs(locale);
         for (const slug of slugs) {
             params.push({ locale, slug });
         }
@@ -25,19 +27,20 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: Props) {
     const { locale, slug } = await params;
-    const product = getProductBySlug(slug, locale as Locale);
+    const product = await getProductBySlug(slug, locale as Locale);
 
     if (!product) {
         return { title: 'Product Not Found' };
     }
 
     return {
-        title: product.frontmatter.title,
-        description: product.frontmatter.summary,
+        title: product.frontmatter.seoTitle || product.frontmatter.title,
+        description: product.frontmatter.seoDescription || product.frontmatter.summary,
         openGraph: {
-            title: product.frontmatter.title,
-            description: product.frontmatter.summary,
+            title: product.frontmatter.seoTitle || product.frontmatter.title,
+            description: product.frontmatter.seoDescription || product.frontmatter.summary,
             type: 'article',
+            images: product.frontmatter.coverImage ? [product.frontmatter.coverImage] : undefined,
         },
     };
 }
@@ -46,7 +49,7 @@ export default async function ProductDetailPage({ params }: Props) {
     const { locale, slug } = await params;
     setRequestLocale(locale);
 
-    const product = getProductBySlug(slug, locale as Locale);
+    const product = await getProductBySlug(slug, locale as Locale);
 
     if (!product) {
         notFound();

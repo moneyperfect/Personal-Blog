@@ -1,15 +1,12 @@
 import { NextResponse } from 'next/server';
+import { getAdminCookieName, getAdminSessionCookieOptions } from '@/lib/admin-auth';
 
 export async function POST() {
   const response = NextResponse.json({ success: true });
-  
-  // 清除会话 cookie
-  response.cookies.set('admin_token', '', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-    maxAge: 0, // 立即过期
-    path: '/',
+
+  response.cookies.set(getAdminCookieName(), '', {
+    ...getAdminSessionCookieOptions(),
+    maxAge: 0,
   });
 
   return response;

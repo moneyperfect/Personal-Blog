@@ -1,5 +1,7 @@
+import { protectAdminRoute } from '@/lib/admin-auth';
 import Editor from '@/components/admin/Editor';
 
-export default function NewNotePage() {
+export default async function NewNotePage() {
+    await protectAdminRoute();
     return <Editor isNew={true} />;
 }

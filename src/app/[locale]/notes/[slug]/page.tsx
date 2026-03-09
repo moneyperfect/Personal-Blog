@@ -21,6 +21,7 @@ interface TocHeading {
     id: string;
     text: string;
     level: 2 | 3;
+    line: number;
 }
 
 function stripInlineMarkdown(text: string): string {
@@ -45,7 +46,7 @@ function extractTocHeadings(markdown: string): TocHeading[] {
     const headings: TocHeading[] = [];
     const usedIds = new Map<string, number>();
 
-    markdown.split('\n').forEach((line) => {
+    markdown.split('\n').forEach((line, index) => {
         const match = line.match(/^(##|###)\s+(.+)$/);
         if (!match) return;
 
@@ -56,7 +57,7 @@ function extractTocHeadings(markdown: string): TocHeading[] {
         usedIds.set(base, nextCount + 1);
         const id = nextCount === 0 ? base : `${base}-${nextCount}`;
 
-        headings.push({ id, text, level });
+        headings.push({ id, text, level, line: index + 1 });
     });
 
     return headings;
@@ -176,13 +177,13 @@ export default async function NoteDetailPage({ params }: Props) {
         { name: frontmatter.title, url: pageUrl },
     ]);
 
-    let headingCursor = 0;
     const markdownComponents: Components = {
         h2: ({ node, className, ...props }) => {
-            const heading = tocHeadings[headingCursor];
-            const fallbackId = `section-${headingCursor + 1}`;
+            const heading = tocHeadings.find(
+                (entry) => entry.level === 2 && entry.line === node?.position?.start.line
+            );
+            const fallbackId = `section-${node?.position?.start.line || 1}`;
             const id = heading?.id || fallbackId;
-            headingCursor += 1;
             return (
                 <h2
                     id={id}
@@ -192,10 +193,11 @@ export default async function NoteDetailPage({ params }: Props) {
             );
         },
         h3: ({ node, className, ...props }) => {
-            const heading = tocHeadings[headingCursor];
-            const fallbackId = `section-${headingCursor + 1}`;
+            const heading = tocHeadings.find(
+                (entry) => entry.level === 3 && entry.line === node?.position?.start.line
+            );
+            const fallbackId = `section-${node?.position?.start.line || 1}`;
             const id = heading?.id || fallbackId;
-            headingCursor += 1;
             return (
                 <h3
                     id={id}

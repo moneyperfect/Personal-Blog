@@ -14,6 +14,23 @@ const REPO_OWNER = process.env.REPO_OWNER;
 const REPO_NAME = process.env.REPO_NAME;
 const CONFIG_PATH = 'config/ignored-notes.json';
 
+function getErrorStatus(error: unknown) {
+    if (typeof error === 'object' && error && 'status' in error) {
+        const status = (error as { status?: unknown }).status;
+        return typeof status === 'number' ? status : null;
+    }
+
+    return null;
+}
+
+function getErrorMessage(error: unknown) {
+    if (error instanceof Error) {
+        return error.message;
+    }
+
+    return 'Unknown GitHub API error';
+}
+
 // Generic helper to get file content
 export async function getFileContent(path: string) {
     if (!REPO_OWNER || !REPO_NAME) {
@@ -31,9 +48,9 @@ export async function getFileContent(path: string) {
             return Buffer.from(data.content, 'base64').toString('utf-8');
         }
         return null;
-    } catch (e: any) {
-        if (e.status === 404) return null;
-        throw e;
+    } catch (error: unknown) {
+        if (getErrorStatus(error) === 404) return null;
+        throw error;
     }
 }
 
@@ -54,9 +71,9 @@ export async function updateFile(path: string, content: string, sha: string | un
             sha,
         });
         return { success: true };
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Error updating file:', error);
-        return { success: false, error: error.message };
+        return { success: false, error: getErrorMessage(error) };
     }
 }
 
@@ -84,8 +101,8 @@ export async function addToIgnoreList(slug: string) {
                 currentContent = JSON.parse(decoded);
                 sha = data.sha;
             }
-        } catch (e: any) {
-            if (e.status !== 404) throw e;
+        } catch (error: unknown) {
+            if (getErrorStatus(error) !== 404) throw error;
             // File doesn't exist, start with empty array
             console.log('ignored-notes.json not found, creating new one.');
         }

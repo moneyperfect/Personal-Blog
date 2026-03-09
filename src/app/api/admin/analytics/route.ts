@@ -1,6 +1,6 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/admin-auth';
-import { hasSupabaseConfig, supabase } from '@/lib/supabase';
+import { hasSupabaseAdminConfig, supabaseAdmin } from '@/lib/supabase';
 import { createRequestContext, logError, logInfo } from '@/lib/server-observability';
 
 interface AnalyticsEventRow {
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ ok: false, error: '未授权访问', code: 'AUTH_REQUIRED' }, { status: 401 });
         }
 
-        if (!hasSupabaseConfig) {
+        if (!hasSupabaseAdminConfig) {
             return NextResponse.json(
                 { ok: false, error: 'Supabase 环境变量未配置完整。', code: 'DB_CONFIG_MISSING' },
                 { status: 500 }
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
         const since30Days = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
         const since7DaysMs = Date.now() - 7 * 24 * 60 * 60 * 1000;
 
-        const { data, error } = await supabase
+        const { data, error } = await supabaseAdmin
             .from('analytics_events')
             .select('event_name,event_label,path,value,created_at,metadata')
             .gte('created_at', since30Days)

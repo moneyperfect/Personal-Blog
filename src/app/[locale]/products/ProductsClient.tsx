@@ -1,13 +1,13 @@
 'use client';
 
-import { useTranslations, useLocale } from 'next-intl';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 import { ProductCard } from '@/components/cards';
 import { TagFilter } from '@/components/ui';
-import { ProductFrontmatter, ContentItem } from '@/lib/mdx';
+import { ProductContentItem } from '@/lib/products';
 
 interface ProductsClientProps {
-    products: ContentItem<ProductFrontmatter>[];
+    products: ProductContentItem[];
     allTags: string[];
 }
 

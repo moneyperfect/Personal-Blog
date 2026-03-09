@@ -2,7 +2,7 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { ProductFrontmatter } from '@/lib/mdx';
+import { ProductFrontmatter } from '@/lib/products';
 
 interface ProductCardProps {
     slug: string;

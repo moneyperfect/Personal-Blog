@@ -3,18 +3,23 @@ import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import { ProductCard } from '@/components/cards';
 import { NewsletterSignup } from '@/components/forms';
-import { getAllProducts, getAllLibraryItems } from '@/lib/mdx';
+import { getAllLibraryItems } from '@/lib/mdx';
+import { getAllProducts } from '@/lib/products';
 import { Locale } from '@/i18n/routing';
 
 type Props = {
     params: Promise<{ locale: string }>;
 };
 
+export const revalidate = 60;
+
 export default async function HomePage({ params }: Props) {
     const { locale } = await params;
     setRequestLocale(locale);
 
-    const products = getAllProducts(locale as Locale).slice(0, 3);
+    const allProducts = await getAllProducts(locale as Locale);
+    const featuredProducts = allProducts.filter((product) => product.frontmatter.featured);
+    const products = (featuredProducts.length > 0 ? featuredProducts : allProducts).slice(0, 3);
     const resources = getAllLibraryItems(locale as Locale).slice(0, 4);
 
     return <HomeContent locale={locale} products={products} resources={resources} />;

@@ -1,5 +1,5 @@
 import { notFound, redirect } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { supabaseAdmin } from '@/lib/supabase';
 import { verifyAdminAuth } from '@/lib/admin-auth';
 import Editor from '@/components/admin/Editor';
 
@@ -17,7 +17,7 @@ export default async function EditNotePage({ params }: PageProps) {
     const { slug } = await params;
 
     // Fetch note from Supabase
-    const { data: post, error } = await supabase
+    const { data: post, error } = await supabaseAdmin
         .from('posts')
         .select('*')
         .eq('slug', slug)

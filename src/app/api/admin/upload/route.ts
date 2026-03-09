@@ -1,6 +1,6 @@
 ﻿import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminAuth } from '@/lib/admin-auth';
-import { hasSupabaseConfig, supabase } from '@/lib/supabase';
+import { hasSupabaseAdminConfig, supabaseAdmin } from '@/lib/supabase';
 import { createRequestContext, logError, logInfo } from '@/lib/server-observability';
 
 function classifyUploadError(error: unknown, runtime: 'cloud' | 'local'): { code: string; message: string } {
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     const ctx = createRequestContext(request, '/api/admin/upload');
 
     try {
-        if (!hasSupabaseConfig) {
+        if (!hasSupabaseAdminConfig) {
             logError(ctx, 'config_missing', 'supabase_storage_config_missing');
             return NextResponse.json(
                 {
@@ -53,6 +53,8 @@ export async function POST(request: NextRequest) {
 
         const formData = await request.formData();
         const file = formData.get('file') as File;
+        const bucket = String(formData.get('bucket') || 'blog-assets');
+        const folder = String(formData.get('folder') || 'uploads').replace(/^\/+|\/+$/g, '');
 
         if (!file) {
             logInfo(ctx, 'validation_failed', { reason: 'missing_file' });
@@ -64,14 +66,14 @@ export async function POST(request: NextRequest) {
 
         const timestamp = Date.now();
         const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-        const fileName = `uploads/${timestamp}-${safeName}`;
+        const fileName = `${folder}/${timestamp}-${safeName}`;
 
         const arrayBuffer = await file.arrayBuffer();
         const buffer = new Uint8Array(arrayBuffer);
 
-        const { error } = await supabase
+        const { error } = await supabaseAdmin
             .storage
-            .from('blog-assets')
+            .from(bucket)
             .upload(fileName, buffer, {
                 contentType: file.type,
                 upsert: false,
@@ -86,14 +88,19 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const {
-            data: { publicUrl },
-        } = supabase.storage.from('blog-assets').getPublicUrl(fileName);
+        const { data: buckets, error: bucketError } = await supabaseAdmin.storage.listBuckets();
+        const isPublicBucket = !bucketError && Array.isArray(buckets)
+            ? buckets.find((item) => item.name === bucket)?.public
+            : false;
+        const publicUrl = isPublicBucket
+            ? supabaseAdmin.storage.from(bucket).getPublicUrl(fileName).data.publicUrl
+            : undefined;
 
         logInfo(ctx, 'upload_success', { fileName });
         return NextResponse.json({
             success: true,
             url: publicUrl,
+            path: fileName,
             requestId: ctx.requestId,
         });
     } catch (error) {
