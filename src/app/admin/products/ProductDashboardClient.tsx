@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminProductSummary } from '@/lib/admin-products';
+import AdminShell from '@/components/admin/AdminShell';
 
 interface ProductListResponse {
   products?: AdminProductSummary[];
@@ -14,10 +15,11 @@ export default function ProductDashboardClient() {
   const router = useRouter();
   const [products, setProducts] = useState<AdminProductSummary[]>([]);
   const [loading, setLoading] = useState(true);
-  const [notice, setNotice] = useState<string>('');
+  const [notice, setNotice] = useState('');
 
-  const loadProducts = async () => {
+  const refreshProducts = useCallback(async () => {
     setLoading(true);
+
     try {
       const response = await fetch('/api/admin/products');
       const data = (await response.json()) as ProductListResponse;
@@ -35,11 +37,11 @@ export default function ProductDashboardClient() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    loadProducts();
-  }, []);
+    void refreshProducts();
+  }, [refreshProducts]);
 
   const updateFlags = async (item: AdminProductSummary, updates: { published?: boolean; featured?: boolean }) => {
     const response = await fetch('/api/admin/products', {
@@ -73,8 +75,10 @@ export default function ProductDashboardClient() {
   };
 
   const deleteProduct = async (item: AdminProductSummary) => {
-    const confirmed = window.confirm(`确认删除 ${item.title}（${item.lang}）吗？`);
-    if (!confirmed) return;
+    const confirmed = window.confirm(`确认删除「${item.title}」(${item.lang}) 吗？`);
+    if (!confirmed) {
+      return;
+    }
 
     const response = await fetch('/api/admin/products', {
       method: 'POST',
@@ -96,123 +100,109 @@ export default function ProductDashboardClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow rounded-lg">
-          <div className="px-4 py-5 sm:px-6 flex flex-wrap justify-between items-center gap-3">
+    <AdminShell
+      title="产品管理"
+      description="统一维护产品内容、发布状态、首页推荐位。当前前台支付入口已切换为临时二维码收款方案。"
+      actions={(
+        <>
+          <button type="button" onClick={() => void refreshProducts()} className="btn btn-tonal">
+            刷新列表
+          </button>
+          <button type="button" onClick={() => router.push('/admin/products/editor')} className="btn btn-primary">
+            新建产品
+          </button>
+        </>
+      )}
+    >
+      {notice ? (
+        <div className="mb-6 rounded-google border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          {notice}
+        </div>
+      ) : null}
+
+      {loading ? (
+        <div className="admin-card text-center text-surface-600">正在加载产品数据...</div>
+      ) : (
+        <div className="admin-table-wrap">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-surface-200 px-6 py-5">
             <div>
-              <h1 className="text-xl font-semibold text-gray-900">产品管理</h1>
-              <p className="mt-1 text-sm text-gray-500">管理可售产品、推荐状态与双语版本。</p>
+              <h2 className="section-title">产品列表</h2>
+              <p className="section-description mt-1">支持数据库产品与历史 MDX 产品并行展示。</p>
             </div>
-            <div className="flex items-center gap-3">
-              <button
-                type="button"
-                onClick={() => router.push('/admin/dashboard')}
-                className="px-4 py-2 border border-gray-300 rounded-md text-sm text-gray-700 hover:bg-gray-50"
-              >
-                返回后台
-              </button>
-              <button
-                type="button"
-                onClick={() => router.push('/admin/products/editor')}
-                className="px-4 py-2 rounded-md text-sm font-medium text-white bg-primary-600 hover:bg-primary-700"
-              >
-                新建产品
-              </button>
-            </div>
+            <span className="admin-badge">共 {products.length} 个产品</span>
           </div>
 
-          {notice && (
-            <div className="mx-4 mb-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800">
-              {notice}
-            </div>
-          )}
+          <div className="overflow-x-auto">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>标题</th>
+                  <th>语言</th>
+                  <th>价格</th>
+                  <th>来源</th>
+                  <th>状态</th>
+                  <th>更新时间</th>
+                  <th className="text-right">操作</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-surface-200 bg-white">
+                {products.map((item) => (
+                  <tr key={`${item.slug}:${item.lang}`}>
+                    <td>
+                      <div className="font-medium text-surface-900">{item.title}</div>
+                      <div className="mt-1 text-xs text-surface-600">{item.slug}</div>
+                    </td>
+                    <td>{item.lang === 'zh' ? '中文' : '日语'}</td>
+                    <td>{item.price}</td>
+                    <td>
+                      <span className={`rounded-pill px-3 py-1 text-xs font-semibold ${item.source === 'supabase' ? 'bg-emerald-50 text-emerald-700' : 'bg-surface-100 text-surface-700'}`}>
+                        {item.source === 'supabase' ? '后台' : 'MDX'}
+                      </span>
+                    </td>
+                    <td>
+                      <div className="flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={() => updateFlags(item, { published: !item.published })}
+                          className={`rounded-pill px-3 py-1 text-xs font-semibold ${item.published ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}
+                        >
+                          {item.published ? '已发布' : '未发布'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => updateFlags(item, { featured: !item.featured })}
+                          className={`rounded-pill px-3 py-1 text-xs font-semibold ${item.featured ? 'bg-primary-50 text-primary-700' : 'bg-surface-100 text-surface-700'}`}
+                        >
+                          {item.featured ? '首页推荐' : '普通'}
+                        </button>
+                      </div>
+                    </td>
+                    <td>{new Date(item.updatedAt).toLocaleString()}</td>
+                    <td>
+                      <div className="flex justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => router.push(`/admin/products/editor/${item.slug}?lang=${item.lang}`)}
+                          className="btn btn-tonal"
+                        >
+                          编辑
+                        </button>
+                        <button type="button" onClick={() => deleteProduct(item)} className="btn btn-text text-accent-red">
+                          删除
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-          <div className="border-t border-gray-200">
-            {loading ? (
-              <div className="p-8 text-center text-sm text-gray-500">加载中...</div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">标题</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">语言</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">价格</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">来源</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">状态</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">更新时间</th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {products.map((item) => (
-                      <tr key={`${item.slug}:${item.lang}`}>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm font-medium text-gray-900">{item.title}</div>
-                          <div className="text-sm text-gray-500">{item.slug}</div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {item.lang === 'zh' ? '中文' : '日语'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{item.price}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <span className={`px-2 py-1 rounded-full text-xs ${item.source === 'supabase' ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-700'}`}>
-                            {item.source === 'supabase' ? '后台' : 'MDX'}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm">
-                          <div className="flex flex-wrap gap-2">
-                            <button
-                              type="button"
-                              onClick={() => updateFlags(item, { published: !item.published })}
-                              className={`px-2 py-1 rounded text-xs ${item.published ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'}`}
-                            >
-                              {item.published ? '已发布' : '未发布'}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => updateFlags(item, { featured: !item.featured })}
-                              className={`px-2 py-1 rounded text-xs ${item.featured ? 'bg-primary-50 text-primary-700' : 'bg-slate-50 text-slate-600'}`}
-                            >
-                              {item.featured ? '首页推荐' : '普通'}
-                            </button>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {new Date(item.updatedAt).toLocaleString()}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <div className="flex justify-end items-center gap-3">
-                            <button
-                              type="button"
-                              onClick={() => router.push(`/admin/products/editor/${item.slug}?lang=${item.lang}`)}
-                              className="text-primary-600 hover:text-primary-900"
-                            >
-                              编辑
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => deleteProduct(item)}
-                              className="text-red-600 hover:text-red-800"
-                            >
-                              删除
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-
-                {products.length === 0 && (
-                  <div className="p-8 text-center text-sm text-gray-500">还没有产品，请先创建一个。</div>
-                )}
-              </div>
-            )}
+            {products.length === 0 ? (
+              <div className="px-6 py-12 text-center text-sm text-surface-600">还没有产品，请先创建一个。</div>
+            ) : null}
           </div>
         </div>
-      </div>
-    </div>
+      )}
+    </AdminShell>
   );
 }

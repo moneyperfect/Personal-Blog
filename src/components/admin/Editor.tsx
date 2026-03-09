@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import AdminShell from '@/components/admin/AdminShell';
 
 type LifecycleStatus = 'draft' | 'review' | 'published';
 
@@ -378,27 +379,26 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
             : 'border-blue-200 bg-blue-50 text-blue-700';
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-6">
-            <div className="flex justify-between items-center mb-2">
-                <h1 className="text-2xl font-bold text-gray-900">{isNew ? '新建笔记' : '编辑笔记'}</h1>
-                <div className="space-x-4">
-                    <button
-                        onClick={() => router.back()}
-                        className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 bg-white"
-                    >
-                        取消
+        <AdminShell
+            title={isNew ? '新建笔记' : '编辑笔记'}
+            description="统一管理文章内容、SEO 字段、发布状态与发布检查清单。"
+            actions={(
+                <>
+                    <button type="button" onClick={() => router.back()} className="btn btn-tonal">
+                        返回
                     </button>
                     <button
+                        type="button"
                         onClick={handleSave}
                         disabled={saveDisabled}
-                        className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {saving ? '保存中...' : note.lifecycleStatus === 'published' ? '保存并发布' : '保存'}
                     </button>
-                </div>
-            </div>
-
-            <div className="flex items-center justify-between mb-6 text-xs text-gray-500">
+                </>
+            )}
+        >
+            <div className="mb-6 flex items-center justify-between text-xs text-surface-500">
                 <span>
                     草稿{draftSavedAt ? `已自动保存于 ${formatTime(draftSavedAt)}` : '尚未保存'}
                 </span>
@@ -408,28 +408,28 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
             </div>
 
             {notice && (
-                <div className={`mb-6 rounded-md border px-3 py-2 text-sm ${noticeClassName}`}>
+                <div className={`mb-6 rounded-google-lg border px-3 py-2 text-sm ${noticeClassName}`}>
                     {notice.text}
                 </div>
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2 space-y-6">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">标题</label>
+                    <div className="admin-card">
+                        <label className="block text-sm font-medium text-surface-700">标题</label>
                         <input
                             type="text"
                             value={note.title}
                             onChange={(e) => handleChange('title', e.target.value)}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                            className="input mt-1"
                             placeholder="输入文章标题"
                         />
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">URL Slug</label>
+                    <div className="admin-card">
+                        <label className="block text-sm font-medium text-surface-700">URL Slug</label>
                         <div className="mt-1 flex rounded-md shadow-sm">
-                            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm">
+                            <span className="inline-flex items-center px-3 rounded-l-google border border-r-0 border-surface-300 bg-surface-50 text-surface-500 text-sm">
                                 /notes/
                             </span>
                             <input
@@ -437,64 +437,64 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                                 value={note.slug}
                                 onChange={(e) => handleChange('slug', e.target.value)}
                                 disabled={!isNew}
-                                className={`flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md focus:ring-primary-500 focus:border-primary-500 sm:text-sm border-gray-300 ${!isNew ? 'bg-gray-100' : ''}`}
+                                className={`flex-1 min-w-0 block w-full px-3 py-3 rounded-none rounded-r-google border border-surface-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${!isNew ? 'bg-surface-100' : ''}`}
                             />
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">摘要 (Excerpt)</label>
+                    <div className="admin-card">
+                        <label className="block text-sm font-medium text-surface-700">摘要 (Excerpt)</label>
                         <textarea
                             rows={3}
                             value={note.excerpt}
                             onChange={(e) => handleChange('excerpt', e.target.value)}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                            className="input mt-1 min-h-[112px]"
                             placeholder="简短的摘要..."
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="admin-card grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">封面图 URL</label>
+                            <label className="block text-sm font-medium text-surface-700">封面图 URL</label>
                             <input
                                 type="text"
                                 value={note.coverImage}
                                 onChange={(e) => handleChange('coverImage', e.target.value)}
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                className="input mt-1"
                                 placeholder="https://..."
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700">SEO 标题</label>
+                            <label className="block text-sm font-medium text-surface-700">SEO 标题</label>
                             <input
                                 type="text"
                                 value={note.seoTitle}
                                 onChange={(e) => handleChange('seoTitle', e.target.value)}
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                className="input mt-1"
                                 placeholder="搜索结果显示标题（建议 25-60 字）"
                             />
                         </div>
                     </div>
 
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700">SEO 描述</label>
+                    <div className="admin-card">
+                        <label className="block text-sm font-medium text-surface-700">SEO 描述</label>
                         <textarea
                             rows={2}
                             value={note.seoDescription}
                             onChange={(e) => handleChange('seoDescription', e.target.value)}
-                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                            className="input mt-1 min-h-[96px]"
                             placeholder="搜索结果摘要（建议 70-160 字）"
                         />
                     </div>
 
-                    <div>
+                    <div className="admin-card">
                         <div className="flex justify-between items-center mb-2">
-                            <label className="block text-sm font-medium text-gray-700">正文 (Markdown)</label>
+                            <label className="block text-sm font-medium text-surface-700">正文 (Markdown)</label>
                             <div className="space-x-2">
-                                <button type="button" onClick={() => insertText('**粗体**')} className="px-2 py-1 text-xs border rounded hover:bg-gray-50">B</button>
-                                <button type="button" onClick={() => insertText('*斜体*')} className="px-2 py-1 text-xs border rounded hover:bg-gray-50">I</button>
-                                <button type="button" onClick={() => insertText('[链接](url)')} className="px-2 py-1 text-xs border rounded hover:bg-gray-50">Link</button>
-                                <label className="px-2 py-1 text-xs border rounded hover:bg-gray-50 cursor-pointer inline-block">
+                                <button type="button" onClick={() => insertText('**粗体**')} className="btn btn-text !px-2 !py-1 text-xs">B</button>
+                                <button type="button" onClick={() => insertText('*斜体*')} className="btn btn-text !px-2 !py-1 text-xs">I</button>
+                                <button type="button" onClick={() => insertText('[链接](url)')} className="btn btn-text !px-2 !py-1 text-xs">Link</button>
+                                <label className="btn btn-text !px-2 !py-1 text-xs cursor-pointer inline-flex">
                                     Image
                                     <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} />
                                 </label>
@@ -505,29 +505,29 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                             rows={20}
                             value={note.content}
                             onChange={(e) => handleChange('content', e.target.value)}
-                            className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm font-mono"
+                            className="input min-h-[520px] font-mono"
                             placeholder="# Hello World"
                         />
                     </div>
                 </div>
 
                 <div className="space-y-6">
-                    <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-4">发布设置</h3>
+                    <div className="admin-card">
+                        <h3 className="section-title mb-4">发布设置</h3>
 
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">生命周期状态</label>
+                                <label className="block text-sm font-medium text-surface-700">生命周期状态</label>
                                 <select
                                     value={note.lifecycleStatus}
                                     onChange={(e) => handleChange('lifecycleStatus', e.target.value as LifecycleStatus)}
-                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
+                                    className="select mt-1 w-full"
                                 >
                                     <option value="draft">草稿（不公开）</option>
                                     <option value="review">待审核（不公开）</option>
                                     <option value="published">已发布（公开）</option>
                                 </select>
-                                <div className="mt-1 text-xs text-gray-500">
+                                <div className="mt-1 text-xs text-surface-500">
                                     {note.lifecycleStatus === 'published'
                                         ? '该文章会在前台公开显示。'
                                         : '该文章仅在后台可见。'}
@@ -535,11 +535,11 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">语言</label>
+                                <label className="block text-sm font-medium text-surface-700">语言</label>
                                 <select
                                     value={note.lang}
                                     onChange={(e) => handleChange('lang', e.target.value as 'zh' | 'ja')}
-                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
+                                    className="select mt-1 w-full"
                                 >
                                     <option value="zh">中文</option>
                                     <option value="ja">日语</option>
@@ -547,11 +547,11 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">分类</label>
+                                <label className="block text-sm font-medium text-surface-700">分类</label>
                                 <select
                                     value={note.category}
                                     onChange={(e) => handleChange('category', e.target.value)}
-                                    className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm rounded-md"
+                                    className="select mt-1 w-full"
                                 >
                                     <option value="">未分类</option>
                                     <option value="AI">AI</option>
@@ -561,20 +561,20 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700">标签 (逗号分隔)</label>
+                                <label className="block text-sm font-medium text-surface-700">标签 (逗号分隔)</label>
                                 <input
                                     type="text"
                                     value={note.tags.join(', ')}
                                     onChange={handleTagsChange}
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                    className="input mt-1"
                                     placeholder="nextjs, supabase, blog"
                                 />
                             </div>
                         </div>
                     </div>
 
-                    <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-3">服务健康检查</h3>
+                    <div className="admin-card">
+                        <h3 className="section-title mb-3">服务健康检查</h3>
                         <div className="flex items-center justify-between mb-3">
                             <p className={`text-sm ${health?.ok ? 'text-emerald-700' : 'text-amber-700'}`}>
                                 {healthLoading ? '检查中...' : health?.message || '尚未检查'}
@@ -583,33 +583,33 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                                 type="button"
                                 onClick={fetchHealth}
                                 disabled={healthLoading}
-                                className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50"
+                                className="btn btn-text !px-2 !py-1 text-xs disabled:opacity-50"
                             >
                                 重新检查
                             </button>
                         </div>
                         <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div className="rounded border px-2 py-1">
+                            <div className="rounded-google border border-surface-200 px-2 py-1">
                                 配置: {health?.checks?.config ? 'OK' : 'FAIL'}
                             </div>
-                            <div className="rounded border px-2 py-1">
+                            <div className="rounded-google border border-surface-200 px-2 py-1">
                                 数据库: {health?.checks?.database ? 'OK' : 'FAIL'}
                             </div>
-                            <div className="rounded border px-2 py-1">
+                            <div className="rounded-google border border-surface-200 px-2 py-1">
                                 存储: {health?.checks?.storage ? 'OK' : 'FAIL'}
                             </div>
-                            <div className="rounded border px-2 py-1">
+                            <div className="rounded-google border border-surface-200 px-2 py-1">
                                 表结构: {health?.checks?.schema ? 'OK' : 'FAIL'}
                             </div>
                         </div>
                         {health?.requestId && (
-                            <p className="mt-2 text-[11px] text-gray-500">请求ID: {health.requestId}</p>
+                            <p className="mt-2 text-[11px] text-surface-500">请求ID: {health.requestId}</p>
                         )}
                     </div>
 
-                    <div className="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6">
-                        <h3 className="text-lg leading-6 font-medium text-gray-900 mb-3">发布检查清单</h3>
-                        <p className="text-xs text-gray-500 mb-3">
+                    <div className="admin-card">
+                        <h3 className="section-title mb-3">发布检查清单</h3>
+                        <p className="text-xs text-surface-500 mb-3">
                             {`完成 ${checklistPassed}/${publishChecklist.length} 项`}
                         </p>
                         <ul className="space-y-2">
@@ -630,6 +630,6 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                     </div>
                 </div>
             </div>
-        </div>
+        </AdminShell>
     );
 }

@@ -90,6 +90,7 @@ export default async function ProductDetailPage({ params }: Props) {
                         <ProductDetailClient
                             slug={slug}
                             title={product.frontmatter.title}
+                            price={product.frontmatter.price}
                             purchaseUrl={product.frontmatter.purchaseUrl}
                             locale={locale}
                         />
@@ -108,6 +109,7 @@ export default async function ProductDetailPage({ params }: Props) {
                     <ProductDetailClient
                         slug={slug}
                         title={product.frontmatter.title}
+                        price={product.frontmatter.price}
                         purchaseUrl={product.frontmatter.purchaseUrl}
                         locale={locale}
                         large
