@@ -42,11 +42,12 @@
 - `/admin/dashboard` 正常打开
 - `/admin/products` 可查看列表
 - `/{locale}/products/{slug}` 可正常展示
-- 点击付款会弹出收款码
-- `/contact` 页面可显示微信 / 支付宝二维码
+- 点击购买会跳转到联系引导页
+- `/contact` 页面可展示联系信息
 
 ## 5. 当前版本重点
 
-- 当前支付方式是手动收款码，不依赖官方支付商户配置
+- 当前对外流程是不公开站内支付，先引导用户联系站长
+- 官方支付代码仍保留，但默认不启用
 - 当前笔记主链路来自 Supabase，不依赖 Obsidian / Notion 同步
 - 当前文档以本清单和 `current-architecture.md` 为准

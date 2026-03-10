@@ -106,7 +106,7 @@ export async function GET(request: NextRequest) {
         storage,
         schema,
       },
-      paymentMode: officialPaymentsEnabled ? 'official' : 'manual',
+      paymentMode: officialPaymentsEnabled ? 'official' : 'contact',
       details,
     },
     { status: ok ? 200 : 500 }

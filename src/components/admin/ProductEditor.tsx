@@ -322,7 +322,7 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
               <div>
                 <label className="block text-sm font-medium text-surface-700">支付方式</label>
                 <p className="mt-2 text-xs text-surface-500">
-                  当前线上版本固定展示微信与支付宝收款码。这里的支付方式配置会继续保留在产品数据中，作为二期官方支付接入时的预留字段。
+                  当前线上版本会先引导用户联系站长，不公开展示支付入口。这里的支付方式配置会继续保留在产品数据中，作为二期官方支付接入时的预留字段。
                 </p>
                 <div className="mt-2 space-y-2">
                   {PAYMENT_OPTIONS.map((option) => (
@@ -348,7 +348,7 @@ export default function ProductEditor({ initialProduct, isNew = false }: Product
                   placeholder="未来用于自动交付的下载或跳转链接"
                 />
                 <p className="mt-2 text-xs text-surface-500">
-                  当前阶段仍以手动确认付款和人工交付为主，这个字段先作为二期自动交付的预留配置。
+                  当前阶段会先通过社交渠道或邮件确认需求，这个字段继续作为二期自动交付与正式交易链路的预留配置。
                 </p>
               </div>
             </div>

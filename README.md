@@ -1,17 +1,17 @@
 # Personal Site
 
-当前版本的项目定位是一个基于 `Next.js + Supabase + MDX` 的个人博客与数字产品站点。
+当前版本是一个基于 `Next.js + Supabase + MDX` 的个人博客与数字产品站点。
 
 ## 当前架构
 
-- 笔记内容：`Supabase posts` 表
+- 笔记内容：`Supabase posts`
 - 产品内容：`Supabase products` 优先，`content/products` 作为兜底
 - 资源 / Playbooks / Cases：本地 `content/*` 下的 MDX
 - 后台管理：`/admin`
-- 当前支付：手动收款码 + 人工确认
-- 二期支付：官方微信 / 支付宝直连，默认关闭
+- 当前对外流程：产品页点击购买后，跳转到联系站长的引导页
+- 二期支付预留：官方微信 / 支付宝直连逻辑仍保留，但默认关闭
 
-更详细的当前状态见 [current-architecture.md](E:/个人博客/personal-site/docs/current-architecture.md)。
+详细说明见 [docs/current-architecture.md](./docs/current-architecture.md)。
 
 ## 开发命令
 
@@ -46,7 +46,7 @@ NEXT_PUBLIC_ENABLE_ADSENSE=false
 
 ## 二期官方支付预留
 
-当前线上版本默认使用手动收款码。如果未来恢复官方直连支付，再补充以下变量并开启：
+当前线上版本默认不公开支付入口。如果未来恢复官方直连支付，再补齐以下变量并开启：
 
 ```env
 ENABLE_OFFICIAL_PAYMENTS=true
@@ -71,11 +71,11 @@ ALIPAY_NOTIFY_URL=
 - 先应用 Supabase migration
 - 再配置环境变量
 - 确认 `/admin/products`、`/admin/dashboard`、`/[locale]/products/[slug]` 可正常访问
-- 当前支付路径以产品详情页弹出的收款码为准
+- 当前前台购买路径以“联系站长引导页”为准
 
 ## 项目文档
 
-- [current-architecture.md](E:/个人博客/personal-site/docs/current-architecture.md)
-- [admin-guide.md](E:/个人博客/personal-site/docs/admin-guide.md)
-- [deployment-checklist.md](E:/个人博客/personal-site/docs/deployment-checklist.md)
-- [product-payments-setup.md](E:/个人博客/personal-site/docs/product-payments-setup.md)
+- [docs/current-architecture.md](./docs/current-architecture.md)
+- [docs/admin-guide.md](./docs/admin-guide.md)
+- [docs/deployment-checklist.md](./docs/deployment-checklist.md)
+- [docs/product-payments-setup.md](./docs/product-payments-setup.md)

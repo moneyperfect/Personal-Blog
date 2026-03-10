@@ -1,44 +1,39 @@
+import ContactGuidePanel from '@/components/contact/ContactGuidePanel';
 import { setRequestLocale } from 'next-intl/server';
-import Image from 'next/image';
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props) {
   const { locale } = await params;
-  return { title: locale === 'zh' ? '联系我们' : 'お問い合わせ' };
+  return { title: locale === 'zh' ? '联系我' : 'お問い合わせ' };
 }
 
 export default async function ContactPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
-  const content = locale === 'zh'
-    ? {
-        title: '联系我们',
-        description: '有项目合作、产品问题或付款确认需求时，欢迎随时联系我。',
-        email: '邮箱',
-        emailValue: 'lingxicto@gmail.com',
-        response: '通常会在 24 小时内回复。',
-        wechat: '微信',
-        wechatId: 'Different709world',
-        qq: 'QQ',
-        qqId: '2720838758',
-        payment: '临时支付方式',
-        paymentHint: '当前阶段使用静态收款码，付款后请联系我并附上付款截图与产品名称。',
-      }
-    : {
-        title: 'お問い合わせ',
-        description: 'プロジェクト相談、商品に関する質問、または支払い確認が必要な場合は、お気軽にご連絡ください。',
-        email: 'Email',
-        emailValue: 'lingxicto@gmail.com',
-        response: 'Usually I reply within 24 hours.',
-        wechat: 'WeChat',
-        wechatId: 'Different709world',
-        qq: 'QQ',
-        qqId: '2720838758',
-        payment: 'Temporary payment method',
-        paymentHint: 'This stage uses static collection QR codes. After payment, please contact me with the screenshot and product name.',
-      };
+  const content =
+    locale === 'zh'
+      ? {
+          title: '联系我',
+          description:
+            '如果你对产品、博客内容、AI 自动化或合作感兴趣，欢迎先加我微信、QQ 或直接发邮件。我会在看到消息后尽快回复。',
+          areasTitle: '你可以找我聊什么',
+          areas: ['产品购买咨询', 'AI 自动化与独立开发', '内容合作与交流'],
+          responseTitle: '回复方式',
+          responseBody:
+            '当前站点不公开站内支付。涉及购买、合作或进一步沟通时，我会先通过社交渠道或邮件和你确认具体情况。',
+        }
+      : {
+          title: 'お問い合わせ',
+          description:
+            '商品、ブログ、AI 自動化、コラボレーションに興味があれば、まずは WeChat・QQ・メールでご連絡ください。確認後できるだけ早く返信します。',
+          areasTitle: 'ご相談いただける内容',
+          areas: ['商品購入の相談', 'AI 自動化と個人開発', 'コンテンツやコラボの相談'],
+          responseTitle: '対応について',
+          responseBody:
+            '現在のサイトではサイト内決済を公開していません。購入やコラボの相談は、まず連絡先経由で内容を確認したうえで進めます。',
+        };
 
   return (
     <div className="page-shell">
@@ -49,58 +44,28 @@ export default async function ContactPage({ params }: Props) {
         </div>
 
         <div className="grid gap-6">
-          <div className="card p-6 sm:p-8 text-center">
-            <p className="text-surface-600 mb-2">{content.email}</p>
-            <a
-              href={`mailto:${content.emailValue}`}
-              className="text-2xl font-semibold text-primary-600 hover:underline break-all"
-            >
-              {content.emailValue}
-            </a>
-            <p className="text-sm text-surface-500 mt-4">{content.response}</p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="card p-6 text-center">
-              <p className="text-surface-600 mb-2">{content.wechat}</p>
-              <p className="text-lg font-semibold text-surface-900">{content.wechatId}</p>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="card p-6 sm:p-7">
+              <h2 className="section-title">{content.areasTitle}</h2>
+              <ul className="mt-4 space-y-3 text-sm text-surface-700">
+                {content.areas.map((item) => (
+                  <li key={item} className="flex items-start gap-3">
+                    <span className="mt-1 inline-flex h-2.5 w-2.5 rounded-full bg-primary-500" />
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <div className="card p-6 text-center">
-              <p className="text-surface-600 mb-2">{content.qq}</p>
-              <p className="text-lg font-semibold text-surface-900">{content.qqId}</p>
+
+            <div className="card p-6 sm:p-7">
+              <h2 className="section-title">{content.responseTitle}</h2>
+              <p className="mt-4 text-sm leading-7 text-surface-700">{content.responseBody}</p>
             </div>
           </div>
 
-          <div className="card p-6 sm:p-8">
-            <div className="section-header mb-3">
-              <h2 className="section-title">{content.payment}</h2>
-            </div>
-            <p className="section-description mb-6">{content.paymentHint}</p>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="rounded-[28px] border border-emerald-100 bg-emerald-50/70 p-4 sm:p-5 text-center">
-                <Image
-                  src="/payments/wechat-qr.jpg"
-                  alt="WeChat Pay"
-                  width={260}
-                  height={360}
-                  className="mx-auto rounded-google-lg border border-white/80 bg-white"
-                />
-                <p className="text-sm text-surface-500 mt-3">微信支付 / WeChat Pay</p>
-              </div>
-
-              <div className="rounded-[28px] border border-sky-100 bg-sky-50/70 p-4 sm:p-5 text-center">
-                <Image
-                  src="/payments/alipay-qr.jpg"
-                  alt="Alipay"
-                  width={260}
-                  height={360}
-                  className="mx-auto rounded-google-lg border border-white/80 bg-white"
-                />
-                <p className="text-sm text-surface-500 mt-3">支付宝 / Alipay</p>
-              </div>
-            </div>
-          </div>
+          <section id="connect">
+            <ContactGuidePanel locale={locale} />
+          </section>
         </div>
       </div>
     </div>

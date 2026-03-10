@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
         {
           ok: false,
           code: 'OFFICIAL_PAYMENTS_DISABLED',
-          error: '当前站点使用人工确认收款码方案，官方直连支付入口暂未启用。',
+            error: '当前站点暂不公开站内支付入口，官方直连支付逻辑已保留但未启用。',
         },
         { status: 410 }
       );
