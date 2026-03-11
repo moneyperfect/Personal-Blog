@@ -1,13 +1,14 @@
-﻿'use client';
+'use client';
 
 import { useDeferredValue, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminShell from '@/components/admin/AdminShell';
+import SidebarCard from '@/components/admin/SidebarCard';
 import MarkdownRenderer from '@/components/notes/MarkdownRenderer';
 
-type LifecycleStatus = 'draft' | 'review' | 'published';
+export type LifecycleStatus = 'draft' | 'review' | 'published';
 
-interface Note {
+export interface Note {
     id?: string;
     title: string;
     slug: string;
@@ -122,6 +123,7 @@ function getDraftStorageKey(isNew: boolean, initialNote?: Note) {
 export default function Editor({ initialNote, isNew = false }: EditorProps) {
     const router = useRouter();
     const [note, setNote] = useState<Note>(normalizeNote(initialNote));
+    const [originalNote, setOriginalNote] = useState<Note>(normalizeNote(initialNote));
     const [saving, setSaving] = useState(false);
     const [notice, setNotice] = useState<{ type: NoticeType; text: string } | null>(null);
     const [draftSavedAt, setDraftSavedAt] = useState<number | null>(null);
@@ -129,6 +131,7 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
     const [health, setHealth] = useState<HealthState | null>(null);
     const [healthLoading, setHealthLoading] = useState(false);
     const [viewMode, setViewMode] = useState<EditorViewMode>('split');
+    const [isFocusMode, setIsFocusMode] = useState(false);
     const [uploading, setUploading] = useState(false);
     const [isDraggingFiles, setIsDraggingFiles] = useState(false);
     const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -510,8 +513,23 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
         <AdminShell
             title={isNew ? '新建笔记' : '编辑笔记'}
             description="把写作、排版、预览和发布检查整合到同一个工作台，减少来回切页。"
+            hideSidebar={isFocusMode}
             actions={(
-                <>
+                <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={() => setIsFocusMode(!isFocusMode)}
+                        className={`btn ${isFocusMode ? 'btn-tonal text-indigo-700 bg-indigo-50 border-indigo-200' : 'btn-text'} flex items-center gap-1.5`}
+                    >
+                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            {isFocusMode ? (
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                            ) : (
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3" />
+                            )}
+                        </svg>
+                        {isFocusMode ? '退出专注' : '专注模式'}
+                    </button>
                     <button type="button" onClick={() => router.back()} className="btn btn-tonal">
                         返回
                     </button>
@@ -523,7 +541,7 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                     >
                         {saving ? '保存中...' : note.lifecycleStatus === 'published' ? '保存并发布' : '保存'}
                     </button>
-                </>
+                </div>
             )}
         >
             <input
@@ -620,175 +638,43 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                 </div>
             )}
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="admin-card space-y-5">
-                        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
-                            <div>
-                                <label className="block text-sm font-medium text-surface-700">标题</label>
-                                <input
-                                    type="text"
-                                    value={note.title}
-                                    onChange={(event) => handleChange('title', event.target.value)}
-                                    className="mt-2 admin-input text-base"
-                                    placeholder="输入一个让人愿意点开的标题"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-surface-700">分类</label>
-                                <select
-                                    value={note.category}
-                                    onChange={(event) => handleChange('category', event.target.value)}
-                                    className="mt-2 admin-select"
-                                >
-                                    <option value="">未分类</option>
-                                    {CATEGORY_OPTIONS.map((category) => (
-                                        <option key={category} value={category}>
-                                            {category}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px]">
-                            <div>
-                                <label className="block text-sm font-medium text-surface-700">URL Slug</label>
-                                <div className="mt-2 flex overflow-hidden rounded-google border border-surface-300 bg-white">
-                                    <span className="inline-flex items-center border-r border-surface-200 bg-surface-50 px-3 text-sm text-surface-500">
-                                        /notes/
-                                    </span>
-                                    <input
-                                        type="text"
-                                        value={note.slug}
-                                        onChange={(event) => handleChange('slug', event.target.value)}
-                                        disabled={!isNew}
-                                        className={`min-w-0 flex-1 px-4 py-3 text-sm text-surface-900 focus:outline-none ${!isNew ? 'bg-surface-100 text-surface-500' : ''}`}
-                                        placeholder="ai-writing-system"
-                                    />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-surface-700">语言</label>
-                                <select
-                                    value={note.lang}
-                                    onChange={(event) => handleChange('lang', event.target.value as 'zh' | 'ja')}
-                                    className="mt-2 admin-select"
-                                >
-                                    <option value="zh">中文</option>
-                                    <option value="ja">日语</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-surface-700">摘要</label>
-                            <textarea
-                                rows={4}
-                                value={note.excerpt}
-                                onChange={(event) => handleChange('excerpt', event.target.value)}
-                                className="mt-2 admin-textarea min-h-[132px]"
-                                placeholder="用 2 到 3 句话说明这篇笔记的核心价值。"
-                            />
-                        </div>
-                    </div>
-
-                    <div className="admin-card space-y-4">
-                        <div className="flex items-start justify-between gap-3">
-                            <div>
-                                <h3 className="section-title">封面与 SEO</h3>
-                                <p className="mt-1 text-sm text-surface-500">兼顾搜索结果展示和页面第一印象。</p>
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => coverUploadInputRef.current?.click()}
-                                className="btn btn-text !px-2 !py-1 text-xs"
-                            >
-                                上传封面
-                            </button>
-                        </div>
-
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                            <div>
-                                <label className="block text-sm font-medium text-surface-700">封面图 URL</label>
-                                <input
-                                    type="text"
-                                    value={note.coverImage}
-                                    onChange={(event) => handleChange('coverImage', event.target.value)}
-                                    className="mt-2 admin-input"
-                                    placeholder="https://..."
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-surface-700">SEO 标题</label>
-                                <input
-                                    type="text"
-                                    value={note.seoTitle}
-                                    onChange={(event) => handleChange('seoTitle', event.target.value)}
-                                    className="mt-2 admin-input"
-                                    placeholder="搜索结果显示标题（建议 25-60 字）"
-                                />
-                            </div>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-surface-700">SEO 描述</label>
-                            <textarea
-                                rows={3}
-                                value={note.seoDescription}
-                                onChange={(event) => handleChange('seoDescription', event.target.value)}
-                                className="mt-2 admin-textarea"
-                                placeholder="搜索结果摘要（建议 70-160 字）"
-                            />
-                        </div>
-
-                        {note.coverImage && (
-                            <div className="overflow-hidden rounded-google-lg border border-surface-200 bg-surface-50">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={note.coverImage}
-                                    alt={note.title || '封面预览'}
-                                    className="h-44 w-full object-cover"
-                                />
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="admin-card overflow-hidden p-0">
-                        <div className="border-b border-surface-200 px-5 py-4 sm:px-6">
-                            <div className="flex flex-wrap items-start justify-between gap-4">
-                                <div>
-                                    <h3 className="text-lg font-semibold text-surface-900">Markdown 工作台</h3>
-                                    <p className="mt-1 text-sm text-surface-500">
-                                        支持表格、任务列表、引用、代码块，以及图片与附件的快捷插入。
-                                    </p>
+            <div className={`grid grid-cols-1 ${isFocusMode ? 'xl:grid-cols-1' : 'xl:grid-cols-4'} gap-8 transition-all duration-500 ease-in-out`}>
+                {/* 左侧主栏 - 沉浸式写作区 */}
+                <div className={`${isFocusMode ? 'xl:col-span-1 max-w-6xl mx-auto w-full' : 'xl:col-span-3'} space-y-6 transition-all duration-500`}>
+                    <div className="admin-card overflow-hidden p-0 shadow-sm border border-surface-200 flex flex-col min-h-[800px]">
+                        {/* 顶部工具栏 */}
+                        <div className="border-b border-surface-200 px-5 py-4 sm:px-8 bg-surface-50/50">
+                            <div className="flex flex-wrap items-center justify-between gap-4">
+                                <div className="flex items-center gap-3 text-sm font-medium text-surface-700">
+                                    <div className="h-5 w-1.5 rounded-full bg-primary-500"></div>
+                                    Markdown 工作台
                                 </div>
                                 <div className="flex flex-wrap gap-2">
                                     <button
                                         type="button"
                                         onClick={() => wrapSelection('**', '**', '加粗内容')}
-                                        className="btn btn-text !px-3 !py-2 text-xs"
+                                        className="btn btn-text !px-3 !py-1.5 text-xs text-surface-600 hover:text-surface-900"
                                     >
                                         加粗
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => wrapSelection('*', '*', '强调内容')}
-                                        className="btn btn-text !px-3 !py-2 text-xs"
+                                        className="btn btn-text !px-3 !py-1.5 text-xs text-surface-600 hover:text-surface-900"
                                     >
                                         斜体
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => wrapSelection('[', '](https://example.com)', '链接标题')}
-                                        className="btn btn-text !px-3 !py-2 text-xs"
+                                        className="btn btn-text !px-3 !py-1.5 text-xs text-surface-600 hover:text-surface-900"
                                     >
                                         链接
                                     </button>
                                     <button
                                         type="button"
                                         onClick={() => uploadInputRef.current?.click()}
-                                        className="btn btn-tonal !px-3 !py-2 text-xs"
+                                        className="btn btn-tonal !px-3 !py-1.5 text-xs"
                                     >
                                         上传素材
                                     </button>
@@ -801,7 +687,7 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                                         key={item.label}
                                         type="button"
                                         onClick={() => insertText(item.value)}
-                                        className="chip hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700"
+                                        className="chip !py-1 hover:border-primary-200 hover:bg-primary-50 hover:text-primary-700"
                                     >
                                         {item.label}
                                     </button>
@@ -809,46 +695,62 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                             </div>
                         </div>
 
+                        {/* 大标题输入区 */}
+                        <div className="border-b border-surface-100 bg-white px-5 py-6 sm:px-8">
+                            <input
+                                type="text"
+                                value={note.title}
+                                onChange={(event) => handleChange('title', event.target.value)}
+                                className="w-full border-0 bg-transparent text-3xl md:text-4xl font-bold tracking-tight text-surface-900 placeholder:text-surface-300 focus:outline-none focus:ring-0"
+                                placeholder="输入引人入胜的文章标题..."
+                            />
+                        </div>
+
+                        {/* 编辑与预览区 (支持拖拽上传) */}
                         <div
-                            className={`relative ${showEditorPane && showPreviewPane ? 'grid xl:grid-cols-2' : ''}`}
+                            className={`relative flex-1 ${showEditorPane && showPreviewPane ? 'grid xl:grid-cols-2' : ''}`}
                             onDrop={handleEditorDrop}
                             onDragOver={handleEditorDragOver}
                             onDragLeave={handleEditorDragLeave}
                         >
                             {isDraggingFiles && (
-                                <div className="pointer-events-none absolute inset-4 z-10 rounded-[28px] border-2 border-dashed border-primary-300 bg-primary-50/85" />
+                                <div className="pointer-events-none absolute inset-4 z-10 rounded-[28px] border-2 border-dashed border-primary-300 bg-primary-50/85 flex items-center justify-center">
+                                    <span className="text-lg font-medium text-primary-700">松开鼠标上传图片/附件</span>
+                                </div>
                             )}
 
                             {showEditorPane && (
-                                <div className="border-b border-surface-200 bg-white xl:border-b-0 xl:border-r">
-                                    <div className="flex items-center justify-between border-b border-surface-100 px-5 py-3 text-sm text-surface-500 sm:px-6">
-                                        <span>写作区</span>
-                                        <span>{uploading ? '上传中...' : '支持拖拽 / 粘贴图片'}</span>
-                                    </div>
+                                <div className="bg-white xl:border-r border-surface-200">
+                                    {showEditorPane && showPreviewPane && (
+                                        <div className="flex items-center justify-between border-b border-surface-100 px-5 py-2 text-xs text-surface-400 bg-surface-50/50 sm:px-8">
+                                            <span>Markdown 编辑区</span>
+                                            <span>支持拖拽粘贴图片</span>
+                                        </div>
+                                    )}
                                     <textarea
                                         ref={textareaRef}
-                                        rows={22}
                                         value={note.content}
                                         onChange={(event) => handleChange('content', event.target.value)}
                                         onPaste={handleEditorPaste}
-                                        className="min-h-[620px] w-full resize-none border-0 bg-transparent px-5 py-5 font-mono text-[15px] leading-7 text-surface-900 outline-none sm:px-6"
-                                        placeholder={'# 从这里开始写作\n\n你可以直接粘贴 Markdown、拖拽图片，或插入表格与任务列表。'}
+                                        className="h-full min-h-[600px] w-full resize-none border-0 bg-transparent px-5 py-6 font-mono text-[15px] leading-8 text-surface-800 outline-none sm:px-8 focus:ring-0"
+                                        placeholder={'从这里开始写作...\n\n支持 Markdown 语法、表格、代码块。\n您可以直接粘贴截图或拖拽图片到这里上传。'}
                                     />
                                 </div>
                             )}
 
                             {showPreviewPane && (
-                                <div className="bg-surface-50/70">
-                                    <div className="flex items-center justify-between border-b border-surface-100 px-5 py-3 text-sm text-surface-500 sm:px-6">
-                                        <span>实时预览</span>
-                                        <span>和前台笔记页共用同一套渲染器</span>
-                                    </div>
-                                    <div className="min-h-[620px] px-5 py-5 sm:px-6">
+                                <div className="bg-surface-50/30">
+                                    {showEditorPane && showPreviewPane && (
+                                        <div className="flex items-center justify-between border-b border-surface-100 px-5 py-2 text-xs text-surface-400 bg-surface-50/50 sm:px-8">
+                                            <span>实时预览</span>
+                                        </div>
+                                    )}
+                                    <div className="h-full min-h-[600px] px-5 py-6 sm:px-8">
                                         {deferredContent.trim() ? (
                                             <MarkdownRenderer content={deferredContent} />
                                         ) : (
-                                            <div className="flex h-full min-h-[540px] items-center justify-center rounded-[24px] border border-dashed border-surface-300 bg-white/80 px-6 text-center text-sm leading-7 text-surface-500">
-                                                这里会显示实时排版效果。先写下标题、段落、表格或拖一张图进来看看。
+                                            <div className="flex h-full min-h-[300px] items-center justify-center rounded-[24px] border border-dashed border-surface-200 bg-surface-50/50 px-6 text-center text-sm leading-7 text-surface-400">
+                                                实时预览区
                                             </div>
                                         )}
                                     </div>
@@ -858,112 +760,195 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                     </div>
                 </div>
 
-                <div className="space-y-6">
-                    <div className="admin-card space-y-4">
-                        <div className="flex items-start justify-between gap-3">
-                            <div>
-                                <h3 className="section-title">发布设置</h3>
-                                <p className="mt-1 text-sm text-surface-500">先整理信息，再决定是草稿、待审核还是公开发布。</p>
+                {/* 右侧边栏 - 属性与设置 */}
+                <div className={`space-y-6 xl:col-span-1 transition-all duration-500 ${isFocusMode ? 'opacity-0 hidden' : 'opacity-100'}`}>
+                    {/* 卡片 1：基础设置 */}
+                    <SidebarCard title="基本信息" defaultExpanded={true}>
+                        <div>
+                            <label className="block text-xs font-medium text-surface-600 mb-1.5">URL Slug</label>
+                            <div className="flex overflow-hidden rounded-md border border-surface-300 bg-white">
+                                <span className="inline-flex items-center border-r border-surface-200 bg-surface-50 px-2 text-xs text-surface-500">
+                                    /notes/
+                                </span>
+                                <input
+                                    type="text"
+                                    value={note.slug}
+                                    onChange={(event) => handleChange('slug', event.target.value)}
+                                    disabled={!isNew}
+                                    className={`min-w-0 flex-1 px-3 py-1.5 text-xs text-surface-900 focus:outline-none ${!isNew ? 'bg-surface-100 text-surface-500' : ''}`}
+                                    placeholder="your-slug"
+                                />
                             </div>
-                            <span className={`admin-badge ${note.lifecycleStatus === 'published' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : ''}`}>
-                                {note.lifecycleStatus === 'published' ? '公开中' : note.lifecycleStatus === 'review' ? '待审核' : '草稿'}
-                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-3">
+                            <div>
+                                <label className="block text-xs font-medium text-surface-600 mb-1.5">分类</label>
+                                <select
+                                    value={note.category}
+                                    onChange={(event) => handleChange('category', event.target.value)}
+                                    className="admin-select !py-1.5 !text-xs !rounded-md"
+                                >
+                                    <option value="">未分类</option>
+                                    {CATEGORY_OPTIONS.map((category) => (
+                                        <option key={category} value={category}>{category}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-xs font-medium text-surface-600 mb-1.5">语言</label>
+                                <select
+                                    value={note.lang}
+                                    onChange={(event) => handleChange('lang', event.target.value as 'zh' | 'ja')}
+                                    className="admin-select !py-1.5 !text-xs !rounded-md"
+                                >
+                                    <option value="zh">中文</option>
+                                    <option value="ja">日语</option>
+                                </select>
+                            </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-surface-700">生命周期状态</label>
+                            <label className="block text-xs font-medium text-surface-600 mb-1.5">核心摘要</label>
+                            <textarea
+                                rows={4}
+                                value={note.excerpt}
+                                onChange={(event) => handleChange('excerpt', event.target.value)}
+                                className="admin-textarea !text-xs !rounded-md !p-3"
+                                placeholder="输入几句话概括笔记核心..."
+                            />
+                        </div>
+                    </SidebarCard>
+
+                    {/* 卡片 2：发布与状态 */}
+                    <SidebarCard
+                        title="发布状态"
+                        defaultExpanded={true}
+                        extra={
+                            <span className={`admin-badge !py-0.5 !px-2 !text-[10px] ${note.lifecycleStatus === 'published' ? 'border-emerald-200 bg-emerald-50 text-emerald-700' : ''}`}>
+                                {note.lifecycleStatus === 'published' ? '公开' : note.lifecycleStatus === 'review' ? '待审' : '草稿'}
+                            </span>
+                        }
+                    >
+                        <div>
+                            <label className="block text-xs font-medium text-surface-600 mb-1.5">状态设定</label>
                             <select
                                 value={note.lifecycleStatus}
                                 onChange={(event) => handleChange('lifecycleStatus', event.target.value as LifecycleStatus)}
-                                className="mt-2 admin-select"
+                                className="admin-select !py-1.5 !text-xs !rounded-md"
                             >
-                                <option value="draft">草稿（不公开）</option>
-                                <option value="review">待审核（不公开）</option>
-                                <option value="published">已发布（公开）</option>
+                                <option value="draft">草稿（仅后台可见）</option>
+                                <option value="review">待审核（仅后台可见）</option>
+                                <option value="published">已发布（对外公开）</option>
                             </select>
-                            <div className="mt-2 text-xs leading-6 text-surface-500">
-                                {note.lifecycleStatus === 'published'
-                                    ? '该文章会在前台公开显示。'
-                                    : '该文章仅在后台可见。'}
-                            </div>
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-surface-700">标签</label>
+                            <label className="block text-xs font-medium text-surface-600 mb-1.5">标签 (逗号分隔)</label>
                             <input
                                 type="text"
                                 value={note.tags.join(', ')}
                                 onChange={handleTagsChange}
-                                className="mt-2 admin-input"
-                                placeholder="nextjs, supabase, prompt-engineering"
+                                className="admin-input !py-1.5 !text-xs !rounded-md"
+                                placeholder="如: AI, 效率"
                             />
-                            <p className="mt-2 text-xs leading-6 text-surface-500">
-                                多个标签用英文逗号分隔，方便前台筛选与相关推荐。
-                            </p>
                         </div>
-                    </div>
 
-                    <div className="admin-card space-y-4">
-                        <div className="flex items-start justify-between gap-3">
-                            <div>
-                                <h3 className="section-title">服务健康检查</h3>
-                                <p className="mt-1 text-sm text-surface-500">确认数据库与存储状态，避免保存或上传时出错。</p>
-                            </div>
+                        <div className="pt-2">
+                            <h4 className="text-[11px] font-semibold text-surface-500 mb-2 uppercase tracking-wider">发布清单 ({checklistPassed}/{publishChecklist.length})</h4>
+                            <ul className="space-y-1.5">
+                                {publishChecklist.map((item) => (
+                                    <li key={item.label} className="flex items-center justify-between text-[11px]">
+                                        <span className={item.ok ? 'text-emerald-700' : 'text-surface-500'}>{item.label}</span>
+                                        <span className={item.ok ? 'text-emerald-600' : 'text-surface-300'}>
+                                            {item.ok ? '✓' : '○'}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </SidebarCard>
+
+                    {/* 卡片 3：视觉与 SEO */}
+                    <SidebarCard
+                        title="视觉与 SEO"
+                        defaultExpanded={false}
+                        extra={
                             <button
                                 type="button"
-                                onClick={fetchHealth}
-                                disabled={healthLoading}
-                                className="btn btn-text !px-2 !py-1 text-xs disabled:opacity-50"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    coverUploadInputRef.current?.click();
+                                }}
+                                className="text-[11px] font-medium text-primary-600 hover:text-primary-800"
                             >
-                                重新检查
+                                上传图
                             </button>
-                        </div>
-                        <div className="flex items-center justify-between">
-                            <p className={`text-sm ${health?.ok ? 'text-emerald-700' : 'text-amber-700'}`}>
-                                {healthLoading ? '检查中...' : health?.message || '尚未检查'}
-                            </p>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
-                            <div className="rounded-google border border-surface-200 px-3 py-2">
-                                配置: {health?.checks?.config ? 'OK' : 'FAIL'}
-                            </div>
-                            <div className="rounded-google border border-surface-200 px-3 py-2">
-                                数据库: {health?.checks?.database ? 'OK' : 'FAIL'}
-                            </div>
-                            <div className="rounded-google border border-surface-200 px-3 py-2">
-                                存储: {health?.checks?.storage ? 'OK' : 'FAIL'}
-                            </div>
-                            <div className="rounded-google border border-surface-200 px-3 py-2">
-                                表结构: {health?.checks?.schema ? 'OK' : 'FAIL'}
-                            </div>
-                        </div>
-                        {health?.requestId && (
-                            <p className="mt-2 text-[11px] text-surface-500">请求ID: {health.requestId}</p>
-                        )}
-                    </div>
-
-                    <div className="admin-card space-y-4">
+                        }
+                    >
                         <div>
-                            <h3 className="section-title">发布检查清单</h3>
-                            <p className="mt-1 text-sm text-surface-500">
-                            {`完成 ${checklistPassed}/${publishChecklist.length} 项`}
-                            </p>
+                            <label className="block text-xs font-medium text-surface-600 mb-1.5">封面图片 URL</label>
+                            <input
+                                type="text"
+                                value={note.coverImage}
+                                onChange={(event) => handleChange('coverImage', event.target.value)}
+                                className="admin-input !py-1.5 !text-xs !rounded-md"
+                                placeholder="https://..."
+                            />
                         </div>
-                        <ul className="space-y-2">
-                            {publishChecklist.map((item) => (
-                                <li key={item.label} className="flex items-center justify-between rounded-google border border-surface-200 px-3 py-2 text-sm">
-                                    <span className={item.ok ? 'text-emerald-700' : 'text-surface-600'}>
-                                        {item.label}
-                                    </span>
-                                    <span className={item.ok ? 'text-emerald-600' : 'text-surface-400'}>
-                                        {item.ok ? '已完成' : '待完成'}
-                                    </span>
-                                </li>
-                            ))}
-                        </ul>
-                        {publishChecklistHint && (
-                            <p className="rounded-google border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">{publishChecklistHint}</p>
+
+                        {note.coverImage && (
+                            <div className="overflow-hidden rounded-md border border-surface-200 bg-surface-50">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img
+                                    src={note.coverImage}
+                                    alt="Cover"
+                                    className="h-28 w-full object-cover"
+                                />
+                            </div>
                         )}
+
+                        <div>
+                            <label className="block text-xs font-medium text-surface-600 mb-1.5">SEO 标题</label>
+                            <input
+                                type="text"
+                                value={note.seoTitle}
+                                onChange={(event) => handleChange('seoTitle', event.target.value)}
+                                className="admin-input !py-1.5 !text-xs !rounded-md"
+                                placeholder="搜索引擎展示标题"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-medium text-surface-600 mb-1.5">SEO 描述</label>
+                            <textarea
+                                rows={3}
+                                value={note.seoDescription}
+                                onChange={(event) => handleChange('seoDescription', event.target.value)}
+                                className="admin-textarea !text-xs !rounded-md !p-3"
+                                placeholder="搜索引擎提要..."
+                            />
+                        </div>
+                    </SidebarCard>
+
+                    {/* 健康检查轻量化展示 */}
+                    <div className="rounded-xl border border-surface-200 bg-surface-50/50 p-4 shadow-sm flex items-center justify-between">
+                        <div className="text-xs">
+                            <span className="font-semibold text-surface-700">系统状态</span>
+                            <span className={`ml-2 ${health?.ok ? 'text-emerald-600' : 'text-amber-600'}`}>
+                                {healthLoading ? '检测中...' : health?.ok ? '正常通行' : '可能异常'}
+                            </span>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={fetchHealth}
+                            disabled={healthLoading}
+                            className="text-surface-400 hover:text-surface-700 disabled:opacity-50"
+                        >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                        </button>
                     </div>
                 </div>
             </div>
