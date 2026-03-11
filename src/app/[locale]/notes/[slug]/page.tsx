@@ -1,9 +1,8 @@
 ﻿import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import ReactMarkdown from 'react-markdown';
-import type { Components } from 'react-markdown';
 import Link from 'next/link';
+import MarkdownRenderer from '@/components/notes/MarkdownRenderer';
 import { getAllNotes, getAllSlugs, getNoteBySlug } from '@/lib/mdx';
 import { Locale } from '@/i18n/routing';
 import {
@@ -177,37 +176,6 @@ export default async function NoteDetailPage({ params }: Props) {
         { name: frontmatter.title, url: pageUrl },
     ]);
 
-    const markdownComponents: Components = {
-        h2: ({ node, className, ...props }) => {
-            const heading = tocHeadings.find(
-                (entry) => entry.level === 2 && entry.line === node?.position?.start.line
-            );
-            const fallbackId = `section-${node?.position?.start.line || 1}`;
-            const id = heading?.id || fallbackId;
-            return (
-                <h2
-                    id={id}
-                    className={['scroll-mt-24', className].filter(Boolean).join(' ')}
-                    {...props}
-                />
-            );
-        },
-        h3: ({ node, className, ...props }) => {
-            const heading = tocHeadings.find(
-                (entry) => entry.level === 3 && entry.line === node?.position?.start.line
-            );
-            const fallbackId = `section-${node?.position?.start.line || 1}`;
-            const id = heading?.id || fallbackId;
-            return (
-                <h3
-                    id={id}
-                    className={['scroll-mt-24', className].filter(Boolean).join(' ')}
-                    {...props}
-                />
-            );
-        },
-    };
-
     const readingLabel = locale === 'zh'
         ? `约 ${readingMinutes} 分钟阅读 · ${wordCount} 字`
         : `約 ${readingMinutes} 分で読めます · ${wordCount} words`;
@@ -250,9 +218,7 @@ export default async function NoteDetailPage({ params }: Props) {
 
                 <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_250px] lg:gap-8">
                     <div>
-                        <article className="prose max-w-none pb-8">
-                            <ReactMarkdown components={markdownComponents}>{content}</ReactMarkdown>
-                        </article>
+                        <MarkdownRenderer content={content} headings={tocHeadings} />
 
                         <section className="card p-6 sm:p-8 mb-8">
                             <h2 className="text-xl font-semibold text-surface-900 mb-2">
