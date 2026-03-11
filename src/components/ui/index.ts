@@ -4,3 +4,4 @@ export { DownloadButton } from './DownloadButton';
 export { Card } from './Card';
 export { Button, ButtonLink } from './Button';
 export { Chip, ChipButton } from './Chip';
+export { Reveal, StaggerGroup, staggerItem, StaggerItem } from './Reveal';

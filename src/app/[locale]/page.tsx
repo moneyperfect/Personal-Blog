@@ -3,6 +3,7 @@ import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import { ProductCard } from '@/components/cards';
 import { NewsletterSignup } from '@/components/forms';
+import { Reveal, StaggerGroup, StaggerItem } from '@/components/ui';
 import { getAllLibraryItems } from '@/lib/mdx';
 import { getAllProducts } from '@/lib/products';
 import { Locale } from '@/i18n/routing';
@@ -58,66 +59,74 @@ function HomeContent({
                     </div>
                 </header>
 
-                <section className="section">
-                    <div className="section-header">
-                        <h2 className="section-title">{t('featured.title')}</h2>
-                        <Link
-                            href={`/${locale}/products`}
-                            className="link text-sm font-medium"
-                        >
-                            {t('featured.viewAll')}
-                        </Link>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {products.map((product) => (
-                            <ProductCard
-                                key={product.slug}
-                                slug={product.slug}
-                                frontmatter={product.frontmatter}
-                            />
-                        ))}
-                    </div>
-                </section>
-
-                <section className="section">
-                    <div className="section-header">
-                        <h2 className="section-title">{t('resources.title')}</h2>
-                        <Link
-                            href={`/${locale}/library`}
-                            className="link text-sm font-medium"
-                        >
-                            {t('resources.viewAll')}
-                        </Link>
-                    </div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                        {resources.map((resource) => (
+                <Reveal direction="up" delay={0.1}>
+                    <section className="section">
+                        <div className="section-header">
+                            <h2 className="section-title">{t('featured.title')}</h2>
                             <Link
-                                key={resource.slug}
-                                href={`/${locale}/library/${resource.slug}`}
-                                className="card card-hover p-4"
+                                href={`/${locale}/products`}
+                                className="link text-sm font-medium"
                             >
-                                <h3 className="font-semibold text-surface-900 mb-1">
-                                    {resource.frontmatter.title}
-                                </h3>
-                                <p className="text-sm text-surface-600 line-clamp-2">
-                                    {resource.frontmatter.summary}
-                                </p>
+                                {t('featured.viewAll')}
                             </Link>
-                        ))}
-                    </div>
-                </section>
-
-                <section className="section pb-12 sm:pb-16">
-                    <div className="card p-6 sm:p-8">
-                        <div className="section-header mb-3">
-                            <h2 className="section-title">{t('newsletter.title')}</h2>
                         </div>
-                        <p className="section-description mb-4">
-                            {t('newsletter.description')}
-                        </p>
-                        <NewsletterSignup />
-                    </div>
-                </section>
+                        <StaggerGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            {products.map((product) => (
+                                <StaggerItem key={product.slug}>
+                                    <ProductCard
+                                        slug={product.slug}
+                                        frontmatter={product.frontmatter}
+                                    />
+                                </StaggerItem>
+                            ))}
+                        </StaggerGroup>
+                    </section>
+                </Reveal>
+
+                <Reveal direction="up" delay={0.1}>
+                    <section className="section">
+                        <div className="section-header">
+                            <h2 className="section-title">{t('resources.title')}</h2>
+                            <Link
+                                href={`/${locale}/library`}
+                                className="link text-sm font-medium"
+                            >
+                                {t('resources.viewAll')}
+                            </Link>
+                        </div>
+                        <StaggerGroup className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {resources.map((resource) => (
+                                <StaggerItem key={resource.slug}>
+                                    <Link
+                                        href={`/${locale}/library/${resource.slug}`}
+                                        className="card card-hover p-4 block h-full"
+                                    >
+                                        <h3 className="font-semibold text-surface-900 mb-1">
+                                            {resource.frontmatter.title}
+                                        </h3>
+                                        <p className="text-sm text-surface-600 line-clamp-2">
+                                            {resource.frontmatter.summary}
+                                        </p>
+                                    </Link>
+                                </StaggerItem>
+                            ))}
+                        </StaggerGroup>
+                    </section>
+                </Reveal>
+
+                <Reveal direction="up" delay={0.1}>
+                    <section className="section pb-12 sm:pb-16">
+                        <div className="card p-6 sm:p-8">
+                            <div className="section-header mb-3">
+                                <h2 className="section-title">{t('newsletter.title')}</h2>
+                            </div>
+                            <p className="section-description mb-4">
+                                {t('newsletter.description')}
+                            </p>
+                            <NewsletterSignup />
+                        </div>
+                    </section>
+                </Reveal>
             </div>
         </div>
     );
