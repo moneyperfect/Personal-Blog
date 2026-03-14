@@ -14,7 +14,7 @@ interface AboutExperienceProps {
 export default function AboutExperience({ locale, content }: AboutExperienceProps) {
     return (
         <div className="about-page-root">
-            <div className="page-container page-width py-10 sm:py-14">
+            <div className="about-bento-container">
                 <AboutHero locale={locale} content={content.hero} />
                 <AboutSkillRail locale={locale} content={content.skills} />
                 <AboutLifeModules

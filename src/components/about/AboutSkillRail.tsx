@@ -9,7 +9,6 @@ interface AboutSkillRailProps {
     locale: string;
 }
 
-/* Skill items with placeholder emoji icons */
 const SKILL_ICONS: Record<string, string> = {
     'Next.js': '▲',
     TypeScript: 'TS',
@@ -30,58 +29,61 @@ export default function AboutSkillRail({ content, locale }: AboutSkillRailProps)
     const reduceMotion = useReducedMotion();
     const [activeTab, setActiveTab] = useState(0);
     const tabs = locale === 'zh' ? TABS_ZH : TABS_JA;
-    const sectionLabel = locale === 'zh' ? '技能' : 'Skills';
-    const sectionTitle = locale === 'zh' ? '开启创造力' : 'Creative Engine';
+    const sectionTitle = locale === 'zh' ? '创造力引擎' : 'Creative Engine';
 
     return (
-        <section className="about-skills-section">
-            <div className="about-skills-card">
-                <div className="about-skills-header">
-                    <p className="about-skills-header__label">{sectionLabel}</p>
-                    <h2 className="about-skills-header__title">{sectionTitle}</h2>
-                </div>
+        <section className="about-skills-wrapper">
+            <div className="px-8 pb-4">
+                <span className="about-eyebrow">{sectionTitle}</span>
+            </div>
 
-                {/* Marquee — icon cards */}
-                <div className="about-skills-marquee">
-                    <div className={`about-skills-marquee-track ${reduceMotion ? 'about-marquee-track-static' : ''}`}>
-                        {[0, 1].map((g) => (
-                            <div key={g} className="about-skills-marquee-group" aria-hidden={g === 1}>
-                                {content.marquee.map((item) => (
-                                    <div key={`${g}-${item}`} className="about-skill-icon-card">
-                                        <span className="about-skill-icon-card__icon">
-                                            {SKILL_ICONS[item] || item.charAt(0)}
-                                        </span>
-                                        <span className="about-skill-icon-card__name">{item}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Category tabs */}
-                <div className="about-skills-tabs">
-                    {tabs.map((tab, i) => (
-                        <button
-                            key={tab}
-                            type="button"
-                            className={`about-skills-tab ${i === activeTab ? 'about-skills-tab--active' : ''}`}
-                            onClick={() => setActiveTab(i)}
-                        >
-                            {tab}
-                        </button>
-                    ))}
-                </div>
-
-                {/* Grid for active tab's skills */}
-                <div className="about-skills-grid">
-                    {content.categories[activeTab % content.categories.length]?.items.map((item) => (
-                        <div key={item} className="about-skill-icon-card">
-                            <span className="about-skill-icon-card__icon">{item.charAt(0)}</span>
-                            <span className="about-skill-icon-card__name">{item}</span>
+            {/* Infinite Marquee Strip */}
+            <div className="relative w-full overflow-hidden">
+                <div 
+                    className={`about-skills-track ${reduceMotion ? 'about-marquee-track-static' : ''}`}
+                >
+                    {/* Double groups for seamless loop */}
+                    {[0, 1].map((g) => (
+                        <div key={g} className="flex gap-4" aria-hidden={g === 1}>
+                            {content.marquee.map((item) => (
+                                <div key={`${g}-${item}`} className="about-skill-pill">
+                                    <span className="text-xl">
+                                        {SKILL_ICONS[item] || item.charAt(0)}
+                                    </span>
+                                    <span>{item}</span>
+                                </div>
+                            ))}
                         </div>
                     ))}
                 </div>
+            </div>
+
+            {/* Optional Tabs for Interaction - subtle approach */}
+            <div className="px-8 pt-8 flex gap-3 flex-wrap">
+                {tabs.map((tab, i) => (
+                    <button
+                        key={tab}
+                        type="button"
+                        className={`
+                            px-4 py-2 rounded-full text-sm font-semibold transition-colors duration-300
+                            ${i === activeTab 
+                                ? 'bg-slate-800 text-white shadow-md' 
+                                : 'bg-slate-50 text-slate-500 hover:bg-white hover:shadow-sm hover:text-slate-800'}
+                        `}
+                        onClick={() => setActiveTab(i)}
+                    >
+                        {tab}
+                    </button>
+                ))}
+            </div>
+
+            {/* Content for tabs - fading grid */}
+            <div className="px-8 pt-6 flex gap-3 flex-wrap">
+                {content.categories[activeTab % content.categories.length]?.items.map((item) => (
+                    <div key={item} className="px-3 py-1.5 bg-white border border-slate-100 rounded-lg text-sm font-medium text-slate-600 shadow-sm transition-transform hover:scale-105">
+                        {item}
+                    </div>
+                ))}
             </div>
         </section>
     );

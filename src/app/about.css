@@ -1,1058 +1,447 @@
 /* ============================================================
-   About Page — Reference-Site-Style CSS
-   Bento Grid · Light Theme · Soft Cards · Micro-interactions
+   About Page — High-Fidelity Bento Redesign
+   Deeply restrained, pixel-perfect, sophisticated interactions
    ============================================================ */
 
-/* ── Page root ── */
+/* ── Global Page Base ── */
 .about-page-root {
-  background: #f7f9fe;
+  background-color: #f7f9fc; /* Muted, extremely clean off-white */
   color: #1a1a2e;
   min-height: 100vh;
+  padding: 60px 16px 120px;
 }
 
-/* ── Global card tokens ── */
-.about-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  background: #fff;
-  padding: 28px 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-.about-card:hover {
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.07);
-}
-
-/* ── Hero: Avatar ring with bubbles ── */
-.about-hero-avatar-ring {
-  position: relative;
+.about-bento-container {
+  max-width: 1120px;
+  margin: 0 auto;
   display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 60px 0 24px;
+  flex-direction: column;
+  gap: 24px; /* Strict, uniform rhythm */
 }
 
-.about-avatar-wrap {
+/* ── Universal Module Card ── */
+.about-bento-card {
   position: relative;
-  width: 160px;
-  height: 160px;
-  z-index: 2;
-}
-
-.about-avatar-img {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
+  background: #ffffff;
+  border-radius: 32px; /* Large, luxurious corners */
+  padding: 36px;
+  border: 1px solid rgba(0, 0, 0, 0.02);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03);
   overflow: hidden;
-  border: 3px solid #fff;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
-  cursor: pointer;
+  /* Crisp typography default inside cards */
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 }
 
-.about-avatar-online {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  width: 18px;
-  height: 18px;
-  background: #34d058;
-  border: 3px solid #fff;
-  border-radius: 50%;
-  z-index: 3;
+/* Physics-based hover for cards */
+.about-hover-spring {
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+}
+@media (hover: hover) {
+  .about-hover-spring:hover {
+    transform: scale(0.985); /* Downward press feeling */
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.08); /* Diffuse shadow bleed */
+    z-index: 10;
+  }
 }
 
-.about-bubble-pill {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(calc(-50% + var(--bx, 0px)), calc(-50% + var(--by, 0px)));
-  white-space: nowrap;
-  font-size: 13px;
-  font-weight: 500;
-  color: #3a3f4b;
-  background: #fff;
-  border: 1px solid #e8eaf0;
-  border-radius: 100px;
-  padding: 8px 16px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* ── Page title below avatar ── */
-.about-page-title {
-  text-align: center;
-  font-size: 2rem;
+/* Section label (Eyebrow text) */
+.about-eyebrow {
+  display: inline-block;
+  font-size: 11px;
   font-weight: 700;
-  color: #1a1a2e;
-  margin: 16px 0 28px;
-  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #8f95a3;
+  margin-bottom: 16px;
 }
 
-/* ── Hero grid: 2 cards side by side below title ── */
+/* ── Hero Section (3-col Bento) ── */
 .about-hero-grid {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: 3fr 4fr 3fr;
+  gap: 24px;
+  height: 380px; 
 }
-
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .about-hero-grid {
     grid-template-columns: 1fr;
+    height: auto;
   }
 }
 
-/* Dark identity card (left) */
-.about-card--dark {
-  background: linear-gradient(145deg, #2c2c2e, #1a1a1e);
-  border-color: #3a3a3e;
-  color: #fff;
-}
-.about-card--dark:hover {
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
-}
-.about-card__eyebrow {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #8a90a0;
-  margin-bottom: 12px;
-}
-.about-card__eyebrow--light {
-  color: rgba(255, 255, 255, 0.55);
-}
-.about-card__name {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-  letter-spacing: -0.02em;
-}
-.about-card__tagline {
-  font-size: 14px;
-  line-height: 1.7;
-  opacity: 0.72;
-}
-
-/* Ideal / aspiration card (right) */
-.about-card--ideal {
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.about-ideal-text {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.about-ideal-text__line {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  letter-spacing: -0.01em;
-  line-height: 1.3;
-}
-.about-ideal-text__accent {
-  color: #4285f4;
-}
-
-/* ── CTA Buttons ── */
-.about-hero-cta {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  margin-bottom: 32px;
-}
-.about-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 28px;
-  border-radius: 100px;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.25s ease;
-  text-decoration: none;
-  cursor: pointer;
-}
-.about-btn--primary {
-  background: #1a1a2e;
-  color: #fff;
-}
-.about-btn--primary:hover {
-  background: #2a2a3e;
-  transform: translateY(-2px);
-}
-.about-btn--secondary {
-  background: #fff;
-  color: #3a3f4b;
-  border: 1px solid #dde0e6;
-}
-.about-btn--secondary:hover {
-  background: #f5f6f8;
-  transform: translateY(-2px);
-}
-
-/* ============================================================
-   Skills Section
-   ============================================================ */
-.about-skills-section {
-  margin-top: 32px;
-}
-.about-skills-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  background: #fff;
-  padding: 28px 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-}
-.about-skills-header {
-  margin-bottom: 20px;
-}
-.about-skills-header__label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #8a90a0;
-}
-.about-skills-header__title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-top: 8px;
-  letter-spacing: -0.02em;
-}
-
-/* Skills marquee — icon cards */
-.about-skills-marquee {
-  overflow: hidden;
-  border-radius: 16px;
-  border: 1px solid #eee;
-  background: #fafbfc;
-  padding: 16px;
-}
-.about-skills-marquee-track {
-  display: flex;
-  width: max-content;
-  gap: 12px;
-  animation: about-marquee-scroll 28s linear infinite;
-  will-change: transform;
-}
-.about-skills-marquee:hover .about-skills-marquee-track {
-  animation-play-state: paused;
-}
-.about-skills-marquee-group {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.about-skill-icon-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  width: 72px;
-  height: 72px;
-  padding: 12px 4px 6px;
-  border-radius: 16px;
-  background: #fff;
-  border: 1px solid #e8eaf0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  flex-shrink: 0;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-.about-skill-icon-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-}
-.about-skill-icon-card__icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  font-weight: 700;
-}
-.about-skill-icon-card__name {
-  font-size: 10px;
-  font-weight: 500;
-  color: #555;
-  text-align: center;
-  line-height: 1.1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 64px;
-}
-
-/* Skills tabs */
-.about-skills-tabs {
-  display: flex;
-  gap: 8px;
-  margin-top: 20px;
-  flex-wrap: wrap;
-}
-.about-skills-tab {
-  padding: 10px 20px;
-  border-radius: 100px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid #e0e3e8;
-  background: #fff;
-  color: #555;
-  transition: all 0.2s;
-}
-.about-skills-tab:hover {
-  background: #f0f2f5;
-}
-.about-skills-tab--active {
-  background: #1a1a2e;
-  color: #fff;
-  border-color: #1a1a2e;
-}
-.about-skills-tab--active:hover {
-  background: #2a2a3e;
-}
-
-/* Skills grid within tab */
-.about-skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
-  gap: 10px;
-  margin-top: 16px;
-}
-
-/* ============================================================
-   Career / Life Progress
-   ============================================================ */
-.about-two-col {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 16px;
-}
-@media (max-width: 768px) {
-  .about-two-col {
-    grid-template-columns: 1fr;
-  }
-}
-.about-career-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  background: #fff;
-  padding: 28px 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-}
-.about-career-bar {
-  margin-top: 20px;
-  height: 14px;
-  border-radius: 7px;
-  background: #eee;
-  overflow: hidden;
-  display: flex;
-}
-.about-career-bar__seg {
-  height: 100%;
-  transition: width 0.6s ease;
-}
-.about-career-bar__label {
-  display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #8a90a0;
-  margin-top: 6px;
-}
-.about-edu-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 12px;
-}
-.about-edu-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-.about-edu-text {
-  font-size: 14px;
-  color: #3a3f4b;
-}
-
-/* ============================================================
-   Personality + Photo
-   ============================================================ */
-.about-personality-grid {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 16px;
-  margin-top: 32px;
-}
-@media (max-width: 768px) {
-  .about-personality-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.about-mbti-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  background: #f9fafb;
-  padding: 28px 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-  position: relative;
-  overflow: hidden;
-  min-height: 220px;
-}
-.about-mbti-card__badge {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #8a90a0;
-}
-.about-mbti-card__type-name {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-top: 8px;
-}
-.about-mbti-card__type-code {
-  font-size: 2rem;
-  font-weight: 800;
-  color: #4285f4;
-  margin-top: 2px;
-  letter-spacing: 0.02em;
-}
-.about-mbti-card__note {
-  font-size: 13px;
-  color: #8a90a0;
-  margin-top: 16px;
-}
-.about-mbti-card__note a {
-  color: #4285f4;
-  text-decoration: underline;
-}
-.about-photo-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-  position: relative;
-}
-.about-photo-card__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  min-height: 260px;
-}
-
-/* ============================================================
-   Motto + Talent
-   ============================================================ */
-.about-motto-talent-grid {
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  gap: 16px;
-  margin-top: 16px;
-}
-@media (max-width: 768px) {
-  .about-motto-talent-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.about-motto-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  background: #fafbfc;
-  padding: 32px 28px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-}
-.about-motto-card__label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #8a90a0;
-  margin-bottom: 12px;
-}
-.about-motto-card__text {
-  font-size: 1.8rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
-}
-.about-talent-card {
-  border-radius: 20px;
-  overflow: hidden;
-  padding: 32px 28px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
-  background: linear-gradient(135deg, #ff7eb3, #ff758c, #ff9a6c);
-  color: #fff;
-}
-.about-talent-card__label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  opacity: 0.85;
-  margin-bottom: 12px;
-}
-.about-talent-card__text {
-  font-size: 1.75rem;
-  font-weight: 700;
-  line-height: 1.4;
-  letter-spacing: -0.01em;
-}
-
-/* ============================================================
-   Game Hobby — 2-col posters
-   ============================================================ */
-.about-game-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 16px;
-}
-@media (max-width: 768px) {
-  .about-game-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.about-game-card {
-  position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  min-height: 260px;
+/* Left Hero Card */
+.about-hero-dark {
+  background: #1a1a1f;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
 }
-.about-game-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+.about-hero-dark .about-eyebrow {
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: auto; /* Push to top */
 }
-.about-game-card__bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-.about-game-card__overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 60%);
-  z-index: 1;
-}
-.about-game-card__content {
-  position: relative;
-  z-index: 2;
-  color: #fff;
-}
-.about-game-card__label {
-  font-size: 12px;
-  font-weight: 500;
-  opacity: 0.75;
-}
-.about-game-card__title {
-  font-size: 1.5rem;
+.about-hero-dark h2 {
+  font-size: 2.5rem;
   font-weight: 700;
-  margin-top: 4px;
+  letter-spacing: -0.02em;
+  margin-bottom: 8px;
 }
-.about-game-card__subtitle {
-  font-size: 13px;
-  margin-top: 4px;
-  opacity: 0.8;
+.about-hero-dark p.tagline {
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.7);
 }
 
-/* ============================================================
-   Anime Accordion
-   ============================================================ */
-.about-anime-section {
-  margin-top: 16px;
-}
-.about-anime-header {
-  margin-bottom: 16px;
-}
-.about-anime-header__label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #8a90a0;
-}
-.about-anime-header__title {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-top: 4px;
-}
-.about-anime-row {
+/* Center Avatar Card */
+.about-hero-avatar-card {
   display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
+  position: relative;
+  /* Mouse tracking handled via framer-motion in JS */
+}
+.about-avatar-ring {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.12);
+  overflow: hidden;
+  z-index: 5;
+}
+.about-avatar-online {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 20px;
+  height: 20px;
+  background: #22c55e;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  z-index: 10;
+}
+.about-bubble-pill {
+  position: absolute;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  pointer-events: none; /* Let mouse pass through for parallax */
+  white-space: nowrap;
+}
+
+/* Right Ideal Card */
+.about-hero-ideal {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.about-hero-ideal .about-eyebrow {
+  margin-bottom: auto;
+}
+.about-ideal-text-group {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
-  height: 320px;
+  margin-top: auto;
+}
+.about-hero-ideal h3 {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #1a1a2e;
+}
+.about-hero-ideal h3 span.accent {
+  color: #4285f4;
+}
+
+/* ── Skills Marquee Wrapper ── */
+.about-skills-wrapper {
+  background: #ffffff;
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03);
+  /* The elegant gradient mask on edges so items dissolve into white */
+  -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+  padding: 40px 0;
+}
+.about-skills-track {
+  display: flex;
+  gap: 16px;
+  width: max-content;
+  animation: skill-scroll 30s linear infinite;
+  padding: 0 24px;
+}
+.about-skills-wrapper:hover .about-skills-track {
+  animation-play-state: paused;
+}
+@keyframes skill-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.about-skill-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  background: #f8fafc;
+  border: 1px solid #f1f5f9;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  transition: all 0.3s ease;
+}
+.about-skill-pill:hover {
+  background: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  transform: translateY(-2px) scale(1.05); /* Slight pop */
+  color: #0f172a;
+}
+
+/* ── Mixed Grid section (MBTI, Data, Map, Edu) ── */
+.about-mixed-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+@media (max-width: 900px) {
+  .about-mixed-grid {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+/* Column spans within mixed grid */
+.ab-col-8 { grid-column: span 8; }
+.ab-col-4 { grid-column: span 4; }
+.ab-col-6 { grid-column: span 6; }
+
+/* Content within mixed cards */
+.about-mbti-card {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background: #fdfdfd;
+}
+.about-mbti-text {
+  flex: 1;
+}
+.about-mbti-photo {
+  width: 200px;
+  height: 200px;
+  border-radius: 24px;
+  object-fit: cover;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  margin-left: 24px;
+}
+.about-music-card {
+  background: #fdfdfd;
+}
+
+.about-bento-title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.about-bento-desc {
+  font-size: 14px;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+/* Dark Data Panel */
+.about-data-panel {
+  background: #1a1a1f;
+  color: #fff;
+}
+.about-data-panel .about-eyebrow {
+  color: rgba(255,255,255,0.4);
+}
+.about-data-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+.about-data-val {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.about-data-label {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  margin-top: 8px;
+  font-weight: 500;
+}
+
+/* ── Anime Hover Accordion (Spring physics focus) ── */
+.about-anime-container {
+  display: flex;
+  gap: 12px;
+  height: 360px;
+  border-radius: 32px;
+  overflow: hidden;
+  background: #fff;
+  padding: 16px;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03);
+}
+.about-anime-panel {
+  position: relative;
+  flex: 1; /* Framer motion handles flex basis */
   border-radius: 20px;
   overflow: hidden;
-}
-.about-anime-card {
-  position: relative;
-  flex: 0.6;
-  border-radius: 16px;
-  overflow: hidden;
-  transition: flex 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   min-width: 0;
 }
-.about-anime-card:hover,
-.about-anime-card--active {
-  flex: 2;
-}
-.about-anime-card__bg {
+.about-anime-bg {
   position: absolute;
   inset: 0;
-  z-index: 0;
-  transition: transform 0.5s ease;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.about-anime-card:hover .about-anime-card__bg {
-  transform: scale(1.05);
+.about-anime-panel:hover .about-anime-bg {
+  transform: scale(1.08);
 }
-.about-anime-card__overlay {
+.about-anime-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
-  z-index: 1;
+  background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
+  opacity: 0.6;
+  transition: opacity 0.4s;
 }
-.about-anime-card__title {
+.about-anime-panel:hover .about-anime-gradient {
+  opacity: 0.8;
+}
+.about-anime-text {
   position: absolute;
-  bottom: 16px;
-  left: 16px;
-  right: 16px;
-  z-index: 2;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
   color: #fff;
-  font-size: 14px;
-  font-weight: 600;
   opacity: 0;
-  transform: translateY(8px);
-  transition: opacity 0.3s, transform 0.3s;
+  transform: translateY(10px);
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.about-anime-card:hover .about-anime-card__title {
+.about-anime-text.active {
   opacity: 1;
   transform: translateY(0);
 }
-
-/* ============================================================
-   Music / Focus Preference
-   ============================================================ */
-.about-pref-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 16px;
-}
-@media (max-width: 768px) {
-  .about-pref-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.about-pref-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  background: #fff;
-  padding: 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-.about-pref-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.07);
-}
-.about-pref-card__label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #8a90a0;
-  margin-bottom: 8px;
-}
-.about-pref-card__title {
-  font-size: 1.15rem;
+.about-anime-text h4 {
+  font-size: 20px;
   font-weight: 700;
-  color: #1a1a2e;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.about-pref-card__body {
-  font-size: 14px;
-  color: #555;
-  margin-top: 8px;
-  line-height: 1.6;
+.about-anime-text p {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  margin-top: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* ============================================================
-   Stats (dark) + Personal Info
-   ============================================================ */
-.about-stats-grid {
-  display: grid;
-  grid-template-columns: 0.9fr 1.1fr;
-  gap: 16px;
-  margin-top: 32px;
+/* ── Edu & Career Timeline ── */
+.about-timeline-card {
+  display: flex;
+  flex-direction: column;
 }
-@media (max-width: 768px) {
-  .about-stats-grid {
-    grid-template-columns: 1fr;
-  }
-}
-.about-stats-dark {
-  border-radius: 20px;
-  background: linear-gradient(145deg, #2c2c2e, #1a1a1e);
-  color: #fff;
-  padding: 28px 24px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
-}
-.about-stats-dark__label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: rgba(255,255,255,0.5);
+.about-edu-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 16px;
 }
-.about-stats-dark__row {
-  display: flex;
-  gap: 32px;
-  flex-wrap: wrap;
+.about-edu-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #334155;
+  box-shadow: 0 0 0 4px rgba(51, 65, 85, 0.1);
 }
-.about-stats-dark__item-label {
-  font-size: 12px;
-  color: rgba(255,255,255,0.5);
-}
-.about-stats-dark__item-value {
-  font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin-top: 2px;
-}
-.about-stats-dark__footer {
-  font-size: 12px;
-  color: rgba(255,255,255,0.4);
-  margin-top: 16px;
-}
-.about-info-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  background: #fff;
-  padding: 28px 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-  display: flex;
-  gap: 24px;
-  align-items: center;
-  justify-content: space-around;
-  flex-wrap: wrap;
-}
-.about-info-item {
-  text-align: center;
-}
-.about-info-item__label {
-  font-size: 12px;
-  color: #8a90a0;
-}
-.about-info-item__value {
-  font-size: 1.6rem;
-  font-weight: 700;
-  margin-top: 4px;
-}
-.about-info-item__value--blue {
-  color: #4285f4;
-}
-.about-info-item__value--purple {
-  color: #9b59b6;
-}
-.about-info-item__value--red {
-  color: #e74c3c;
-}
-
-/* ============================================================
-   Map Module
-   ============================================================ */
-.about-map-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  overflow: hidden;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-  margin-top: 16px;
-}
-.about-map-card__img {
-  width: 100%;
-  height: 240px;
-  object-fit: cover;
-}
-.about-map-card__body {
-  padding: 20px 24px;
-  background: #fff;
-}
-.about-map-card__label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #8a90a0;
-}
-.about-map-card__text {
-  font-size: 14px;
-  color: #555;
-  margin-top: 8px;
-  line-height: 1.6;
-}
-
-/* ============================================================
-   Journey / "Why I Started"
-   ============================================================ */
-.about-journey-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  background: #fff;
-  padding: 32px 28px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-  margin-top: 16px;
-}
-.about-journey-card__label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #8a90a0;
-}
-.about-journey-card__title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-top: 8px;
-  letter-spacing: -0.02em;
-}
-.about-journey-card__body {
+.about-edu-name {
   font-size: 15px;
-  color: #3a3f4b;
-  line-height: 1.9;
-  margin-top: 12px;
-}
-.about-journey-card__body strong {
-  color: #1a1a2e;
+  font-weight: 600;
+  color: #1e293b;
 }
 
-/* ============================================================
-   Ten-Year Pact — progress bar
-   ============================================================ */
-.about-pact-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  background: #fff;
-  padding: 32px 28px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-  margin-top: 16px;
-}
-.about-pact-card__label {
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #8a90a0;
-}
-.about-pact-card__quote {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a1a2e;
-  margin-top: 12px;
-  letter-spacing: -0.01em;
-}
-.about-pact-progress {
-  margin-top: 24px;
-  height: 36px;
-  border-radius: 18px;
-  background: #e8eaf0;
-  overflow: hidden;
-  position: relative;
-}
-.about-pact-progress__fill {
-  height: 100%;
-  border-radius: 18px;
-  background: #1a1a2e;
-  display: flex;
-  align-items: center;
-  padding: 0 16px;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 700;
-  transition: width 1s ease;
-}
-.about-pact-progress__dates {
-  display: flex;
-  justify-content: space-between;
-  font-size: 13px;
-  color: #8a90a0;
-  margin-top: 8px;
-}
-
-/* ============================================================
-   Support Wall (appreciation list)
-   ============================================================ */
-.about-support-section {
-  margin-top: 32px;
-}
-.about-support-card {
-  border-radius: 20px;
-  border: 1px solid #e8eaf0;
-  background: #fff;
-  padding: 28px 24px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-}
-.about-support-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-.about-support-header__title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1a1a2e;
-}
-.about-support-donate-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 20px;
-  border-radius: 100px;
-  background: #ff4757;
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s, transform 0.2s;
-}
-.about-support-donate-btn:hover {
-  background: #e8414f;
-  transform: translateY(-2px);
-}
+/* ── Support Wall (Restrained grid) ── */
 .about-support-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  gap: 16px;
+  margin-top: 24px;
 }
-@media (max-width: 1024px) {
-  .about-support-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-@media (max-width: 768px) {
+@media (max-width: 900px) {
   .about-support-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-.about-supporter-item {
-  border-radius: 14px;
-  border: 1px solid #eee;
-  padding: 14px;
-  background: #fafbfc;
-  transition: transform 0.2s, box-shadow 0.2s;
+@media (max-width: 500px) {
+  .about-support-grid {
+    grid-template-columns: 1fr;
+  }
 }
-.about-supporter-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+.about-support-item {
+  padding: 20px;
+  border-radius: 20px;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-.about-supporter-item__name {
+.about-support-name {
   font-size: 14px;
-  font-weight: 600;
-  color: #1a1a2e;
-}
-.about-supporter-item__amount {
-  display: inline-block;
-  margin-top: 6px;
-  padding: 3px 10px;
-  border-radius: 100px;
-  font-size: 12px;
   font-weight: 700;
+  color: #0f172a;
 }
-.about-supporter-item__date {
-  font-size: 11px;
-  color: #aaa;
-  margin-top: 4px;
+.about-support-amount {
+  font-size: 12px;
+  font-weight: 800;
+  color: #c2410c; /* Muted orange-red */
+  background: #ffedd5;
+  padding: 4px 10px;
+  border-radius: 100px;
+  display: inline-block;
+  align-self: flex-start;
 }
-
-/* Amount color variants */
-.about-amount--green  { background: #e6f7ef; color: #27ae60; }
-.about-amount--red    { background: #fde8ea; color: #e74c3c; }
-.about-amount--blue   { background: #e8f0fe; color: #4285f4; }
-.about-amount--orange { background: #fff3e0; color: #f39c12; }
-.about-amount--purple { background: #f3e8fd; color: #9b59b6; }
-.about-amount--pink   { background: #fde8f0; color: #e84393; }
-
-/* ============================================================
-   Footer Signature
-   ============================================================ */
-.about-footer-sign {
-  margin-top: 40px;
-  padding: 32px 0;
-  text-align: center;
-}
-.about-footer-sign__avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  margin: 0 auto 12px;
-  overflow: hidden;
-  border: 2px solid #e8eaf0;
-}
-.about-footer-sign__text {
-  font-size: 14px;
-  color: #8a90a0;
-  margin-top: 8px;
-}
-.about-footer-sign__name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1a1a2e;
-  margin-top: 4px;
-}
-.about-footer-sign__quote {
+.about-support-msg {
   font-size: 13px;
-  color: #aaa;
-  font-style: italic;
-  margin-top: 6px;
+  color: #64748b;
+  line-height: 1.5;
 }
 
-/* ============================================================
-   Responsive bubble positioning
-   ============================================================ */
-@media (max-width: 768px) {
-  .about-bubble-pill {
-    display: none;
-  }
-  .about-hero-avatar-ring {
-    padding: 40px 0 16px;
-  }
-  .about-avatar-wrap {
-    width: 120px;
-    height: 120px;
-  }
-  .about-page-title {
-    font-size: 1.5rem;
-  }
-  .about-ideal-text__line {
-    font-size: 1.4rem;
-  }
-  .about-card__name {
-    font-size: 1.35rem;
-  }
-  .about-anime-row {
-    height: 200px;
-  }
+/* Footer signature */
+.about-footer {
+  text-align: center;
+  margin-top: 60px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+.about-footer-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  margin: 0 auto 16px;
+  border: 2px solid #e2e8f0;
 }

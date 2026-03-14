@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
+import { useState } from 'react';
 import type { AboutInfoContent, AboutNarrativeContent, AboutPersonalityContent } from './types';
 
 interface AboutLifeModulesProps {
@@ -13,289 +14,185 @@ interface AboutLifeModulesProps {
 
 export default function AboutLifeModules({ locale, personality, info, narrative }: AboutLifeModulesProps) {
     const reduceMotion = useReducedMotion();
+    const [activeAnime, setActiveAnime] = useState<number>(0);
 
     return (
-        <>
-            {/* ═══════════════════════════════════════════
-                Skills + Career  (two-column)
-            ═══════════════════════════════════════════ */}
-            <div className="about-two-col">
-                {/* Career progress card (left slot used by SkillRail above, this is right slot) */}
-                <article className="about-career-card">
-                    <p className="about-card__eyebrow">
-                        {locale === 'zh' ? '生涯' : '生涯'}
-                    </p>
-                    <h3 className="about-skills-header__title" style={{ marginTop: 8 }}>
-                        {locale === 'zh' ? '无限进步' : '無限に前へ'}
-                    </h3>
-                    <div style={{ marginTop: 16 }}>
-                        {info.educationItems.map((item, i) => (
-                            <div key={item} className="about-edu-item">
-                                <span
-                                    className="about-edu-dot"
-                                    style={{ background: ['#4285f4', '#fbbc04', '#34a853'][i % 3] }}
-                                />
-                                <span className="about-edu-text">{item}</span>
-                            </div>
-                        ))}
+        <section className="flex flex-col gap-6 w-full">
+            {/* ── First Grid: MBTI (8) + Photo (4) ── */}
+            <div className="about-mixed-grid">
+                <motion.article 
+                    className="about-bento-card about-hover-spring ab-col-8 about-mbti-card"
+                >
+                    <div className="about-mbti-text">
+                        <span className="about-eyebrow">{locale === 'zh' ? '性格探测' : '性格'}</span>
+                        <h3 className="text-3xl font-extrabold text-slate-800 tracking-tight mt-2 mb-1">
+                            {locale === 'zh' ? '提倡者' : '提唱者'} (INFJ)
+                        </h3>
+                        <p className="text-slate-500 font-medium mb-6">
+                            Introverted, Intuitive, Feeling, Judging
+                        </p>
+                        <p className="text-slate-600 leading-relaxed text-[15px] max-w-md">
+                            {locale === 'zh' 
+                                ? '喜欢深思细想，直觉敏锐，对世界怀有某种理想主义色彩。很少盲从主流节奏，更愿在角落里自己打磨发光的石头。' 
+                                : '物事を深く考え、直感が鋭く、理想主義的な一面がある。主流には流されず、自分のペースで輝く石を磨きたい。'}
+                        </p>
                     </div>
-                    {/* Career color bar */}
-                    <div style={{ marginTop: 20 }}>
-                        <p style={{ fontSize: 12, fontWeight: 600, color: '#e74c3c', letterSpacing: '0.08em' }}>EDU</p>
-                        <div className="about-career-bar">
-                            <div className="about-career-bar__seg" style={{ width: '40%', background: '#4285f4' }} />
-                            <div className="about-career-bar__seg" style={{ width: '25%', background: '#fbbc04' }} />
-                            <div className="about-career-bar__seg" style={{ width: '35%', background: '#34a853' }} />
-                        </div>
-                        <div className="about-career-bar__label">
-                            <span>2017</span>
-                            <span>{locale === 'zh' ? '现在' : '現在'}</span>
-                        </div>
-                    </div>
-                </article>
-
-                {/* This column is only shown on desktop to pair with SkillRail; on mobile it flows naturally */}
-            </div>
-
-            {/* ═══════════════════════════════════════════
-                Personality (MBTI) + Photo
-            ═══════════════════════════════════════════ */}
-            <div className="about-personality-grid">
-                <article className="about-mbti-card">
-                    <p className="about-mbti-card__badge">
-                        {locale === 'zh' ? '性格' : '性格'}
-                    </p>
-                    <h3 className="about-mbti-card__type-name">
-                        {locale === 'zh' ? '提倡者' : '提唱者'}
-                    </h3>
-                    <p className="about-mbti-card__type-code">{personality.mbti}-T</p>
-                    <p className="about-mbti-card__note">
-                        {locale === 'zh' ? '在 ' : ''}
-                        <a href="https://www.16personalities.com/" target="_blank" rel="noreferrer">16personalities</a>
-                        {locale === 'zh'
-                            ? ` 了解更多关于 逻辑学家`
-                            : ' でもっと知る'}
-                    </p>
-                </article>
-
-                <article className="about-photo-card">
+                    {/* The photo container */}
                     <Image
                         src="/about/portrait-demo.svg"
                         alt="Portrait"
-                        width={400}
-                        height={320}
-                        className="about-photo-card__img"
+                        width={200}
+                        height={200}
+                        className="about-mbti-photo hidden sm:block"
                     />
-                </article>
-            </div>
+                </motion.article>
 
-            {/* ═══════════════════════════════════════════
-                Motto + Talent
-            ═══════════════════════════════════════════ */}
-            <div className="about-motto-talent-grid">
-                <article className="about-motto-card">
-                    <p className="about-motto-card__label">
-                        {locale === 'zh' ? '座右铭' : '座右銘'}
-                    </p>
-                    <p className="about-motto-card__text">
-                        {locale === 'zh' ? '但行好事，\n莫问前程。' : '善行を続けよ、\n先を問うな。'}
-                    </p>
-                </article>
-
-                <motion.article
-                    whileHover={reduceMotion ? undefined : { y: -4 }}
-                    transition={{ duration: 0.25, ease: 'easeOut' }}
-                    className="about-talent-card"
+                <motion.article 
+                    className="about-bento-card about-hover-spring ab-col-4 flex flex-col justify-end"
+                    style={{ background: 'linear-gradient(145deg, #1a1a2e, #16213e)', color: '#fff' }}
                 >
-                    <p className="about-talent-card__label">
-                        {locale === 'zh' ? '特长' : '特技'}
-                    </p>
-                    <p className="about-talent-card__text">
-                        {locale === 'zh'
-                            ? '脑洞大开 厕所战神\n写日记技能MAX'
-                            : 'アイデア爆発 トイレの王\n日記スキルMAX'}
+                    <span className="about-eyebrow" style={{ color: 'rgba(255,255,255,0.4)', marginBottom: 'auto' }}>
+                        {locale === 'zh' ? '游戏品味' : 'Game Hobby'}
+                    </span>
+                    <h3 className="text-2xl font-bold tracking-tight mb-2">INSIDE</h3>
+                    <p className="text-slate-400 text-sm">
+                        {locale === 'zh' ? '深爱的一款神作，沉默且压抑的美学。' : '無言の圧迫感、沈黙の美。'}
                     </p>
                 </motion.article>
             </div>
 
-            {/* ═══════════════════════════════════════════
-                Game Hobby — 2 poster cards
-            ═══════════════════════════════════════════ */}
-            <div className="about-game-grid">
-                {[
-                    {
-                        label: locale === 'zh' ? '游戏爱好' : 'ゲーム',
-                        title: 'INSIDE',
-                        subtitle: locale === 'zh' ? '最爱的一款游戏' : '一番好きなゲーム',
-                        gradient: 'linear-gradient(160deg, #1a1a2e 0%, #16213e 100%)',
-                    },
-                    {
-                        label: locale === 'zh' ? '游戏爱好' : 'ゲーム',
-                        title: locale === 'zh' ? '黑神话：悟空' : 'Black Myth: Wukong',
-                        subtitle: locale === 'zh' ? '国产动作天花板' : '国産アクションの頂点',
-                        gradient: 'linear-gradient(160deg, #2c1810 0%, #3d2214 100%)',
-                    },
-                ].map((game) => (
-                    <motion.article
-                        key={game.title}
-                        whileHover={reduceMotion ? undefined : { y: -4 }}
-                        transition={{ duration: 0.3, ease: 'easeOut' }}
-                        className="about-game-card"
-                    >
-                        <div className="about-game-card__bg" style={{ background: game.gradient }} />
-                        <div className="about-game-card__overlay" />
-                        <div className="about-game-card__content">
-                            <p className="about-game-card__label">{game.label}</p>
-                            <h4 className="about-game-card__title">{game.title}</h4>
-                            <p className="about-game-card__subtitle">{game.subtitle}</p>
-                        </div>
-                    </motion.article>
-                ))}
+            {/* ── Second Grid: Anime Accordion (12) ── */}
+            <div className="about-anime-container">
+                {personality.posters.map((poster, idx) => {
+                    const isActive = activeAnime === idx;
+                    return (
+                        <motion.div
+                            key={poster.title}
+                            className="about-anime-panel"
+                            style={{ flex: isActive ? 3 : 1 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                            onHoverStart={() => !reduceMotion && setActiveAnime(idx)}
+                            onClick={() => setActiveAnime(idx)}
+                        >
+                            <div className="about-anime-bg" style={{ background: poster.gradient }} />
+                            <div className="about-anime-gradient" />
+                            <div className={`about-anime-text ${isActive ? 'active' : ''}`}>
+                                <h4>{poster.title}</h4>
+                                <p>{locale === 'zh' ? '经典神作' : 'Masterpiece'}</p>
+                            </div>
+                        </motion.div>
+                    );
+                })}
             </div>
 
-            {/* ═══════════════════════════════════════════
-                Anime Accordion
-            ═══════════════════════════════════════════ */}
-            <div className="about-anime-section">
-                <div className="about-anime-header">
-                    <p className="about-anime-header__label">
-                        {locale === 'zh' ? '爱好番剧' : 'アニメ'}
-                    </p>
-                    <h3 className="about-anime-header__title">
-                        {locale === 'zh' ? '追番 · 科幻、动漫、推理' : '追番 · SF・アニメ・推理'}
-                    </h3>
-                </div>
-                <div className="about-anime-row">
-                    {personality.posters.map((poster) => (
-                        <div key={poster.title} className="about-anime-card">
-                            <div className="about-anime-card__bg" style={{ background: poster.gradient }} />
-                            <div className="about-anime-card__overlay" />
-                            <div className="about-anime-card__title">{poster.title}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* ═══════════════════════════════════════════
-                Music + Focus Preference
-            ═══════════════════════════════════════════ */}
-            <div className="about-pref-grid">
-                <motion.article
-                    whileHover={reduceMotion ? undefined : { y: -3 }}
-                    transition={{ duration: 0.25, ease: 'easeOut' }}
-                    className="about-pref-card"
-                >
-                    <p className="about-pref-card__label">{personality.musicTitle}</p>
-                    <p className="about-pref-card__title">
-                        {locale === 'zh' ? '周杰伦、Hiphop、民谣、华语流行' : 'J-Pop, HipHop, Folk'}
-                    </p>
-                    <p className="about-pref-card__body">{personality.musicBody}</p>
-                </motion.article>
-
-                <motion.article
-                    whileHover={reduceMotion ? undefined : { y: -3 }}
-                    transition={{ duration: 0.25, ease: 'easeOut' }}
-                    className="about-pref-card"
-                >
-                    <p className="about-pref-card__label">{personality.focusTitle}</p>
-                    <p className="about-pref-card__title">
-                        {locale === 'zh' ? '数码科技、人工智能' : 'テック・AI'}
-                    </p>
-                    <p className="about-pref-card__body">{personality.focusBody}</p>
-                </motion.article>
-            </div>
-
-            {/* ═══════════════════════════════════════════
-                Stats (dark) + Personal Info
-            ═══════════════════════════════════════════ */}
-            <div className="about-stats-grid">
-                {/* Dark stats card */}
-                <article className="about-stats-dark">
-                    <p className="about-stats-dark__label">{info.statsTitle}</p>
-                    <div className="about-stats-dark__row">
+            {/* ── Third Grid: Data Panel (6) + Music (6) ── */}
+            <div className="about-mixed-grid">
+                <motion.article className="about-bento-card about-hover-spring ab-col-6 about-data-panel">
+                    <span className="about-eyebrow">{info.statsTitle}</span>
+                    <div className="about-data-grid">
                         {info.stats.slice(0, 2).map((s) => (
                             <div key={s.label}>
-                                <p className="about-stats-dark__item-label">{s.label}</p>
-                                <p className="about-stats-dark__item-value">{s.value}</p>
+                                <div className="about-data-val">{s.value}</div>
+                                <div className="about-data-label">{s.label}</div>
                             </div>
                         ))}
                     </div>
-                    <p className="about-stats-dark__footer">
-                        {locale === 'zh' ? '本站采用 51LA 网站统计' : 'Powered by 51LA Analytics'}
-                    </p>
-                </article>
+                </motion.article>
 
-                {/* Personal info card */}
-                <article className="about-info-card">
-                    <div className="about-info-item">
-                        <p className="about-info-item__label">{locale === 'zh' ? '生于' : '生年'}</p>
-                        <p className="about-info-item__value about-info-item__value--blue">1999</p>
-                    </div>
-                    <div className="about-info-item">
-                        <p className="about-info-item__label">EDU</p>
-                        <p className="about-info-item__value about-info-item__value--purple">
-                            {locale === 'zh' ? '计算机专业' : 'コンピュータ'}
-                        </p>
-                    </div>
-                    <div className="about-info-item">
-                        <p className="about-info-item__label">{locale === 'zh' ? '现在职业' : '現職'}</p>
-                        <p className="about-info-item__value about-info-item__value--red">
-                            {locale === 'zh' ? '互联网' : 'IT業界'}
-                        </p>
-                    </div>
-                </article>
+                <motion.article className="about-bento-card about-hover-spring ab-col-6 about-music-card">
+                    <span className="about-eyebrow">{personality.musicTitle}</span>
+                    <h4 className="about-bento-title mt-2">
+                        {locale === 'zh' ? '华语流行、独立民谣、Hiphop' : 'J-Pop, Indie Folk, HipHop'}
+                    </h4>
+                    <p className="about-bento-desc mt-2">{personality.musicBody}</p>
+                </motion.article>
             </div>
 
-            {/* ═══════════════════════════════════════════
-                Map
-            ═══════════════════════════════════════════ */}
-            <article className="about-map-card">
-                <div style={{ position: 'relative', width: '100%', height: 240 }}>
-                    <Image
-                        src="/about/map-demo.svg"
-                        alt="Map"
-                        fill
-                        className="about-map-card__img"
-                        style={{ objectFit: 'cover' }}
-                    />
-                </div>
-                <div className="about-map-card__body">
-                    <p className="about-map-card__label">{info.mapTitle}</p>
-                    <p className="about-map-card__text">{info.mapBody}</p>
-                </div>
-            </article>
-
-            {/* ═══════════════════════════════════════════
-                Journey — "Why I started"
-            ═══════════════════════════════════════════ */}
-            <article className="about-journey-card">
-                <p className="about-journey-card__label">
-                    {locale === 'zh' ? '心路历程' : '起源'}
-                </p>
-                <h3 className="about-journey-card__title">{narrative.routeTitle}</h3>
-                <p className="about-journey-card__body">{narrative.routeIntro}</p>
-            </article>
-
-            {/* ═══════════════════════════════════════════
-                Ten-Year Pact — progress bar
-            ═══════════════════════════════════════════ */}
-            <article className="about-pact-card">
-                <p className="about-pact-card__label">{narrative.pactTitle}</p>
-                <h3 className="about-pact-card__quote">
-                    {locale === 'zh'
-                        ? '一个人的寂寞，一群人的狂欢。'
-                        : '一人の孤独、皆の祝祭。'}
-                </h3>
-                <div className="about-pact-progress">
-                    <div className="about-pact-progress__fill" style={{ width: '33%' }}>
-                        33%
+            {/* ── Fourth Grid: Info (4) + Map (4) + Timeline (4) ── */}
+            <div className="about-mixed-grid">
+                {/* Personal Bio Data */}
+                <motion.article className="about-bento-card about-hover-spring ab-col-4 flex flex-col gap-6 justify-center">
+                    <div>
+                        <span className="about-eyebrow block">{locale === 'zh' ? '生年' : '生年'}</span>
+                        <span className="text-3xl font-extrabold text-blue-600">- 1999 -</span>
                     </div>
-                </div>
-                <div className="about-pact-progress__dates">
-                    <span>11/21/2022</span>
-                    <span>11/21/2032</span>
-                </div>
-            </article>
-        </>
+                    <div>
+                        <span className="about-eyebrow block">EDU</span>
+                        <span className="text-2xl font-bold text-purple-600">
+                            {locale === 'zh' ? '计算机科学' : 'コンピュータ'}
+                        </span>
+                    </div>
+                    <div>
+                        <span className="about-eyebrow block">{locale === 'zh' ? '职业' : '現職'}</span>
+                        <span className="text-2xl font-bold text-rose-500">
+                            {locale === 'zh' ? '独立开发者' : 'ITエンジニア'}
+                        </span>
+                    </div>
+                </motion.article>
+
+                {/* Map Focus */}
+                <motion.article className="about-bento-card about-hover-spring ab-col-4 p-0 flex flex-col">
+                    <div className="h-40 relative w-full overflow-hidden">
+                        <Image
+                            src="/about/map-demo.svg"
+                            alt="Map Location"
+                            fill
+                            className="object-cover transition-transform duration-700 hover:scale-105"
+                        />
+                    </div>
+                    <div className="p-6">
+                        <span className="about-eyebrow">{info.mapTitle}</span>
+                        <p className="text-sm text-slate-600 mt-2 leading-relaxed">
+                            {locale === 'zh' ? '坐标在不断更新，但编码的锚点始终如一。' : '座標は更新されるが、コードのアンカーは変わらない。'}
+                        </p>
+                    </div>
+                </motion.article>
+
+                {/* Edu/Timeline */}
+                <motion.article className="about-bento-card about-hover-spring ab-col-4 about-timeline-card">
+                    <span className="about-eyebrow mb-6"> {locale === 'zh' ? '历程' : '経歴'} </span>
+                    <div className="flex-1 flex flex-col justify-center border-l-2 border-slate-100 pl-4 py-2">
+                        {info.educationItems.slice(0, 3).map((item, idx) => (
+                            <div key={item} className="relative mb-5 last:mb-0 group">
+                                <div className={`absolute -left-[23px] w-3 h-3 rounded-full border-2 border-white transition-colors duration-300
+                                        ${idx === 0 ? 'bg-blue-500' : idx === 1 ? 'bg-emerald-500' : 'bg-amber-500'}`} />
+                                <span className="text-sm font-semibold text-slate-700 group-hover:text-black transition-colors">
+                                    {item}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </motion.article>
+            </div>
+
+            {/* ── Fifth Grid: Narrative (6) + Ten-Year Pact (6) ── */}
+            <div className="about-mixed-grid">
+                <motion.article className="about-bento-card about-hover-spring ab-col-6">
+                    <span className="about-eyebrow">{narrative.routeTitle}</span>
+                    <h4 className="about-bento-title mt-4">
+                        {locale === 'zh' ? '为何执笔写下这些？' : 'なぜ書き記すのか'}
+                    </h4>
+                    <p className="about-bento-desc mt-3">
+                        {narrative.routeIntro}
+                    </p>
+                </motion.article>
+
+                <motion.article className="about-bento-card about-hover-spring ab-col-6">
+                    <span className="about-eyebrow">{narrative.pactTitle}</span>
+                    <h4 className="text-xl font-bold text-slate-800 mt-2">
+                        {locale === 'zh' ? '「一个人的寂寞，一群人的狂欢」' : '「一人の孤独、皆の祝祭」'}
+                    </h4>
+                    {/* The refined progress bar */}
+                    <div className="w-full h-3 bg-slate-100 rounded-full mt-6 overflow-hidden shadow-inner">
+                        <div className="h-full bg-slate-800 rounded-full w-1/3 relative transition-all duration-1000 ease-in-out" />
+                    </div>
+                    <div className="flex justify-between text-xs font-semibold text-slate-400 mt-3 tracking-widest uppercase">
+                        <span>2022.11</span>
+                        <span className="text-slate-600">33.3%</span>
+                        <span>2032.11</span>
+                    </div>
+                </motion.article>
+            </div>
+        </section>
     );
 }
