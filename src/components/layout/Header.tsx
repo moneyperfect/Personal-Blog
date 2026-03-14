@@ -1,11 +1,11 @@
 'use client';
 
+import { AnimatePresence, motion } from 'framer-motion';
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { LanguageSwitcher } from './LanguageSwitcher';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const navItems = [
     { key: 'home', href: '' },
@@ -22,6 +22,7 @@ export function Header() {
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const isAboutPage = pathname === `/${locale}/about`;
+
     const getNavLabel = (key: string) => {
         if (key === 'about') {
             return locale === 'zh' ? '关于我' : '私について';
@@ -35,6 +36,7 @@ export function Header() {
         if (href === '') {
             return pathname === `/${locale}` || pathname === `/${locale}/`;
         }
+
         return pathname.startsWith(localePath);
     };
 
@@ -42,31 +44,34 @@ export function Header() {
         <header
             className={`sticky top-0 z-50 border-b backdrop-blur-md transition-colors ${
                 isAboutPage
-                    ? 'border-white/10 bg-[#040814]/72'
+                    ? 'border-[#e7e1d6] bg-[#faf7f1]/86'
                     : 'border-surface-200 bg-white/90'
             }`}
         >
             <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
-                    {/* Logo */}
+                <div className="flex h-16 items-center justify-between">
                     <Link
                         href={`/${locale}`}
                         className={`flex items-center gap-2 text-lg font-semibold transition-colors ${
                             isAboutPage
-                                ? 'text-white hover:text-cyan-200'
+                                ? 'text-[#23344a] hover:text-[#305780]'
                                 : 'text-surface-900 hover:text-primary-600'
                         }`}
                     >
-                        <svg className={`w-8 h-8 ${isAboutPage ? 'text-cyan-300' : 'text-primary-600'}`} fill="currentColor" viewBox="0 0 24 24">
+                        <svg
+                            className={`h-8 w-8 ${isAboutPage ? 'text-[#5e85b2]' : 'text-primary-600'}`}
+                            fill="currentColor"
+                            viewBox="0 0 24 24"
+                        >
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                         </svg>
                         <span className="hidden sm:inline">NAS</span>
                     </Link>
 
-                    {/* Desktop Navigation */}
-                    <nav className="hidden md:flex items-center gap-1">
+                    <nav className="hidden items-center gap-1 md:flex">
                         {navItems.map((item) => {
                             const active = isActive(item.href);
+
                             return (
                                 <Link
                                     key={item.key}
@@ -74,19 +79,21 @@ export function Header() {
                                     className={`relative rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                                         active
                                             ? isAboutPage
-                                                ? 'text-cyan-200'
+                                                ? 'text-[#285987]'
                                                 : 'text-primary-600'
                                             : isAboutPage
-                                                ? 'text-slate-300 hover:bg-white/6 hover:text-white'
+                                                ? 'text-[#5e6d81] hover:bg-white/70 hover:text-[#23344a]'
                                                 : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900'
                                     }`}
                                 >
                                     {active && (
                                         <motion.div
                                             layoutId="nav-indicator"
-                                            className={`absolute bottom-0 left-0 right-0 h-0.5 ${isAboutPage ? 'bg-cyan-300' : 'bg-primary-600'}`}
+                                            className={`absolute bottom-0 left-0 right-0 h-0.5 ${
+                                                isAboutPage ? 'bg-[#77a7d7]' : 'bg-primary-600'
+                                            }`}
                                             initial={false}
-                                            transition={{ type: "spring", stiffness: 350, damping: 30 }}
+                                            transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                                         />
                                     )}
                                     {getNavLabel(item.key)}
@@ -95,43 +102,57 @@ export function Header() {
                         })}
                     </nav>
 
-                    {/* Right side */}
                     <div className="flex items-center gap-2">
                         <LanguageSwitcher />
 
-                        {/* Mobile menu button */}
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             className={`rounded-google p-2 md:hidden ${
                                 isAboutPage
-                                    ? 'text-slate-200 hover:bg-white/8'
+                                    ? 'text-[#58697d] hover:bg-white/70'
                                     : 'text-surface-600 hover:bg-surface-100'
                             }`}
                             aria-label="Toggle menu"
                         >
                             <AnimatePresence mode="wait" initial={false}>
                                 {mobileMenuOpen ? (
-                                    <motion.svg 
-                                        key="close" 
-                                        initial={{ rotate: -90, opacity: 0 }} 
-                                        animate={{ rotate: 0, opacity: 1 }} 
-                                        exit={{ rotate: 90, opacity: 0 }} 
+                                    <motion.svg
+                                        key="close"
+                                        initial={{ rotate: -90, opacity: 0 }}
+                                        animate={{ rotate: 0, opacity: 1 }}
+                                        exit={{ rotate: 90, opacity: 0 }}
                                         transition={{ duration: 0.2 }}
-                                        className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        className="h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
                                     >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M6 18L18 6M6 6l12 12"
+                                        />
                                     </motion.svg>
                                 ) : (
-                                    <motion.svg 
-                                        key="menu" 
-                                        initial={{ rotate: 90, opacity: 0 }} 
-                                        animate={{ rotate: 0, opacity: 1 }} 
-                                        exit={{ rotate: -90, opacity: 0 }} 
+                                    <motion.svg
+                                        key="menu"
+                                        initial={{ rotate: 90, opacity: 0 }}
+                                        animate={{ rotate: 0, opacity: 1 }}
+                                        exit={{ rotate: -90, opacity: 0 }}
                                         transition={{ duration: 0.2 }}
-                                        className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                                        className="h-6 w-6"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
                                     >
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M4 6h16M4 12h16M4 18h16"
+                                        />
                                     </motion.svg>
                                 )}
                             </AnimatePresence>
@@ -139,17 +160,16 @@ export function Header() {
                     </div>
                 </div>
 
-                {/* Mobile Navigation */}
                 <AnimatePresence>
                     {mobileMenuOpen && (
-                        <motion.nav 
+                        <motion.nav
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.2 }}
                             className={`overflow-hidden border-t md:hidden ${
                                 isAboutPage
-                                    ? 'border-white/10 bg-[#050916]/96'
+                                    ? 'border-[#ece5d8] bg-[#faf7f1]/98'
                                     : 'border-surface-200'
                             }`}
                         >
@@ -162,8 +182,8 @@ export function Header() {
                                         className={`nav-link ${
                                             isAboutPage
                                                 ? isActive(item.href)
-                                                    ? 'bg-white/10 text-cyan-200'
-                                                    : 'text-slate-300 hover:bg-white/6 hover:text-white'
+                                                    ? 'bg-white/90 text-[#285987]'
+                                                    : 'text-[#5e6d81] hover:bg-white/75 hover:text-[#23344a]'
                                                 : isActive(item.href)
                                                     ? 'nav-link-active'
                                                     : ''
@@ -180,4 +200,3 @@ export function Header() {
         </header>
     );
 }
-

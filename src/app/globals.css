@@ -33,6 +33,39 @@ html {
   scroll-behavior: smooth;
 }
 
+@keyframes about-marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - (var(--about-marquee-gap, 0.75rem) / 2)));
+  }
+}
+
+.about-marquee-track {
+  --about-marquee-gap: 0.75rem;
+  display: flex;
+  width: max-content;
+  gap: var(--about-marquee-gap);
+  animation: about-marquee-scroll 22s linear infinite;
+  will-change: transform;
+}
+
+.about-marquee:hover .about-marquee-track {
+  animation-play-state: paused;
+}
+
+.about-marquee-track-static {
+  animation: none;
+}
+
+.about-marquee-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;

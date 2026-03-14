@@ -1,177 +1,374 @@
 import { setRequestLocale } from 'next-intl/server';
-import AboutExperience, { type AboutExperienceContent } from '@/components/about/AboutExperience';
+import AboutExperience from '@/components/about/AboutExperience';
+import type { AboutPageContent } from '@/components/about/types';
 
 type Props = { params: Promise<{ locale: string }> };
 
-const zhContent: AboutExperienceContent = {
+const zhContent: AboutPageContent = {
     hero: {
-        eyebrow: 'About Me / Personal Signal',
+        eyebrow: 'About Me / Theme Demo',
         name: '你好，我是 NAS。',
-        headline: '我把内容、产品和体验，做成一个能持续生长的个人品牌系统。',
-        description: '这页会更像个人档案，而不是传统商务简介。我关注产品验证、AI 工作流、自动化内容系统，以及如何让一个个人博客既有表达力，也有转化与复利能力。',
-        primaryCta: '和我聊聊项目',
-        secondaryCta: '查看联系方式',
-        status: 'Open to collaborate',
-        location: 'China / Remote-friendly',
-        motto: '我希望网站既有风格，也有结构；既能表达自己，也能承接真正的产品与机会。',
-    },
-    labels: ['Product Builder', 'AI Workflow Designer', 'Content Systems', 'Growth-minded Operator', 'Personal Branding', 'Frontend Experience'],
-    facts: [
-        { label: '当前重心', value: '个人品牌型产品体系' },
-        { label: '擅长方式', value: '0 到 1 快速推进' },
-        { label: '关注方向', value: '内容 × 自动化 × 转化' },
-        { label: '工作节奏', value: '先验证，再放大' },
-    ],
-    about: {
-        title: '关于我',
-        intro: '我不想把博客做成“标准模板站”，而更想把它打造成一个有气质、有层次、也能真实承接机会的个人空间。',
-        paragraphs: [
-            '我喜欢把模糊的想法慢慢打磨成可以上线的东西。它可以是一篇笔记、一张销售页、一个数字产品，也可以是一套能长期运转的内容系统。',
-            '相比堆很多功能，我更在意页面有没有辨识度、信息有没有节奏、动效是不是服务表达、以及整个站点有没有形成一套属于自己的品牌语言。',
-            '这也是为什么我会持续优化这个博客：它不只是内容容器，更像是一个不断进化中的个人产品实验室。',
+        tagline:
+            '这个页面先不急着写满真实经历，而是先把你想要的主题、模块、布局节奏和悬停表现搭成一个更接近参考页的浅色个人档案页。',
+        introTitle: '关于我是谁',
+        introBody:
+            '这里先放示意内容。后面你可以把它替换成自己的身份介绍、做事方式、擅长方向、教育经历与当前阶段的核心目标。',
+        introBullets: [
+            '长期主义取向，想把博客做成个人品牌阵地',
+            '内容、产品、自动化与表达系统并行推进',
+            '希望页面不只是展示，而是能承接机会与信任',
         ],
-        principles: [
-            { title: '表达要有记忆点', description: '我希望用户进入页面后，不会觉得它和其他模板站没有区别。' },
-            { title: '系统比碎片更重要', description: '单个页面再漂亮，如果不能和内容、产品、后台联动，也很难形成长期价值。' },
-            { title: '动效应该帮助理解', description: '我喜欢动效，但更在意它是否帮助页面建立节奏、层次与反馈。' },
+        status: 'Open to collaborate',
+        primaryCta: '联系我',
+        secondaryCta: '合作入口',
+        floatingSkills: ['Next.js', 'Motion', 'Branding', 'Automation'],
+        profileSummary: ['个人博客', '长期主义', '产品表达'],
+        journeyTitle: '生涯无限接近',
+        journeyBody:
+            '这个模块先模拟参考页右侧的人生轨迹卡片。等主题骨架稳定后，我们再把它替换成你的真实教育、职业阶段和长期路线。',
+        journeyItems: [
+            '从写作表达逐步过渡到产品思维',
+            '把博客升级成可持续生长的个人品牌网站',
+            '持续打磨后台、体验与内容系统的协同感',
         ],
     },
     skills: {
-        title: '我会用什么能力把想法落下来',
-        intro: '我的工作方式通常不是单点输出，而是把产品思考、页面表达、技术实现和内容结构一起往前推。',
-        marquee: ['Next.js', 'Framer Motion', 'Tailwind CSS', 'Supabase', 'Markdown Systems', 'Product Messaging', 'SEO-aware Content', 'Automation Workflows', 'Landing Pages', 'Admin Tools'],
-        groups: [
-            { title: '产品表达', items: ['价值主张梳理', '页面叙事', '转化结构', '个人品牌定位'], accent: 'linear-gradient(90deg, rgba(34,211,238,0.95), rgba(96,165,250,0.25))' },
-            { title: '体验设计', items: ['视觉层级', '滚动节奏', '交互动效', '信息密度控制'], accent: 'linear-gradient(90deg, rgba(244,114,182,0.95), rgba(168,85,247,0.30))' },
-            { title: '系统搭建', items: ['Next.js', '内容系统', '后台编辑器', 'Supabase 数据流'], accent: 'linear-gradient(90deg, rgba(250,204,21,0.95), rgba(34,211,238,0.25))' },
-            { title: '效率工具', items: ['AI 工作流', '自动化 SOP', '模板化资产', '重复劳动缩减'], accent: 'linear-gradient(90deg, rgba(52,211,153,0.95), rgba(59,130,246,0.28))' },
-            { title: '增长意识', items: ['入口设计', '信任信号', '用户路径', '轻量验证'], accent: 'linear-gradient(90deg, rgba(129,140,248,0.95), rgba(236,72,153,0.32))' },
-            { title: '长期复利', items: ['博客矩阵', '资源沉淀', '数字产品', '品牌一致性'], accent: 'linear-gradient(90deg, rgba(251,146,60,0.95), rgba(244,114,182,0.28))' },
+        title: '开启创造',
+        intro:
+            '先把自动滚动的 skills 展示、鼠标移入暂停、卡片分区这些主题感做出来。后续你再把这里换成自己的技术栈、能力方向和个人介绍语。',
+        marquee: [
+            'Next.js',
+            'TypeScript',
+            'Framer Motion',
+            'Tailwind CSS',
+            'Supabase',
+            'Content Design',
+            'Automation',
+            'Prompt Systems',
+            'Landing Pages',
+            'Admin Dashboard',
         ],
-    },
-    journey: {
-        title: '经历轨迹',
-        intro: '与其说是一条标准职业路线，不如说是内容、产品和体验慢慢融合成的一条路径。',
-        timeline: [
-            { year: 'Phase 01', title: '从表达与内容开始', description: '先从写作、信息整理和内容表达切入，逐渐建立对结构、用户理解与价值传递的敏感度。' },
-            { year: 'Phase 02', title: '转向产品与工作流', description: '开始从“写内容”走向“做系统”，把自动化、产品化和效率工具一起纳入思考。' },
-            { year: 'Phase 03', title: '构建个人品牌型站点', description: '博客、产品、笔记、资源和合作入口不再分散，而是慢慢形成一个更完整的品牌体验。' },
+        categories: [
+            {
+                title: '页面表达',
+                summary: '把想表达的内容拆成更有节奏的模块与视觉层次，而不是平铺直叙。',
+                items: ['首屏结构', '模块编排', '视觉层次', '品牌感'],
+                accent: 'linear-gradient(90deg,#8ec5ff,#c8ddff)',
+            },
+            {
+                title: '产品承接',
+                summary: '不仅考虑展示，也考虑转化路径、咨询入口、信任感与用户下一步动作。',
+                items: ['CTA 设计', '产品页', '咨询入口', '信息分层'],
+                accent: 'linear-gradient(90deg,#ffc6b3,#ffe0d4)',
+            },
+            {
+                title: '系统能力',
+                summary: '让博客、产品、后台和内容系统不是孤立存在，而是能互相支撑。',
+                items: ['内容系统', '后台编辑', '结构优化', '长期迭代'],
+                accent: 'linear-gradient(90deg,#b8e7d3,#d5f3e7)',
+            },
         ],
-        snapshotTitle: '我现在在做什么',
-        snapshotBody: '目前我更专注于把这个个人博客继续打磨成有审美、有结构、也有承接力的品牌型网站。',
-        snapshotList: ['继续优化 About / 产品 / 后台体验', '让内容系统更适合长期积累', '把博客升级成真正的个人品牌阵地'],
     },
     personality: {
-        title: '我的工作方式与个人偏好',
-        intro: '我更喜欢那些兼顾审美、系统感和可执行性的东西，而不是只停留在概念层面的漂亮想法。',
+        title: '性格与偏好',
+        intro:
+            '这一段先把你提到的“性格模块 + 照片 + 爱好/动漫/音乐/关注偏好”这些块状结构做齐，当前内容先用演示信息占位。',
+        mbti: 'INTP',
+        mbtiSummary:
+            '偏理性、喜欢独立思考，也容易被系统、结构和页面节奏打动。比起堆砌元素，更在意整体表达是否克制但有记忆点。',
+        spotlightTitle: '个人照片位',
+        spotlightBody:
+            '这里现在先用占位肖像来模拟照片模块。后面可以替换成你的真实照片，或者更贴近你个人气质的视觉素材。',
+        highlights: [
+            '偏爱有气场的首屏与清晰的信息层次',
+            '喜欢细腻但不过度喧闹的动效表现',
+            '对系统感、结构感和长期复利比较执着',
+            '愿意持续打磨个人品牌的视觉表达',
+        ],
+        musicTitle: '音乐偏好',
+        musicBody:
+            '这里后面可以写你常听的音乐类型、歌单风格，或者用来表达你平时创作与工作时喜欢的氛围。',
+        focusTitle: '关注偏好',
+        focusBody:
+            '这里可以放你长期关注的主题，比如产品、AI、创作、自动化、个人成长、效率方法论等。',
+        galleryTitle: '爱好与收藏',
+        galleryIntro:
+            '先把“喜欢的动漫、兴趣、特长、收藏偏好”这种展示方式搭起来，后面再换成你自己的真实内容与封面。',
+        posters: [
+            {
+                title: '喜欢的动漫 A',
+                caption: '鼠标移上去会有放大和更顺滑的视觉过渡，先把交互味道做出来。',
+                gradient: 'linear-gradient(160deg,#dfefff,#c6dbff)',
+            },
+            {
+                title: '喜欢的动漫 B',
+                caption: '这里现在先用示意海报，后续可以换成你真实喜欢的作品封面。',
+                gradient: 'linear-gradient(160deg,#fff2db,#ffd9cc)',
+            },
+            {
+                title: '个人爱好',
+                caption: '可以替换成摄影、绘画、运动、收藏，或者任何能代表你的兴趣。',
+                gradient: 'linear-gradient(160deg,#e6fbef,#cbeed8)',
+            },
+            {
+                title: '擅长特长',
+                caption: '这里也可以展示你擅长的创作方向、长期技能或偏爱的表达媒介。',
+                gradient: 'linear-gradient(160deg,#f2eaff,#dfd3ff)',
+            },
+        ],
         traits: [
-            { title: '偏爱有气场的首屏', description: '第一屏必须有记忆点，要能迅速传达你的气质、方向和能力。' },
-            { title: '喜欢细腻但克制的动效', description: '我不抗拒炫酷，但更希望它有节奏感，而不是把页面变成噪音现场。' },
-            { title: '对系统感比较执着', description: '我会反复思考内容、产品、后台和转化入口之间是不是能真正连起来。' },
-            { title: '长期主义偏重', description: '我更愿意做能慢慢积累势能的东西，而不是一次性的短期热闹。' },
+            { title: '节奏感', description: '做页面时，我很在意视觉起伏、阅读节奏和用户停留的气口。' },
+            { title: '系统感', description: '我不喜欢模块彼此割裂，更希望它们能形成可复用的整体结构。' },
+            { title: '审美方向', description: '我偏好克制但有记忆点的页面，而不是过度模板化的设计。' },
+            { title: '长期主义', description: '我更愿意持续迭代，而不是只追求一次性的惊艳。' },
         ],
     },
-    site: {
-        title: '这个站点正在变成什么',
-        intro: '我希望它最终不是单一博客，也不是单一产品站，而是一个能同时承载表达、产品、资源、合作和实验的个人品牌系统。',
-        blocks: [
-            { title: '它是个人作品集', description: '我会用它展示自己的审美取向、页面表达和产品思考。' },
-            { title: '它也是实验场', description: '很多页面结构、交互方式和内容组织方法，我都会先在这里试。' },
-            { title: '它还是转化入口', description: '无论是咨询、合作还是未来的数字产品，都需要有一个像样的承接空间。' },
-            { title: '它会持续迭代', description: '我不希望这个站定型太早，它应该跟着我一起成长。' },
+    info: {
+        title: '个人模块',
+        statsTitle: '网站访问统计 / 个人信息',
+        stats: [
+            { label: '文章示意数', value: '24+' },
+            { label: '当前主题迭代', value: 'V3 Demo' },
+            { label: '产品方向', value: '个人品牌站' },
+            { label: '长期目标', value: '内容复利系统' },
+        ],
+        mapTitle: '地图上的位置',
+        mapBody:
+            '这里现在是占位地图模块。后续可以替换成你的城市、工作区域，或者带有情绪表达的地点信息。',
+        identityTitle: '关于我是谁',
+        identityBody:
+            '这里后面可以放真实的自我介绍、教育经历、当前职业、擅长领域，以及你希望别人如何认识你。',
+        educationTitle: '教育经历',
+        educationItems: ['示意教育经历 A', '示意教育经历 B', '示意研究方向 / 学习主题'],
+        currentTitle: '当前职业',
+        currentItems: ['示意职业身份 01', '示意正在做的事 02', '示意长期方向 03'],
+    },
+    narrative: {
+        routeTitle: '系列路程',
+        routeIntro:
+            '这里先把参考页里那种“路程感”做出来。等后面补内容时，我们再把它换成你的真实阶段、项目线索和成长路径。',
+        routeItems: [
+            {
+                stage: 'Phase 01',
+                title: '开始记录与表达',
+                description: '从写东西、整理内容开始，逐步建立自己的表达习惯、审美倾向和记录方式。',
+            },
+            {
+                stage: 'Phase 02',
+                title: '转向产品与系统',
+                description: '开始思考博客如何承接机会，以及内容如何逐步产品化、系统化与长期迭代。',
+            },
+            {
+                stage: 'Phase 03',
+                title: '形成个人品牌站',
+                description: '把 About、产品页、后台和资源页逐步连接成一个更完整的个人品牌体验。',
+            },
+        ],
+        pactTitle: '实验之约 / 十年之约',
+        pactIntro:
+            '这里先做成一个长期计划型模块。后续可以写你的长期主义计划、站点愿景，或者你和读者之间的约定。',
+        pactItems: [
+            '持续迭代站点，而不是一次性完工',
+            '让内容与产品互相支撑，形成长期价值',
+            '把网站做成可复用、可积累的个人品牌资产',
         ],
     },
-    cta: {
-        title: '如果你也想把个人博客做得更有风格和辨识度，我们可以聊聊。',
-        description: '不管你是想升级个人品牌站、做产品页、整理后台，还是搭建一个更有表达力的内容系统，我都更倾向于用可落地的方式推进。',
-        primary: '联系我',
-        secondary: '先看我的笔记',
+    support: {
+        title: '致谢赞赏名单',
+        intro:
+            '这一块先把赞赏名单的主题结构做出来。等你确认要不要展示真实支持者信息后，再替换成真实名单、留言和金额。',
+        supporters: [
+            { name: '示意用户 A', amount: '¥66', note: '感谢你的分享，页面真的很有气质。' },
+            { name: '示意用户 B', amount: '¥99', note: '期待你继续更新博客与产品内容。' },
+            { name: '示意用户 C', amount: '¥36', note: '这个主题方向很喜欢，会继续关注。' },
+            { name: '示意用户 D', amount: '¥188', note: '支持长期创作，也感谢你认真打磨页面体验。' },
+        ],
+        ctaTitle: '先把主题和布局对齐，内容后面再慢慢填。',
+        ctaBody:
+            '这一版的重点是先把你想模仿的模块划分、悬停表现、浅色主题和整体节奏做对。等这些骨架稳定后，我们再逐块替换成你的真实信息。',
+        primaryCta: '继续完善内容',
+        secondaryCta: '先浏览笔记',
     },
 };
 
-const jaContent: AboutExperienceContent = {
+const jaContent: AboutPageContent = {
     hero: {
-        eyebrow: 'About Me / Personal Signal',
+        eyebrow: 'About Me / Theme Demo',
         name: 'こんにちは、NAS です。',
-        headline: 'コンテンツ、プロダクト、体験をつなぎ、育ち続ける個人ブランドの仕組みを作っています。',
-        description: 'このページは一般的な会社紹介ではなく、もっとパーソナルなプロフィールページです。私はプロダクト検証、AI ワークフロー、自動化されたコンテンツ基盤、そして表現力のある個人ブランドサイトづくりに関心があります。',
-        primaryCta: '相談してみる',
-        secondaryCta: '連絡先を見る',
-        status: 'Open to collaborate',
-        location: 'China / Remote-friendly',
-        motto: 'サイトは見た目だけでなく、構造・導線・体験まで含めてブランドになるべきだと思っています。',
-    },
-    labels: ['Product Builder', 'AI Workflow Designer', 'Content Systems', 'Growth-minded Operator', 'Personal Branding', 'Frontend Experience'],
-    facts: [
-        { label: 'Current focus', value: '個人ブランド型サイト' },
-        { label: 'Strength', value: '0→1 の高速推進' },
-        { label: 'Interests', value: 'Content × Automation × Conversion' },
-        { label: 'Rhythm', value: 'まず検証、次に拡張' },
-    ],
-    about: {
-        title: 'About Me',
-        intro: 'このブログを「よくあるテンプレートサイト」にしたくなくて、もっと空気感と構造を持った個人の場に育てています。',
-        paragraphs: [
-            '私は曖昧なアイデアを少しずつ磨き、公開できる形に変えていくのが好きです。それはノートであり、LPであり、デジタルプロダクトであり、長く使える運用システムでもあります。',
-            '単に機能を増やすより、ページに記憶点があるか、情報にリズムがあるか、動きが表現に役立っているかを重視しています。',
-            'このブログもただの置き場所ではなく、進化し続ける個人プロダクトの実験室として育てています。',
+        tagline:
+            'このページはまず、参考にしたいテーマの空気感、浅色レイアウト、カード構成、ホバー表現を先に整えるためのデモです。',
+        introTitle: '私は誰か',
+        introBody:
+            'ここはまだ仮の内容です。あとで本当の自己紹介、学歴、仕事、得意分野、価値観に差し替えられるように構造を先に整えています。',
+        introBullets: [
+            '個人ブランドとして長く育つブログを目指す',
+            'コンテンツ、プロダクト、自動化、表現を並行して育てる',
+            '見せるだけでなく機会と信頼を受け止めるサイトにしたい',
         ],
-        principles: [
-            { title: '記憶に残る表現', description: '見た瞬間に雰囲気が伝わり、他と違うと感じてもらえることを大切にしています。' },
-            { title: '断片よりシステム', description: 'ページ単体より、コンテンツ・導線・運用・ブランドがつながることを重視します。' },
-            { title: '動きは理解を助けるために', description: 'アニメーションは派手さよりも、層・流れ・反応をつくるために使いたいです。' },
+        status: 'Open to collaborate',
+        primaryCta: '連絡する',
+        secondaryCta: '協力入口',
+        floatingSkills: ['Next.js', 'Motion', 'Branding', 'Automation'],
+        profileSummary: ['Personal Blog', 'Long-term', 'Product Expression'],
+        journeyTitle: '生涯、無限に近づく',
+        journeyBody:
+            'ここは参考ページ右側の人生カードを意識したデモです。あとで実際の学歴、職歴、長期ビジョンに置き換えられます。',
+        journeyItems: [
+            '表現からプロダクト思考へ',
+            'ブログを個人ブランドの拠点へ育てる',
+            '管理画面、体験、コンテンツを少しずつ連動させる',
         ],
     },
     skills: {
-        title: 'アイデアを形にするためのスキル',
-        intro: '私は単発のアウトプットより、プロダクト思考、ページ表現、実装、コンテンツ設計を一緒に進めるスタイルです。',
-        marquee: ['Next.js', 'Framer Motion', 'Tailwind CSS', 'Supabase', 'Markdown Systems', 'Product Messaging', 'SEO-aware Content', 'Automation Workflows', 'Landing Pages', 'Admin Tools'],
-        groups: [
-            { title: 'プロダクト表現', items: ['価値提案整理', 'ページストーリー', '導線設計', '個人ブランド定位'], accent: 'linear-gradient(90deg, rgba(34,211,238,0.95), rgba(96,165,250,0.25))' },
-            { title: '体験設計', items: ['視覚階層', 'スクロールの流れ', 'インタラクション', '情報密度調整'], accent: 'linear-gradient(90deg, rgba(244,114,182,0.95), rgba(168,85,247,0.30))' },
-            { title: 'システム構築', items: ['Next.js', 'コンテンツ基盤', '管理画面', 'Supabase'], accent: 'linear-gradient(90deg, rgba(250,204,21,0.95), rgba(34,211,238,0.25))' },
-            { title: '効率化', items: ['AI ワークフロー', '自動化 SOP', 'テンプレ資産', '反復作業削減'], accent: 'linear-gradient(90deg, rgba(52,211,153,0.95), rgba(59,130,246,0.28))' },
-            { title: '成長視点', items: ['入口設計', '信頼シグナル', 'ユーザー導線', '軽量検証'], accent: 'linear-gradient(90deg, rgba(129,140,248,0.95), rgba(236,72,153,0.32))' },
-            { title: '長期複利', items: ['ブログ基盤', '資産化', 'デジタル商品', '一貫したブランド感'], accent: 'linear-gradient(90deg, rgba(251,146,60,0.95), rgba(244,114,182,0.28))' },
+        title: '創造を起動する',
+        intro:
+            'まずは自動で流れる skills、ホバーで停止する挙動、分割カードのリズムなど、テーマの雰囲気を先に再現しています。',
+        marquee: [
+            'Next.js',
+            'TypeScript',
+            'Framer Motion',
+            'Tailwind CSS',
+            'Supabase',
+            'Content Design',
+            'Automation',
+            'Prompt Systems',
+            'Landing Pages',
+            'Admin Dashboard',
         ],
-    },
-    journey: {
-        title: 'Journey',
-        intro: '典型的なキャリアというより、コンテンツ・プロダクト・体験が少しずつ重なってできた流れです。',
-        timeline: [
-            { year: 'Phase 01', title: '表現とコンテンツから出発', description: '文章、構造化、情報整理から入り、価値の伝え方に対する感覚を磨いてきました。' },
-            { year: 'Phase 02', title: 'プロダクトとワークフローへ', description: '書くことだけでなく、仕組み化、自動化、プロダクト化まで含めて考えるようになりました。' },
-            { year: 'Phase 03', title: '個人ブランド型サイトを構築', description: 'ブログ、プロダクト、ノート、資料、相談導線を一つのブランド体験として接続しています。' },
+        categories: [
+            {
+                title: 'ページ表現',
+                summary: '伝えたいことを、平坦ではなくリズムのあるセクション構成へ変える。',
+                items: ['ファーストビュー', 'モジュール配置', '視線誘導', 'ブランド感'],
+                accent: 'linear-gradient(90deg,#8ec5ff,#c8ddff)',
+            },
+            {
+                title: '受け皿設計',
+                summary: 'ただ見せるのではなく、信頼感、入口、相談導線まで含めて考える。',
+                items: ['CTA 設計', '商品ページ', '相談入口', '情報階層'],
+                accent: 'linear-gradient(90deg,#ffc6b3,#ffe0d4)',
+            },
+            {
+                title: 'システム感',
+                summary: 'ブログ、商品、管理画面、コンテンツ基盤がつながるように整えていく。',
+                items: ['コンテンツ基盤', '管理画面', '構造改善', '長期運用'],
+                accent: 'linear-gradient(90deg,#b8e7d3,#d5f3e7)',
+            },
         ],
-        snapshotTitle: 'What I am building now',
-        snapshotBody: '今はこの個人ブログを、表現力があり、構造があり、ちゃんと機会を受け止められるブランド型サイトに育てることに集中しています。',
-        snapshotList: ['About / Product / Admin 体験の磨き込み', '長期運用に向くコンテンツ基盤づくり', '個人ブランドの中心としてのブログ強化'],
     },
     personality: {
-        title: 'Work style and personal preference',
-        intro: 'きれいなだけのアイデアより、審美性・システム感・実行性が同居しているものに惹かれます。',
+        title: '性格と嗜好',
+        intro:
+            'ここは「性格モジュール + 写真 + 趣味 + アニメ + 音楽 + 関心テーマ」のような構成を先に整えるためのデモです。',
+        mbti: 'INTP',
+        mbtiSummary:
+            '理性と構造を好み、静かな表現や情報の整理に惹かれやすいタイプ。要素を増やすより、全体の印象を整える方が好きです。',
+        spotlightTitle: 'Portrait Demo',
+        spotlightBody:
+            '今はダミーの肖像ですが、あとで自分の写真や、より自分らしいビジュアル素材に差し替えられます。',
+        highlights: [
+            '空気感のあるファーストビューが好き',
+            'うるさすぎないモーションが好き',
+            '構造がつながっていくサイトに惹かれる',
+            '長く積み上がる個人ブランドを育てたい',
+        ],
+        musicTitle: '音楽の好み',
+        musicBody: '普段よく聴く音楽、制作時の雰囲気、気分の切り替えに使うプレイリストなどを書けます。',
+        focusTitle: '関心のあるテーマ',
+        focusBody: 'プロダクト、AI、創作、自動化、個人成長、効率化など、長く関心を持つテーマの置き場です。',
+        galleryTitle: '趣味とコレクション',
+        galleryIntro:
+            'アニメ、得意なこと、趣味、好きなビジュアルなどを並べるブロックとして先に構造だけ合わせています。',
+        posters: [
+            {
+                title: 'Favorite Anime A',
+                caption: 'Hover で拡大し、より滑らかな切り替えを感じられるダミーカードです。',
+                gradient: 'linear-gradient(160deg,#dfefff,#c6dbff)',
+            },
+            {
+                title: 'Favorite Anime B',
+                caption: 'あとで実際に好きな作品やカバー画像へ差し替えられます。',
+                gradient: 'linear-gradient(160deg,#fff2db,#ffd9cc)',
+            },
+            {
+                title: 'Hobby Demo',
+                caption: '写真、収集、創作、運動など、自分らしい趣味カードに置き換えられます。',
+                gradient: 'linear-gradient(160deg,#e6fbef,#cbeed8)',
+            },
+            {
+                title: 'Talent Demo',
+                caption: '得意分野や長く育てているスキルを見せるカードとして使えます。',
+                gradient: 'linear-gradient(160deg,#f2eaff,#dfd3ff)',
+            },
+        ],
         traits: [
-            { title: '強いファーストビューが好き', description: '最初の数秒で空気感が伝わることをかなり重視しています。' },
-            { title: '繊細で抑制された動きが好き', description: '派手でも、騒がしくなく、意味のある動きであることが大事です。' },
-            { title: 'システム感にこだわる', description: 'コンテンツ、プロダクト、管理画面、導線がどうつながるかを常に考えます。' },
-            { title: '長期で効くものを作りたい', description: '一時的な話題性より、積み上がっていくブランドと資産を大切にしています。' },
+            { title: 'Rhythm', description: 'ページには読む呼吸と視線の流れが必要だと考えています。' },
+            { title: 'System', description: 'モジュールが孤立せず、全体としてつながる構造が好きです。' },
+            { title: 'Taste', description: 'テンプレ感の薄い、静かだけど記憶に残る表現に惹かれます。' },
+            { title: 'Long-term', description: '一度きりの驚きより、積み上がる継続性を大切にします。' },
         ],
     },
-    site: {
-        title: 'What this site is becoming',
-        intro: 'このサイトは単なるブログでも商品一覧でもなく、表現、プロダクト、資料、相談、実験をまとめて担う個人ブランド基盤になっていくはずです。',
-        blocks: [
-            { title: 'Portfolio', description: '自分の審美感、ページ表現、プロダクト思考を見せる場です。' },
-            { title: 'Lab', description: 'ページ構成、動き、情報設計の試行をここで繰り返しています。' },
-            { title: 'Gateway', description: '相談、協業、今後のデジタル商品への入口として機能させたいです。' },
-            { title: 'Living system', description: 'このサイトは完成形ではなく、私と一緒に変化し続けるものです。' },
+    info: {
+        title: '個人モジュール',
+        statsTitle: 'サイト統計 / 個人情報',
+        stats: [
+            { label: 'Demo Articles', value: '24+' },
+            { label: 'Theme Iteration', value: 'V3 Demo' },
+            { label: 'Direction', value: 'Personal Brand Site' },
+            { label: 'Long Goal', value: 'Content Compound System' },
+        ],
+        mapTitle: '地図の上の位置',
+        mapBody: 'ここは後で都市や活動エリア、思い入れのある場所情報に差し替えられる地図カードです。',
+        identityTitle: '私は誰か',
+        identityBody: '自己紹介、学歴、仕事、得意分野、どう見られたいかをまとめるためのカードです。',
+        educationTitle: '教育歴',
+        educationItems: ['Demo education item A', 'Demo education item B', 'Demo learning direction / focus'],
+        currentTitle: '現在の仕事',
+        currentItems: ['Demo role 01', 'Demo current focus 02', 'Demo long-term direction 03'],
+    },
+    narrative: {
+        routeTitle: 'シリーズ路程',
+        routeIntro:
+            'ここでは参考ページの「道のり感」を先に整えています。あとで本当の人生段階やプロジェクトの流れに差し替えられます。',
+        routeItems: [
+            {
+                stage: 'Phase 01',
+                title: '記録と表現から始める',
+                description: '書くこと、整理すること、見せ方を通して、自分の表現の土台を少しずつ作っていく。',
+            },
+            {
+                stage: 'Phase 02',
+                title: 'プロダクトと仕組みへ広げる',
+                description: 'ブログを表現だけではなく、価値や機会を受け止める装置として考え始める。',
+            },
+            {
+                stage: 'Phase 03',
+                title: '個人ブランドサイトへ',
+                description: 'About、商品、管理画面、ノートが一つのブランド体験としてつながっていく。',
+            },
+        ],
+        pactTitle: '実験の約束 / 十年の約束',
+        pactIntro: 'ここは長期ビジョン、継続の約束、読者との関係性を書くためのモジュールです。',
+        pactItems: [
+            '完成より継続的な改善を重視する',
+            'コンテンツと商品が支え合う構造にする',
+            'サイトを長く育つ個人ブランド資産にする',
         ],
     },
-    cta: {
-        title: '個人ブログをもっと印象的で、もっと機能する場所にしたいなら話しましょう。',
-        description: 'ブランドサイト、商品ページ、管理画面、コンテンツシステムまで、実装と運用の両方を見ながら一緒に前へ進めます。',
-        primary: '問い合わせる',
-        secondary: 'ノートを見る',
+    support: {
+        title: '感謝とサポート一覧',
+        intro: 'このブロックはまず構成を合わせるためのダミーです。あとで実際の支援者情報に差し替えられます。',
+        supporters: [
+            { name: 'Demo Supporter A', amount: '¥66', note: 'ページの空気感がとても好きです。' },
+            { name: 'Demo Supporter B', amount: '¥99', note: '今後の更新も楽しみにしています。' },
+            { name: 'Demo Supporter C', amount: '¥36', note: '個人サイトの方向性がとても良いです。' },
+            { name: 'Demo Supporter D', amount: '¥188', note: '長期的な制作を応援しています。' },
+        ],
+        ctaTitle: 'まずはテーマと構造をそろえる段階です。',
+        ctaBody:
+            'この版では、参考ページに近いモジュール構成、視線の流れ、浅色テーマ、ホバーの節度を先に整えています。実際の情報はあとから丁寧に差し替えられます。',
+        primaryCta: '内容を詰めていく',
+        secondaryCta: '先にノートを見る',
     },
 };
 
@@ -182,8 +379,8 @@ export async function generateMetadata({ params }: Props) {
         title: locale === 'zh' ? '关于我' : '私について',
         description:
             locale === 'zh'
-                ? '更像个人档案页的 About 页面，用自己的内容展示产品思考、审美方向与个人品牌系统。'
-                : 'プロダクト思考、審美感、個人ブランドの方向性をまとめたプロフィールページです。',
+                ? '按个人档案页结构重做的 About 页面，目前先用示意内容完成主题、布局与交互。'
+                : 'プロフィールページ構成を意識して作り直した About ページです。まずはテーマ、レイアウト、挙動を整えています。',
     };
 }
 
