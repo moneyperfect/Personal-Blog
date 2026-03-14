@@ -18,8 +18,8 @@ interface AboutProfileMediaRow {
 }
 
 export const ABOUT_PROFILE_MEDIA_DEFAULTS = {
-    avatarUrl: '/about/avatar-demo.svg',
-    portraitUrl: '/about/portrait-demo.svg',
+    avatarUrl: '/about/avatar-nas.jpg',
+    portraitUrl: '/about/portrait-intj.png',
 } as const;
 
 const EMPTY_ABOUT_PROFILE_MEDIA: AboutProfileMedia = {

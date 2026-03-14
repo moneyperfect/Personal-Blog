@@ -77,11 +77,12 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
         if (reduceMotion) return;
 
         void artControls.start({
-            x: 8,
-            y: -10,
-            scale: 1.028,
+            rotate: 15,
+            x: 2,
+            y: 8,
+            scale: 1.012,
             transition: {
-                duration: 0.36,
+                duration: 0.58,
                 ease: [0.22, 1, 0.36, 1],
             },
         });
@@ -93,13 +94,13 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
         if (reduceMotion) return;
 
         void artControls.start({
+            rotate: 0,
             x: 0,
-            y: [-4, 0],
+            y: 0,
             scale: 1,
             transition: {
-                x: { duration: 0.52, ease: [0.22, 1, 0.36, 1] },
-                y: { duration: 0.56, ease: [0.22, 1, 0.36, 1] },
-                scale: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+                duration: 0.68,
+                ease: [0.22, 1, 0.36, 1],
             },
         });
     };
@@ -124,8 +125,9 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                         <div className="about-personality-card__art">
                             <motion.div
                                 className={`about-personality-card__artInner ${isArtFocused ? 'is-focused' : ''}`}
-                                initial={{ x: 0, y: 0, scale: 1 }}
+                                initial={{ rotate: 0, x: 0, y: 0, scale: 1 }}
                                 animate={artControls}
+                                style={reduceMotion ? undefined : { transformOrigin: '58% 84%' }}
                                 onHoverStart={handleArtHoverStart}
                                 onHoverEnd={handleArtHoverEnd}
                             >
