@@ -1,0 +1,18 @@
+<svg width="700" height="420" viewBox="0 0 700 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="700" height="420" rx="40" fill="#FFF8FF"/>
+<path d="M397 85L480 118L507 197L478 250L429 260L387 236L370 175L397 85Z" fill="#A6749F"/>
+<path d="M298 308L340 250L379 250L421 308L456 420H260L298 308Z" fill="#E9E7ED"/>
+<path d="M341 133L417 110L463 160L450 235L390 258L329 236L309 178L341 133Z" fill="#C6947C"/>
+<path d="M389 149L428 170L431 210L400 233L360 216L352 178L389 149Z" fill="#F0D5BD"/>
+<path d="M321 172L350 168L355 215L325 224L301 202L321 172Z" fill="#B57A67"/>
+<path d="M430 175L454 181L467 212L442 225L430 201V175Z" fill="#B57A67"/>
+<path d="M352 178L386 189L404 170L402 232L367 216L352 178Z" fill="#E6C4AA"/>
+<rect x="352" y="162" width="96" height="21" rx="10.5" fill="#4E4067"/>
+<rect x="343" y="153" width="36" height="48" rx="8" fill="#4E4067"/>
+<rect x="416" y="153" width="36" height="48" rx="8" fill="#4E4067"/>
+<path d="M525 110L575 130L557 180L523 160L525 110Z" fill="#E8C1A4"/>
+<path d="M557 180L593 255L557 278L515 190L557 180Z" fill="#F4F4F4"/>
+<path d="M586 186L610 202L590 238L565 223L586 186Z" fill="#C48D52"/>
+<path d="M538 144L563 154L548 181L529 165L538 144Z" fill="#A064BB"/>
+<text x="58" y="72" fill="#A661BF" font-family="Arial, sans-serif" font-size="24" font-weight="700">MBTI</text>
+</svg>

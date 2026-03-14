@@ -1,51 +1,45 @@
 export interface AboutHeroContent {
-    eyebrow: string;
-    name: string;
-    tagline: string;
-    introTitle: string;
-    introBody: string;
-    introBullets: string[];
-    status: string;
-    primaryCta: string;
-    secondaryCta: string;
+    pageTitle: string;
     floatingPills: string[];
-    journeyTitle: string;
-    journeyBody: string;
-    journeyItems: string[];
+    aboutKicker: string;
+    aboutTitle: string;
+    aboutSubtitle: string;
+    idealLabel: string;
+    idealLines: string[];
 }
 
-export interface AboutSkillItem {
+export interface AboutSkillTile {
     label: string;
     icon: string;
-}
-
-export interface AboutSkillDisplayGroup {
-    title: string;
-    summary: string;
-    icon: string;
-    items: string[];
+    tone: 'sand' | 'indigo' | 'white' | 'green' | 'blue' | 'pink' | 'dark';
 }
 
 export interface AboutSkillContent {
+    label: string;
     title: string;
-    intro: string;
-    marquee: AboutSkillItem[];
-    displayGroups: AboutSkillDisplayGroup[];
+    categories: string[];
+    tiles: AboutSkillTile[];
+    careerLabel: string;
+    careerTitle: string;
+    careerItems: string[];
+    careerLegend: string;
+    careerStart: string;
+    careerEnd: string;
 }
 
-export interface AboutTalentItem {
+export interface AboutPersonalityContent {
+    label: string;
     title: string;
-    description: string;
-}
-
-export interface AboutMediaCard {
-    title: string;
-    description: string;
-    imageSrc: string;
-    imageAlt: string;
-    href?: string;
-    tag?: string;
-    caption?: string;
+    code: string;
+    notePrefix: string;
+    noteLinkLabel: string;
+    noteLinkHref: string;
+    noteSuffix: string;
+    illustrationSrc: string;
+    illustrationAlt: string;
+    photoLabel: string;
+    photoSrc: string;
+    photoAlt: string;
 }
 
 export interface AboutWorkCard {
@@ -53,40 +47,30 @@ export interface AboutWorkCard {
     summary: string;
     imageSrc: string;
     imageAlt: string;
-    href?: string;
     meta: string;
+    href?: string;
 }
 
 export interface AboutGameCard {
+    label: string;
+    imageSrc: string;
+    imageAlt: string;
+}
+
+export interface AboutPreferenceCard {
+    label: string;
     title: string;
-    summary: string;
+    subtitle: string;
     imageSrc: string;
     imageAlt: string;
     href?: string;
-    tag: string;
-}
-
-export interface AboutPersonalityContent {
-    title: string;
-    intro: string;
-    mbti: string;
-    mbtiLabel: string;
-    mbtiSummary: string;
-    photoTitle: string;
-    photoBody: string;
-    talentsTitle: string;
-    talentsIntro: string;
-    talents: AboutTalentItem[];
 }
 
 export interface AboutInfoContent {
-    title: string;
     statsTitle: string;
     stats: Array<{ label: string; value: string }>;
-    mapTitle: string;
-    mapBody: string;
-    identityTitle: string;
-    identityBody: string;
+    aboutTitle: string;
+    aboutBody: string;
     educationTitle: string;
     educationItems: string[];
     currentTitle: string;
@@ -96,10 +80,7 @@ export interface AboutInfoContent {
 export interface AboutNarrativeContent {
     routeTitle: string;
     routeIntro: string;
-    routeItems: Array<{ stage: string; title: string; description: string }>;
-    pactTitle: string;
-    pactIntro: string;
-    pactItems: string[];
+    routeItems: string[];
 }
 
 export interface AboutSupportContent {
@@ -117,17 +98,12 @@ export interface AboutPageContent {
     skills: AboutSkillContent;
     personality: AboutPersonalityContent;
     worksTitle: string;
-    worksIntro: string;
     works: AboutWorkCard[];
     gamesTitle: string;
-    gamesIntro: string;
     games: AboutGameCard[];
-    animeTitle: string;
-    animeIntro: string;
-    anime: AboutMediaCard[];
-    musicCard: AboutMediaCard;
-    focusCard: AboutMediaCard;
+    preferencesTitle: string;
+    preferences: AboutPreferenceCard[];
     info: AboutInfoContent;
     narrative: AboutNarrativeContent;
-    support: AboutSupportContent;
+    support?: AboutSupportContent;
 }

@@ -1,69 +1,74 @@
 'use client';
 
-import { motion, useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from 'framer-motion';
 import type { AboutSkillContent } from './types';
 
 interface AboutSkillRailProps {
     content: AboutSkillContent;
-    locale: string;
 }
 
-export default function AboutSkillRail({ content, locale }: AboutSkillRailProps) {
+const TONE_CLASS_MAP: Record<AboutSkillContent['tiles'][number]['tone'], string> = {
+    sand: 'about-skill-tile--sand',
+    indigo: 'about-skill-tile--indigo',
+    white: 'about-skill-tile--white',
+    green: 'about-skill-tile--green',
+    blue: 'about-skill-tile--blue',
+    pink: 'about-skill-tile--pink',
+    dark: 'about-skill-tile--dark',
+};
+
+export default function AboutSkillRail({ content }: AboutSkillRailProps) {
     const reduceMotion = useReducedMotion();
 
     return (
-        <section className="about-section-card">
-            <div className="about-section-header">
-                <div>
-                    <span className="about-eyebrow">{content.title}</span>
-                    <h2 className="about-section-title">{content.title}</h2>
-                    <p className="about-section-copy">{content.intro}</p>
+        <section className="about-skill-row">
+            <article className="about-bento-card about-hover-spring about-skill-card">
+                <span className="about-eyebrow">{content.label}</span>
+                <h2 className="about-section-title about-section-title--compact">{content.title}</h2>
+                <div className="about-skill-category-row">
+                    {content.categories.map((item) => (
+                        <span key={item}>{item}</span>
+                    ))}
                 </div>
-                <span className="about-section-note">
-                    {locale === 'zh' ? '滚动技能带悬停会暂停' : 'Hover pauses the marquee'}
-                </span>
-            </div>
 
-            <div className="about-creator-marquee">
-                <div className={`about-creator-track ${reduceMotion ? 'about-creator-track--static' : ''}`}>
-                    {[0, 1].map((group) => (
-                        <div key={group} className="about-creator-group" aria-hidden={group === 1}>
-                            {content.marquee.map((item) => (
-                                <div key={`${group}-${item.label}`} className="about-creator-pill">
-                                    <span className="about-creator-pill__icon">{item.icon}</span>
-                                    <span>{item.label}</span>
-                                </div>
-                            ))}
+                <div className="about-skill-grid-shell">
+                    <div className={`about-skill-grid-track ${reduceMotion ? 'about-skill-grid-track--static' : ''}`}>
+                        {[0, 1].map((group) => (
+                            <div key={group} className="about-skill-grid" aria-hidden={group === 1}>
+                                {content.tiles.map((tile) => (
+                                    <div key={`${group}-${tile.label}`} className={`about-skill-tile ${TONE_CLASS_MAP[tile.tone]}`}>
+                                        <span className="about-skill-tile__icon">{tile.icon}</span>
+                                        <span className="about-skill-tile__label">{tile.label}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </article>
+
+            <article className="about-bento-card about-hover-spring about-career-card">
+                <span className="about-eyebrow">{content.careerLabel}</span>
+                <h2 className="about-section-title about-section-title--compact">{content.careerTitle}</h2>
+                <div className="about-career-list">
+                    {content.careerItems.map((item, index) => (
+                        <div key={item} className="about-career-item">
+                            <span className={`about-career-item__dot about-career-item__dot--${index % 3}`} />
+                            <span>{item}</span>
                         </div>
                     ))}
                 </div>
-            </div>
-
-            <div className="about-skill-display-grid">
-                {content.displayGroups.map((group) => (
-                    <motion.article
-                        key={group.title}
-                        whileHover={reduceMotion ? undefined : { y: -6 }}
-                        transition={{ duration: 0.24, ease: 'easeOut' }}
-                        className="about-skill-display-card"
-                    >
-                        <div className="about-skill-display-card__top">
-                            <span className="about-skill-display-card__icon">{group.icon}</span>
-                            <div>
-                                <h3 className="about-skill-display-card__title">{group.title}</h3>
-                                <p className="about-skill-display-card__summary">{group.summary}</p>
-                            </div>
-                        </div>
-                        <div className="about-skill-display-card__chips">
-                            {group.items.map((item) => (
-                                <span key={item} className="about-skill-display-card__chip">
-                                    {item}
-                                </span>
-                            ))}
-                        </div>
-                    </motion.article>
-                ))}
-            </div>
+                <p className="about-career-legend">{content.careerLegend}</p>
+                <div className="about-career-progress">
+                    <span className="about-career-progress__seg about-career-progress__seg--blue" />
+                    <span className="about-career-progress__seg about-career-progress__seg--yellow" />
+                    <span className="about-career-progress__seg about-career-progress__seg--green" />
+                </div>
+                <div className="about-career-years">
+                    <span>{content.careerStart}</span>
+                    <span>{content.careerEnd}</span>
+                </div>
+            </article>
         </section>
     );
 }
