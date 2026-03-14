@@ -558,6 +558,10 @@
   color: #5b6474;
 }
 
+.about-about-card p {
+  white-space: pre-line;
+}
+
 .about-inline-link {
   display: inline-flex;
   align-items: center;
