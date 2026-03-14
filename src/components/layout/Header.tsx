@@ -12,6 +12,7 @@ const navItems = [
     { key: 'products', href: '/products' },
     { key: 'saas', href: '/saas' },
     { key: 'library', href: '/library' },
+    { key: 'about', href: '/about' },
     { key: 'workWithMe', href: '/work-with-me' },
 ];
 
@@ -20,6 +21,14 @@ export function Header() {
     const locale = useLocale();
     const pathname = usePathname();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const isAboutPage = pathname === `/${locale}/about`;
+    const getNavLabel = (key: string) => {
+        if (key === 'about') {
+            return locale === 'zh' ? '关于我' : '私について';
+        }
+
+        return t(key);
+    };
 
     const isActive = (href: string) => {
         const localePath = `/${locale}${href}`;
@@ -30,15 +39,25 @@ export function Header() {
     };
 
     return (
-        <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-surface-200">
+        <header
+            className={`sticky top-0 z-50 border-b backdrop-blur-md transition-colors ${
+                isAboutPage
+                    ? 'border-white/10 bg-[#040814]/72'
+                    : 'border-surface-200 bg-white/90'
+            }`}
+        >
             <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex items-center justify-between h-16">
                     {/* Logo */}
                     <Link
                         href={`/${locale}`}
-                        className="flex items-center gap-2 font-semibold text-lg text-surface-900 hover:text-primary-600 transition-colors"
+                        className={`flex items-center gap-2 text-lg font-semibold transition-colors ${
+                            isAboutPage
+                                ? 'text-white hover:text-cyan-200'
+                                : 'text-surface-900 hover:text-primary-600'
+                        }`}
                     >
-                        <svg className="w-8 h-8 text-primary-600" fill="currentColor" viewBox="0 0 24 24">
+                        <svg className={`w-8 h-8 ${isAboutPage ? 'text-cyan-300' : 'text-primary-600'}`} fill="currentColor" viewBox="0 0 24 24">
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                         </svg>
                         <span className="hidden sm:inline">NAS</span>
@@ -52,17 +71,25 @@ export function Header() {
                                 <Link
                                     key={item.key}
                                     href={`/${locale}${item.href}`}
-                                    className={`relative px-3 py-2 text-sm font-medium rounded-md transition-colors ${active ? 'text-primary-600' : 'text-surface-600 hover:text-surface-900 hover:bg-surface-50'}`}
+                                    className={`relative rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                                        active
+                                            ? isAboutPage
+                                                ? 'text-cyan-200'
+                                                : 'text-primary-600'
+                                            : isAboutPage
+                                                ? 'text-slate-300 hover:bg-white/6 hover:text-white'
+                                                : 'text-surface-600 hover:bg-surface-50 hover:text-surface-900'
+                                    }`}
                                 >
                                     {active && (
                                         <motion.div
                                             layoutId="nav-indicator"
-                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary-600"
+                                            className={`absolute bottom-0 left-0 right-0 h-0.5 ${isAboutPage ? 'bg-cyan-300' : 'bg-primary-600'}`}
                                             initial={false}
                                             transition={{ type: "spring", stiffness: 350, damping: 30 }}
                                         />
                                     )}
-                                    {t(item.key)}
+                                    {getNavLabel(item.key)}
                                 </Link>
                             );
                         })}
@@ -76,7 +103,11 @@ export function Header() {
                         <button
                             type="button"
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                            className="md:hidden p-2 rounded-google text-surface-600 hover:bg-surface-100"
+                            className={`rounded-google p-2 md:hidden ${
+                                isAboutPage
+                                    ? 'text-slate-200 hover:bg-white/8'
+                                    : 'text-surface-600 hover:bg-surface-100'
+                            }`}
                             aria-label="Toggle menu"
                         >
                             <AnimatePresence mode="wait" initial={false}>
@@ -116,7 +147,11 @@ export function Header() {
                             animate={{ height: 'auto', opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
                             transition={{ duration: 0.2 }}
-                            className="md:hidden overflow-hidden border-t border-surface-200"
+                            className={`overflow-hidden border-t md:hidden ${
+                                isAboutPage
+                                    ? 'border-white/10 bg-[#050916]/96'
+                                    : 'border-surface-200'
+                            }`}
                         >
                             <div className="flex flex-col gap-1 py-4">
                                 {navItems.map((item) => (
@@ -124,9 +159,17 @@ export function Header() {
                                         key={item.key}
                                         href={`/${locale}${item.href}`}
                                         onClick={() => setMobileMenuOpen(false)}
-                                        className={`nav-link ${isActive(item.href) ? 'nav-link-active' : ''}`}
+                                        className={`nav-link ${
+                                            isAboutPage
+                                                ? isActive(item.href)
+                                                    ? 'bg-white/10 text-cyan-200'
+                                                    : 'text-slate-300 hover:bg-white/6 hover:text-white'
+                                                : isActive(item.href)
+                                                    ? 'nav-link-active'
+                                                    : ''
+                                        }`}
                                     >
-                                        {t(item.key)}
+                                        {getNavLabel(item.key)}
                                     </Link>
                                 ))}
                             </div>
