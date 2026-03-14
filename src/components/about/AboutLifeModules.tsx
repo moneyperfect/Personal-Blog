@@ -17,6 +17,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
     const artControls = useAnimationControls();
     const [activePreference, setActivePreference] = useState(0);
     const [activeWork, setActiveWork] = useState(0);
+    const [isArtFocused, setIsArtFocused] = useState(false);
     const currentWork = content.works[activeWork];
     const copy =
         locale === 'zh'
@@ -38,56 +39,67 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                   viewWork: '作品を見る',
                   profileLinks: 'プロフィールリンク',
               };
+
     const footerLinks = [
         {
             key: 'home',
             href: `/${locale}`,
             label: copy.home,
             icon: <HomeIcon />,
-            kind: 'internal',
+            kind: 'internal' as const,
         },
         {
             key: 'email',
             href: 'mailto:leizhen2046@gmail.com',
             label: copy.email,
             icon: <MailIcon />,
-            kind: 'mail',
+            kind: 'mail' as const,
         },
         {
             key: 'github',
             href: 'https://github.com/moneyperfect',
             label: 'GitHub',
             icon: <GitHubIcon />,
-            kind: 'external',
+            kind: 'external' as const,
         },
         {
             key: 'douyin',
             href: 'https://v.douyin.com/BrWWZQDifn8/',
             label: copy.douyin,
             icon: <DouyinIcon />,
-            kind: 'external',
+            kind: 'external' as const,
         },
     ];
 
     const handleArtHoverStart = () => {
+        setIsArtFocused(true);
+
         if (reduceMotion) return;
 
         void artControls.start({
-            rotate: -15,
-            y: 0,
-            transition: { type: 'spring', stiffness: 220, damping: 18, mass: 0.8 },
+            x: 8,
+            y: -10,
+            scale: 1.028,
+            transition: {
+                duration: 0.36,
+                ease: [0.22, 1, 0.36, 1],
+            },
         });
     };
 
     const handleArtHoverEnd = () => {
+        setIsArtFocused(false);
+
         if (reduceMotion) return;
 
         void artControls.start({
-            rotate: 0,
-            y: [0, -10, 0],
+            x: 0,
+            y: [-4, 0],
+            scale: 1,
             transition: {
-                rotate: { type: 'spring', stiffness: 220, damping: 18, mass: 0.8 },
-                y: { duration: 0.48, ease: [0.22, 1, 0.36, 1] },
+                x: { duration: 0.52, ease: [0.22, 1, 0.36, 1] },
+                y: { duration: 0.56, ease: [0.22, 1, 0.36, 1] },
+                scale: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
             },
         });
     };
@@ -111,10 +123,9 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                         </div>
                         <div className="about-personality-card__art">
                             <motion.div
-                                className="about-personality-card__artInner"
-                                initial={{ rotate: 0, y: 0 }}
+                                className={`about-personality-card__artInner ${isArtFocused ? 'is-focused' : ''}`}
+                                initial={{ x: 0, y: 0, scale: 1 }}
                                 animate={artControls}
-                                style={reduceMotion ? undefined : { transformOrigin: '56% 90%' }}
                                 onHoverStart={handleArtHoverStart}
                                 onHoverEnd={handleArtHoverEnd}
                             >
@@ -272,12 +283,12 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
 
             <div className="about-grid about-grid--info">
                 <article className="about-bento-card about-hover-spring about-stats-card">
-                    <span className="about-eyebrow about-eyebrow--light">{content.info.statsTitle}</span>
-                    <div className="about-stats-card__grid">
-                        {content.info.stats.map((item) => (
-                            <div key={item.label}>
-                                <div className="about-stats-card__value">{item.value}</div>
-                                <div className="about-stats-card__label">{item.label}</div>
+                    <span className="about-eyebrow about-eyebrow--light">{content.info.principlesTitle}</span>
+                    <div className="about-principles-list">
+                        {content.info.principles.map((item) => (
+                            <div key={item.title} className="about-principle-card">
+                                <div className="about-principle-card__title">{item.title}</div>
+                                <p>{item.description}</p>
                             </div>
                         ))}
                     </div>
@@ -286,23 +297,19 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                 <article className="about-bento-card about-hover-spring about-about-card">
                     <div className="about-about-card__block">
                         <span className="about-eyebrow">{content.info.aboutTitle}</span>
-                        <p>{content.info.aboutBody}</p>
+                        <div className="about-about-card__paragraphs">
+                            {content.info.aboutParagraphs.map((paragraph) => (
+                                <p key={paragraph}>{paragraph}</p>
+                            ))}
+                        </div>
                     </div>
                     <div className="about-about-card__block">
                         <span className="about-eyebrow">{content.info.educationTitle}</span>
-                        <div className="about-chip-list">
-                            {content.info.educationItems.map((item) => (
-                                <span key={item}>{item}</span>
-                            ))}
-                        </div>
+                        <p className="about-about-card__metaLine">{content.info.educationBody}</p>
                     </div>
                     <div className="about-about-card__block">
                         <span className="about-eyebrow">{content.info.currentTitle}</span>
-                        <div className="about-chip-list">
-                            {content.info.currentItems.map((item) => (
-                                <span key={item}>{item}</span>
-                            ))}
-                        </div>
+                        <p className="about-about-card__metaLine">{content.info.currentBody}</p>
                     </div>
                 </article>
             </div>
@@ -311,13 +318,6 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                 <span className="about-eyebrow">{content.narrative.routeTitle}</span>
                 <h3 className="about-section-title about-section-title--compact">{content.narrative.routeTitle}</h3>
                 <p className="about-route-card__intro">{content.narrative.routeIntro}</p>
-                <div className="about-route-card__list">
-                    {content.narrative.routeItems.map((item) => (
-                        <div key={item} className="about-route-chip">
-                            {item}
-                        </div>
-                    ))}
-                </div>
             </article>
 
             <div className="about-link-row" aria-label={copy.profileLinks}>

@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
         const file = formData.get('file') as File;
         const bucket = String(formData.get('bucket') || 'blog-assets');
         const folder = String(formData.get('folder') || 'uploads').replace(/^\/+|\/+$/g, '');
+        const isAboutProfileUpload = folder.startsWith('about/profile');
 
         if (!file) {
             logInfo(ctx, 'validation_failed', { reason: 'missing_file' });
@@ -62,6 +63,22 @@ export async function POST(request: NextRequest) {
                 { error: '未找到文件。', code: 'NO_FILE', requestId: ctx.requestId },
                 { status: 400 }
             );
+        }
+
+        if (isAboutProfileUpload) {
+            const allowedTypes = new Set(['image/webp', 'image/jpeg', 'image/png']);
+
+            if (!allowedTypes.has(file.type)) {
+                logInfo(ctx, 'validation_failed', { reason: 'unsupported_about_profile_media_type', fileType: file.type });
+                return NextResponse.json(
+                    {
+                        error: '头像与个人照片只支持 WebP、JPEG 或 PNG 格式。',
+                        code: 'UNSUPPORTED_ABOUT_PROFILE_MEDIA_TYPE',
+                        requestId: ctx.requestId,
+                    },
+                    { status: 400 },
+                );
+            }
         }
 
         const timestamp = Date.now();

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import AdminShell from '@/components/admin/AdminShell';
+import AboutMediaPanel from './AboutMediaPanel';
 
 type LifecycleStatus = 'draft' | 'review' | 'published';
 
@@ -364,6 +365,8 @@ export default function DashboardClient() {
       ) : null}
 
       <div className="space-y-8">
+        <AboutMediaPanel />
+
         {/* Analytics Bento Grid */}
         <section>
           <h2 className="text-sm font-semibold text-slate-900 mb-4 px-1">数据大盘概览</h2>

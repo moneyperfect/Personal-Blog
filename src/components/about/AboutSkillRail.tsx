@@ -17,11 +17,7 @@ export default function AboutSkillRail({ content }: AboutSkillRailProps) {
             <article className="about-bento-card about-hover-spring about-skill-card">
                 <span className="about-eyebrow">{content.label}</span>
                 <h2 className="about-section-title about-section-title--compact">{content.title}</h2>
-                <div className="about-skill-category-row">
-                    {content.categories.map((item) => (
-                        <span key={item}>{item}</span>
-                    ))}
-                </div>
+                <p className="about-skill-summary">{content.summary}</p>
 
                 <div className="about-skill-grid-shell">
                     <div className={`about-skill-grid-track ${reduceMotion ? 'about-skill-grid-track--static' : ''}`}>
@@ -52,20 +48,39 @@ export default function AboutSkillRail({ content }: AboutSkillRailProps) {
             <article className="about-bento-card about-hover-spring about-career-card">
                 <span className="about-eyebrow">{content.careerLabel}</span>
                 <h2 className="about-section-title about-section-title--compact">{content.careerTitle}</h2>
+
                 <div className="about-career-list">
-                    {content.careerItems.map((item, index) => (
-                        <div key={item} className="about-career-item">
-                            <span className={`about-career-item__dot about-career-item__dot--${index % 3}`} />
-                            <span>{item}</span>
+                    {content.careerTimeline.map((item) => (
+                        <div
+                            key={item.date}
+                            className={`about-career-entry about-career-entry--${item.tone}`}
+                            style={{ '--career-progress': item.progress } as CSSProperties}
+                        >
+                            <div className={`about-career-entry__dot about-career-entry__dot--${item.tone}`} />
+                            <div className="about-career-entry__copy">
+                                <div className="about-career-entry__date">{item.date}</div>
+                                <div className="about-career-entry__title">{item.title}</div>
+                                <p>{item.description}</p>
+                            </div>
                         </div>
                     ))}
                 </div>
-                <p className="about-career-legend">{content.careerLegend}</p>
+
                 <div className="about-career-progress">
-                    <span className="about-career-progress__seg about-career-progress__seg--blue" />
-                    <span className="about-career-progress__seg about-career-progress__seg--yellow" />
-                    <span className="about-career-progress__seg about-career-progress__seg--green" />
+                    <span className="about-career-progress__legend">{content.careerLegend}</span>
+                    <div className="about-career-progress__line">
+                        <div className="about-career-progress__rail" />
+                        {content.careerTimeline.map((item) => (
+                            <span
+                                key={item.date}
+                                className={`about-career-progress__marker about-career-progress__marker--${item.tone}`}
+                                style={{ '--career-progress': item.progress } as CSSProperties}
+                                aria-hidden="true"
+                            />
+                        ))}
+                    </div>
                 </div>
+
                 <div className="about-career-years">
                     <span>{content.careerStart}</span>
                     <span>{content.careerEnd}</span>

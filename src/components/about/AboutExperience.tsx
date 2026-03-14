@@ -14,7 +14,7 @@ export default function AboutExperience({ locale, content }: AboutExperienceProp
     return (
         <div className="about-page-root">
             <div className="about-bento-container">
-                <AboutHero locale={locale} content={content.hero} />
+                <AboutHero content={content.hero} />
                 <AboutSkillRail content={content.skills} />
                 <AboutLifeModules locale={locale} content={content} />
             </div>

@@ -1,20 +1,31 @@
 export interface AboutHeroContent {
     pageTitle: string;
     floatingPills: string[];
+    avatarSrc: string;
+    avatarAlt: string;
     aboutKicker: string;
     aboutTitle: string;
     aboutSubtitle: string;
     idealLabel: string;
-    idealLines: string[];
+    idealHeadline: string;
+    idealBody: string;
+}
+
+export interface AboutCareerTimelineItem {
+    date: string;
+    title: string;
+    description: string;
+    tone: 'blue' | 'yellow' | 'green';
+    progress: string;
 }
 
 export interface AboutSkillContent {
     label: string;
     title: string;
-    categories: string[];
+    summary: string;
     careerLabel: string;
     careerTitle: string;
-    careerItems: string[];
+    careerTimeline: AboutCareerTimelineItem[];
     careerLegend: string;
     careerStart: string;
     careerEnd: string;
@@ -58,20 +69,19 @@ export interface AboutPreferenceCard {
 }
 
 export interface AboutInfoContent {
-    statsTitle: string;
-    stats: Array<{ label: string; value: string }>;
+    principlesTitle: string;
+    principles: Array<{ title: string; description: string }>;
     aboutTitle: string;
-    aboutBody: string;
+    aboutParagraphs: string[];
     educationTitle: string;
-    educationItems: string[];
+    educationBody: string;
     currentTitle: string;
-    currentItems: string[];
+    currentBody: string;
 }
 
 export interface AboutNarrativeContent {
     routeTitle: string;
     routeIntro: string;
-    routeItems: string[];
 }
 
 export interface AboutSupportContent {

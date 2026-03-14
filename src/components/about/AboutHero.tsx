@@ -6,11 +6,10 @@ import { useEffect } from 'react';
 import type { AboutHeroContent } from './types';
 
 interface AboutHeroProps {
-    locale: string;
     content: AboutHeroContent;
 }
 
-export default function AboutHero({ locale, content }: AboutHeroProps) {
+export default function AboutHero({ content }: AboutHeroProps) {
     const reduceMotion = useReducedMotion();
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
@@ -64,8 +63,8 @@ export default function AboutHero({ locale, content }: AboutHeroProps) {
                 >
                     <div className="about-avatar-ring">
                         <Image
-                            src="/about/avatar-demo.svg"
-                            alt={locale === 'zh' ? '头像' : 'アバター'}
+                            src={content.avatarSrc}
+                            alt={content.avatarAlt}
                             fill
                             className="object-cover"
                             sizes="240px"
@@ -104,13 +103,8 @@ export default function AboutHero({ locale, content }: AboutHeroProps) {
 
                 <article className="about-bento-card about-hover-spring about-card-ideal">
                     <span className="about-eyebrow">{content.idealLabel}</span>
-                    <div className="about-ideal-lines">
-                        {content.idealLines.map((line, index) => (
-                            <span key={line} className={index === content.idealLines.length - 1 ? 'is-accent' : undefined}>
-                                {line}
-                            </span>
-                        ))}
-                    </div>
+                    <h2 className="about-card-ideal__headline">{content.idealHeadline}</h2>
+                    <p className="about-card-ideal__body">{content.idealBody}</p>
                 </article>
             </div>
         </section>
