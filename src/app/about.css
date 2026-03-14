@@ -57,7 +57,7 @@
 .about-page-title {
   margin: 18px 0 20px;
   text-align: center;
-  font-size: clamp(3rem, 4.2vw, 4.2rem);
+  font-size: clamp(2.6rem, 3.7vw, 3.65rem);
   font-weight: 800;
   line-height: 1.05;
 }
@@ -740,7 +740,8 @@
 }
 
 .about-stats-card {
-  min-height: 280px;
+  min-height: 240px;
+  padding: 24px;
   background: #1b1e26;
   color: #ffffff;
   border-color: #1b1e26;
@@ -748,8 +749,8 @@
 
 .about-stats-card__grid {
   display: grid;
-  gap: 22px;
-  margin-top: 22px;
+  gap: 18px;
+  margin-top: 18px;
 }
 
 .about-stats-card__value {
@@ -767,13 +768,14 @@
 .about-about-card {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 18px;
+  padding: 24px;
 }
 
 .about-about-card__block {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .about-chip-list {
@@ -801,6 +803,40 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 22px;
+}
+
+.about-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 18px;
+  padding: 16px 0 2px;
+}
+
+.about-link-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  border: 1px solid #d7deea;
+  background: rgba(255, 255, 255, 0.96);
+  color: #2f3237;
+  box-shadow: 0 12px 24px -20px rgba(15, 23, 42, 0.34);
+  transition: transform 0.24s ease, box-shadow 0.24s ease, color 0.24s ease, border-color 0.24s ease;
+}
+
+.about-link-icon:hover {
+  transform: translateY(-2px);
+  border-color: #bec9da;
+  color: #111827;
+  box-shadow: 0 16px 28px -20px rgba(15, 23, 42, 0.4);
+}
+
+.about-link-icon svg {
+  width: 24px;
+  height: 24px;
 }
 
 @media (max-width: 1180px) {
@@ -849,6 +885,11 @@
     border-radius: 18px;
   }
 
+  .about-stats-card,
+  .about-about-card {
+    padding: 22px;
+  }
+
   .about-grid--games,
   .about-work-card__thumbs {
     grid-template-columns: 1fr;
@@ -873,5 +914,15 @@
   .about-preference-panel.is-active {
     min-height: 210px;
     flex: none;
+  }
+
+  .about-link-row {
+    gap: 14px;
+    padding-top: 10px;
+  }
+
+  .about-link-icon {
+    width: 52px;
+    height: 52px;
   }
 }

@@ -7,7 +7,7 @@ interface ContactGuidePanelProps {
   showContactLink?: boolean;
 }
 
-const CONTACT_EMAIL = 'lingxicto@gmail.com';
+const CONTACT_EMAIL = 'leizhen2046@gmail.com';
 const CONTACT_WECHAT = 'Different709world';
 const CONTACT_QQ = '2720838758';
 

@@ -16,6 +16,36 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
     const [activePreference, setActivePreference] = useState(0);
     const [activeWork, setActiveWork] = useState(0);
     const currentWork = content.works[activeWork];
+    const footerLinks = [
+        {
+            key: 'home',
+            href: `/${locale}`,
+            label: locale === 'zh' ? '首页' : 'Home',
+            icon: <HomeIcon />,
+            kind: 'internal',
+        },
+        {
+            key: 'email',
+            href: 'mailto:leizhen2046@gmail.com',
+            label: 'Email',
+            icon: <MailIcon />,
+            kind: 'mail',
+        },
+        {
+            key: 'github',
+            href: 'https://github.com/moneyperfect',
+            label: 'GitHub',
+            icon: <GitHubIcon />,
+            kind: 'external',
+        },
+        {
+            key: 'douyin',
+            href: 'https://v.douyin.com/BrWWZQDifn8/',
+            label: locale === 'zh' ? '抖音' : 'Douyin',
+            icon: <DouyinIcon />,
+            kind: 'external',
+        },
+    ];
 
     return (
         <section className="about-life-stack">
@@ -241,6 +271,78 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                     ))}
                 </div>
             </article>
+
+            <div className="about-link-row" aria-label={locale === 'zh' ? '联系与主页链接' : 'Profile links'}>
+                {footerLinks.map((item) =>
+                    item.kind === 'internal' ? (
+                        <Link
+                            key={item.key}
+                            href={item.href}
+                            className="about-link-icon"
+                            aria-label={item.label}
+                            title={item.label}
+                        >
+                            {item.icon}
+                        </Link>
+                    ) : (
+                        <a
+                            key={item.key}
+                            href={item.href}
+                            target={item.kind === 'external' ? '_blank' : undefined}
+                            rel={item.kind === 'external' ? 'noreferrer' : undefined}
+                            className="about-link-icon"
+                            aria-label={item.label}
+                            title={item.label}
+                        >
+                            {item.icon}
+                        </a>
+                    ),
+                )}
+            </div>
         </section>
+    );
+}
+
+function HomeIcon() {
+    return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+                fill="currentColor"
+                d="M12 3.4 4 9.7V20a1 1 0 0 0 1 1h4.8a1 1 0 0 0 1-1v-4.5h2.4V20a1 1 0 0 0 1 1H19a1 1 0 0 0 1-1V9.7l-8-6.3Z"
+            />
+        </svg>
+    );
+}
+
+function MailIcon() {
+    return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+                fill="currentColor"
+                d="M4 6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5v11a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 17.5v-11Zm2 .5 6 4.5L18 7H6Zm12 2.5-5.4 4.04a1 1 0 0 1-1.2 0L6 9.5v8a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-8Z"
+            />
+        </svg>
+    );
+}
+
+function GitHubIcon() {
+    return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+                fill="currentColor"
+                d="M12 .7a11.3 11.3 0 0 0-3.57 22.02c.56.1.77-.24.77-.55v-1.93c-3.13.68-3.8-1.34-3.8-1.34-.5-1.3-1.24-1.64-1.24-1.64-1.01-.7.08-.69.08-.69 1.12.08 1.71 1.15 1.71 1.15.99 1.7 2.6 1.2 3.23.92.1-.72.39-1.2.7-1.48-2.5-.28-5.13-1.25-5.13-5.58 0-1.23.44-2.24 1.15-3.03-.12-.28-.5-1.42.1-2.95 0 0 .95-.3 3.1 1.16a10.75 10.75 0 0 1 5.64 0c2.15-1.46 3.1-1.16 3.1-1.16.6 1.53.22 2.67.1 2.95.72.79 1.15 1.8 1.15 3.03 0 4.34-2.64 5.3-5.15 5.57.4.35.77 1.04.77 2.1v3.12c0 .31.2.66.78.55A11.3 11.3 0 0 0 12 .7Z"
+            />
+        </svg>
+    );
+}
+
+function DouyinIcon() {
+    return (
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path
+                fill="currentColor"
+                d="M14.4 2.8c.46 2.3 1.84 4.1 3.98 5.06v2.54a8.34 8.34 0 0 1-3.25-1.03v5.44c0 3.8-3.03 6.5-6.7 6.5A6.52 6.52 0 0 1 2 14.77c0-3.6 2.9-6.57 6.55-6.57.39 0 .77.04 1.15.12v2.72a3.84 3.84 0 0 0-1.15-.18 3.88 3.88 0 0 0-3.9 3.9 3.83 3.83 0 0 0 3.78 3.9c2.08 0 3.92-1.5 3.92-3.77V2.8h2.05Z"
+            />
+        </svg>
     );
 }
