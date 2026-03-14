@@ -13,364 +13,289 @@ interface AboutLifeModulesProps {
 
 export default function AboutLifeModules({ locale, personality, info, narrative }: AboutLifeModulesProps) {
     const reduceMotion = useReducedMotion();
-    const sectionLabel = locale === 'zh' ? '关于我是谁' : 'Who I Am';
-    const hobbyLabel = locale === 'zh' ? '爱好与偏好' : 'Hobbies & Tastes';
-    const infoLabel = locale === 'zh' ? '独立模块' : 'Independent Modules';
-    const routeLabel = locale === 'zh' ? '系列路程' : 'Series Route';
-    const personalityBadge = locale === 'zh' ? `性格 ${personality.mbti}` : `Personality ${personality.mbti}`;
-    const portraitLabel = locale === 'zh' ? '个人照片位' : 'Portrait';
-    const animeLabel = locale === 'zh' ? '动漫 / 视觉卡片' : 'Anime / Visual Cards';
-    const hoverLabel = locale === 'zh' ? '悬停' : 'Hover';
 
     return (
         <>
-            <section className="mt-10 grid gap-6 xl:grid-cols-[1.08fr_340px_340px]">
-                <motion.article
-                    whileHover={reduceMotion ? undefined : { y: -6 }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
-                    className="rounded-[34px] border border-[#ebe4d8] bg-white/88 p-6 shadow-[0_20px_54px_rgba(34,53,79,0.07)] backdrop-blur-sm sm:p-8"
-                >
-                    <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7a8aa0]">{sectionLabel}</p>
-                    <div className="mt-5 flex flex-wrap items-center gap-3">
-                        <span className="rounded-full border border-[#d7e6f3] bg-[#f8fbff] px-4 py-2 text-sm font-semibold text-[#4f6f90]">
-                            {personalityBadge}
-                        </span>
-                        <span className="rounded-full border border-[#efe6d7] bg-[#fffaf2] px-4 py-2 text-sm text-[#8d7b62]">
-                            {personality.spotlightTitle}
-                        </span>
-                    </div>
-                    <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[#203047] sm:text-4xl">
-                        {personality.title}
-                    </h2>
-                    <p className="mt-4 text-base leading-8 text-[#52657f]">{personality.intro}</p>
-                    <div className="mt-5 rounded-[26px] border border-[#e5edf5] bg-[#f8fbff] px-5 py-4">
-                        <p className="text-sm leading-7 text-[#55708b]">{personality.mbtiSummary}</p>
-                    </div>
-                    <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                        {personality.highlights.map((item) => (
-                            <div
-                                key={item}
-                                className="rounded-[22px] border border-[#ece7dd] bg-[#fffdfa] px-4 py-3 text-sm leading-7 text-[#556980]"
-                            >
-                                {item}
-                            </div>
-                        ))}
-                    </div>
-                    <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                        {personality.traits.map((item, index) => (
-                            <div key={item.title} className="rounded-[24px] border border-[#e7edf4] bg-white p-4">
-                                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8d97a8]">
-                                    0{index + 1}
-                                </div>
-                                <h3 className="mt-3 text-lg font-semibold text-[#203047]">{item.title}</h3>
-                                <p className="mt-2 text-sm leading-7 text-[#5b6e85]">{item.description}</p>
-                            </div>
-                        ))}
-                    </div>
-                </motion.article>
-
-                <motion.article
-                    whileHover={reduceMotion ? undefined : { y: -8, scale: 1.01 }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
-                    className="overflow-hidden rounded-[34px] border border-[#eadfd3] bg-[linear-gradient(160deg,#fffaf2,#ffffff)] shadow-[0_20px_54px_rgba(34,53,79,0.07)]"
-                >
-                    <div className="relative aspect-[4/5]">
-                        <Image
-                            src="/about/portrait-demo.svg"
-                            alt="Portrait demo"
-                            fill
-                            className="object-cover"
-                            sizes="340px"
-                        />
-                    </div>
-                    <div className="border-t border-[#ebe4d8] p-5">
-                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8d97a8]">
-                            {portraitLabel}
-                        </div>
-                        <p className="mt-3 text-sm leading-7 text-[#566980]">{personality.spotlightBody}</p>
-                    </div>
-                </motion.article>
-
-                <div className="grid gap-6">
-                    <motion.article
-                        whileHover={reduceMotion ? undefined : { y: -6 }}
-                        transition={{ duration: 0.28, ease: 'easeOut' }}
-                        className="rounded-[30px] border border-[#ebe4d8] bg-[linear-gradient(165deg,#fffdfa,#f8fbff)] p-6 shadow-[0_14px_38px_rgba(40,53,77,0.06)]"
-                    >
-                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7a8aa0]">
-                            {personality.musicTitle}
-                        </div>
-                        <p className="mt-4 text-sm leading-7 text-[#556980]">{personality.musicBody}</p>
-                    </motion.article>
-
-                    <motion.article
-                        whileHover={reduceMotion ? undefined : { y: -6 }}
-                        transition={{ duration: 0.28, ease: 'easeOut' }}
-                        className="rounded-[30px] border border-[#ebe4d8] bg-[linear-gradient(165deg,#fffdfa,#f8fbff)] p-6 shadow-[0_14px_38px_rgba(40,53,77,0.06)]"
-                    >
-                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7a8aa0]">
-                            {personality.focusTitle}
-                        </div>
-                        <p className="mt-4 text-sm leading-7 text-[#556980]">{personality.focusBody}</p>
-                    </motion.article>
-
-                    <motion.article
-                        whileHover={reduceMotion ? undefined : { y: -6 }}
-                        transition={{ duration: 0.28, ease: 'easeOut' }}
-                        className="rounded-[30px] border border-[#ebe4d8] bg-[linear-gradient(165deg,#f8fbff,#fffdfa)] p-6 shadow-[0_14px_38px_rgba(40,53,77,0.06)]"
-                    >
-                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#7a8aa0]">
-                            {info.currentTitle}
-                        </div>
-                        <div className="mt-4 space-y-3">
-                            {info.currentItems.map((item) => (
-                                <div
-                                    key={item}
-                                    className="rounded-[18px] border border-[#ece7dd] bg-white px-4 py-3 text-sm text-[#556980]"
-                                >
-                                    {item}
-                                </div>
-                            ))}
-                        </div>
-                    </motion.article>
-                </div>
-            </section>
-
-            <section className="mt-10 rounded-[34px] border border-[#ebe4d8] bg-white/88 p-6 shadow-[0_20px_54px_rgba(34,53,79,0.07)] backdrop-blur-sm sm:p-8">
-                <div className="section-header mb-7">
-                    <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7a8aa0]">{hobbyLabel}</p>
-                        <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[#203047] sm:text-4xl">
-                            {personality.galleryTitle}
-                        </h2>
-                        <p className="mt-4 max-w-3xl text-base leading-8 text-[#52657f]">{personality.galleryIntro}</p>
-                    </div>
-                </div>
-
-                <div className="grid gap-4 xl:grid-cols-[1.15fr_0.85fr]">
-                    <motion.article
-                        whileHover={reduceMotion ? undefined : { y: -6 }}
-                        transition={{ duration: 0.28, ease: 'easeOut' }}
-                        className="rounded-[28px] border border-[#ebe4d8] bg-[linear-gradient(160deg,#fffdfa,#f8fbff)] p-5 shadow-[0_12px_30px_rgba(36,55,80,0.05)]"
-                    >
-                        <div className="flex items-center justify-between gap-3">
-                            <div>
-                                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b96a8]">
-                                    {animeLabel}
-                                </div>
-                                <h3 className="mt-3 text-2xl font-semibold text-[#203047]">
-                                    {locale === 'zh' ? '喜欢的动漫与视觉偏好' : 'Anime and visual references'}
-                                </h3>
-                            </div>
-                            <span className="rounded-full border border-[#d9e6f3] bg-white px-3 py-1.5 text-xs font-semibold text-[#55718e]">
-                                {hoverLabel}
-                            </span>
-                        </div>
-
-                        <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                            {personality.posters.map((item) => (
-                                <motion.article
-                                    key={item.title}
-                                    whileHover={reduceMotion ? undefined : { y: -10, scale: 1.04 }}
-                                    transition={{ duration: 0.28, ease: 'easeOut' }}
-                                    className="group overflow-hidden rounded-[24px] border border-[#ebe4d8] bg-white shadow-[0_10px_28px_rgba(40,53,77,0.06)]"
-                                >
-                                    <div className="relative h-48 overflow-hidden">
-                                        <div
-                                            className="absolute inset-0 transition-transform duration-500 group-hover:scale-110"
-                                            style={{ background: item.gradient }}
-                                        />
-                                        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.45),transparent_55%)]" />
-                                    </div>
-                                    <div className="p-4">
-                                        <h4 className="text-base font-semibold text-[#203047]">{item.title}</h4>
-                                        <p className="mt-2 text-sm leading-7 text-[#5a6d85]">{item.caption}</p>
-                                    </div>
-                                </motion.article>
-                            ))}
-                        </div>
-                    </motion.article>
-
-                    <div className="grid gap-4">
-                        <motion.article
-                            whileHover={reduceMotion ? undefined : { y: -6 }}
-                            transition={{ duration: 0.28, ease: 'easeOut' }}
-                            className="rounded-[28px] border border-[#ebe4d8] bg-[linear-gradient(160deg,#f8fbff,#fffdfa)] p-5 shadow-[0_12px_30px_rgba(36,55,80,0.05)]"
-                        >
-                            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b96a8]">
-                                {locale === 'zh' ? '特长与习惯' : 'Strengths and habits'}
-                            </div>
-                            <div className="mt-4 space-y-3">
-                                {personality.highlights.slice(0, 3).map((item) => (
-                                    <div
-                                        key={item}
-                                        className="rounded-[18px] border border-[#e7edf4] bg-white px-4 py-3 text-sm text-[#556980]"
-                                    >
-                                        {item}
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.article>
-
-                        <motion.article
-                            whileHover={reduceMotion ? undefined : { y: -6 }}
-                            transition={{ duration: 0.28, ease: 'easeOut' }}
-                            className="rounded-[28px] border border-[#ebe4d8] bg-[linear-gradient(160deg,#fffdfa,#f8fbff)] p-5 shadow-[0_12px_30px_rgba(36,55,80,0.05)]"
-                        >
-                            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8b96a8]">
-                                {locale === 'zh' ? '关注与小宇宙' : 'Personal focus map'}
-                            </div>
-                            <p className="mt-4 text-sm leading-7 text-[#5a6d85]">
-                                {personality.focusBody}
-                            </p>
-                            <div className="mt-5 grid grid-cols-2 gap-3">
-                                {personality.traits.slice(0, 4).map((item) => (
-                                    <div
-                                        key={item.title}
-                                        className="rounded-[18px] border border-[#ece7dd] bg-white px-4 py-3 text-sm font-medium text-[#556980]"
-                                    >
-                                        {item.title}
-                                    </div>
-                                ))}
-                            </div>
-                        </motion.article>
-                    </div>
-                </div>
-            </section>
-
-            <section className="mt-10">
-                <div className="section-header mb-7">
-                    <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7a8aa0]">{infoLabel}</p>
-                        <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[#203047] sm:text-4xl">
-                            {info.title}
-                        </h2>
-                    </div>
-                </div>
-
-                <div className="grid gap-6 xl:grid-cols-[1.06fr_0.94fr]">
-                    <div className="grid gap-6">
-                        <article className="rounded-[34px] border border-[#ebe4d8] bg-white/88 p-6 shadow-[0_20px_54px_rgba(34,53,79,0.07)] backdrop-blur-sm sm:p-8">
-                            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7a8aa0]">
-                                {info.statsTitle}
-                            </div>
-                            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                                {info.stats.map((item) => (
-                                    <div key={item.label} className="rounded-[24px] border border-[#e5edf5] bg-[#f8fbff] p-5">
-                                        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8a97a9]">
-                                            {item.label}
-                                        </div>
-                                        <div className="mt-3 text-2xl font-semibold text-[#203047]">{item.value}</div>
-                                    </div>
-                                ))}
-                            </div>
-                        </article>
-
-                        <article className="rounded-[34px] border border-[#ebe4d8] bg-white/88 p-6 shadow-[0_20px_54px_rgba(34,53,79,0.07)] backdrop-blur-sm sm:p-8">
-                            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7a8aa0]">
-                                {info.identityTitle}
-                            </div>
-                            <p className="mt-4 text-base leading-8 text-[#52657f]">{info.identityBody}</p>
-                        </article>
-
-                        <article className="rounded-[34px] border border-[#ebe4d8] bg-white/88 p-6 shadow-[0_20px_54px_rgba(34,53,79,0.07)] backdrop-blur-sm sm:p-8">
-                            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7a8aa0]">
-                                {info.educationTitle}
-                            </div>
-                            <div className="mt-5 space-y-3">
-                                {info.educationItems.map((item) => (
-                                    <div
-                                        key={item}
-                                        className="rounded-[20px] border border-[#ece7dd] bg-[#fffdfa] px-4 py-3 text-sm text-[#556980]"
-                                    >
-                                        {item}
-                                    </div>
-                                ))}
-                            </div>
-                        </article>
-                    </div>
-
-                    <div className="grid gap-6">
-                        <article className="overflow-hidden rounded-[34px] border border-[#e5edf5] bg-white/88 shadow-[0_20px_54px_rgba(34,53,79,0.07)] backdrop-blur-sm">
-                            <div className="relative aspect-[4/3]">
-                                <Image
-                                    src="/about/map-demo.svg"
-                                    alt="Map demo"
-                                    fill
-                                    className="object-cover"
-                                    sizes="480px"
+            {/* ═══════════════════════════════════════════
+                Skills + Career  (two-column)
+            ═══════════════════════════════════════════ */}
+            <div className="about-two-col">
+                {/* Career progress card (left slot used by SkillRail above, this is right slot) */}
+                <article className="about-career-card">
+                    <p className="about-card__eyebrow">
+                        {locale === 'zh' ? '生涯' : '生涯'}
+                    </p>
+                    <h3 className="about-skills-header__title" style={{ marginTop: 8 }}>
+                        {locale === 'zh' ? '无限进步' : '無限に前へ'}
+                    </h3>
+                    <div style={{ marginTop: 16 }}>
+                        {info.educationItems.map((item, i) => (
+                            <div key={item} className="about-edu-item">
+                                <span
+                                    className="about-edu-dot"
+                                    style={{ background: ['#4285f4', '#fbbc04', '#34a853'][i % 3] }}
                                 />
+                                <span className="about-edu-text">{item}</span>
                             </div>
-                            <div className="border-t border-[#e5edf5] p-6">
-                                <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7a8aa0]">
-                                    {info.mapTitle}
-                                </div>
-                                <p className="mt-4 text-sm leading-7 text-[#5a6d85]">{info.mapBody}</p>
-                            </div>
-                        </article>
+                        ))}
+                    </div>
+                    {/* Career color bar */}
+                    <div style={{ marginTop: 20 }}>
+                        <p style={{ fontSize: 12, fontWeight: 600, color: '#e74c3c', letterSpacing: '0.08em' }}>EDU</p>
+                        <div className="about-career-bar">
+                            <div className="about-career-bar__seg" style={{ width: '40%', background: '#4285f4' }} />
+                            <div className="about-career-bar__seg" style={{ width: '25%', background: '#fbbc04' }} />
+                            <div className="about-career-bar__seg" style={{ width: '35%', background: '#34a853' }} />
+                        </div>
+                        <div className="about-career-bar__label">
+                            <span>2017</span>
+                            <span>{locale === 'zh' ? '现在' : '現在'}</span>
+                        </div>
+                    </div>
+                </article>
 
-                        <article className="rounded-[34px] border border-[#ebe4d8] bg-white/88 p-6 shadow-[0_20px_54px_rgba(34,53,79,0.07)] backdrop-blur-sm">
-                            <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7a8aa0]">
-                                {info.currentTitle}
+                {/* This column is only shown on desktop to pair with SkillRail; on mobile it flows naturally */}
+            </div>
+
+            {/* ═══════════════════════════════════════════
+                Personality (MBTI) + Photo
+            ═══════════════════════════════════════════ */}
+            <div className="about-personality-grid">
+                <article className="about-mbti-card">
+                    <p className="about-mbti-card__badge">
+                        {locale === 'zh' ? '性格' : '性格'}
+                    </p>
+                    <h3 className="about-mbti-card__type-name">
+                        {locale === 'zh' ? '提倡者' : '提唱者'}
+                    </h3>
+                    <p className="about-mbti-card__type-code">{personality.mbti}-T</p>
+                    <p className="about-mbti-card__note">
+                        {locale === 'zh' ? '在 ' : ''}
+                        <a href="https://www.16personalities.com/" target="_blank" rel="noreferrer">16personalities</a>
+                        {locale === 'zh'
+                            ? ` 了解更多关于 逻辑学家`
+                            : ' でもっと知る'}
+                    </p>
+                </article>
+
+                <article className="about-photo-card">
+                    <Image
+                        src="/about/portrait-demo.svg"
+                        alt="Portrait"
+                        width={400}
+                        height={320}
+                        className="about-photo-card__img"
+                    />
+                </article>
+            </div>
+
+            {/* ═══════════════════════════════════════════
+                Motto + Talent
+            ═══════════════════════════════════════════ */}
+            <div className="about-motto-talent-grid">
+                <article className="about-motto-card">
+                    <p className="about-motto-card__label">
+                        {locale === 'zh' ? '座右铭' : '座右銘'}
+                    </p>
+                    <p className="about-motto-card__text">
+                        {locale === 'zh' ? '但行好事，\n莫问前程。' : '善行を続けよ、\n先を問うな。'}
+                    </p>
+                </article>
+
+                <motion.article
+                    whileHover={reduceMotion ? undefined : { y: -4 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    className="about-talent-card"
+                >
+                    <p className="about-talent-card__label">
+                        {locale === 'zh' ? '特长' : '特技'}
+                    </p>
+                    <p className="about-talent-card__text">
+                        {locale === 'zh'
+                            ? '脑洞大开 厕所战神\n写日记技能MAX'
+                            : 'アイデア爆発 トイレの王\n日記スキルMAX'}
+                    </p>
+                </motion.article>
+            </div>
+
+            {/* ═══════════════════════════════════════════
+                Game Hobby — 2 poster cards
+            ═══════════════════════════════════════════ */}
+            <div className="about-game-grid">
+                {[
+                    {
+                        label: locale === 'zh' ? '游戏爱好' : 'ゲーム',
+                        title: 'INSIDE',
+                        subtitle: locale === 'zh' ? '最爱的一款游戏' : '一番好きなゲーム',
+                        gradient: 'linear-gradient(160deg, #1a1a2e 0%, #16213e 100%)',
+                    },
+                    {
+                        label: locale === 'zh' ? '游戏爱好' : 'ゲーム',
+                        title: locale === 'zh' ? '黑神话：悟空' : 'Black Myth: Wukong',
+                        subtitle: locale === 'zh' ? '国产动作天花板' : '国産アクションの頂点',
+                        gradient: 'linear-gradient(160deg, #2c1810 0%, #3d2214 100%)',
+                    },
+                ].map((game) => (
+                    <motion.article
+                        key={game.title}
+                        whileHover={reduceMotion ? undefined : { y: -4 }}
+                        transition={{ duration: 0.3, ease: 'easeOut' }}
+                        className="about-game-card"
+                    >
+                        <div className="about-game-card__bg" style={{ background: game.gradient }} />
+                        <div className="about-game-card__overlay" />
+                        <div className="about-game-card__content">
+                            <p className="about-game-card__label">{game.label}</p>
+                            <h4 className="about-game-card__title">{game.title}</h4>
+                            <p className="about-game-card__subtitle">{game.subtitle}</p>
+                        </div>
+                    </motion.article>
+                ))}
+            </div>
+
+            {/* ═══════════════════════════════════════════
+                Anime Accordion
+            ═══════════════════════════════════════════ */}
+            <div className="about-anime-section">
+                <div className="about-anime-header">
+                    <p className="about-anime-header__label">
+                        {locale === 'zh' ? '爱好番剧' : 'アニメ'}
+                    </p>
+                    <h3 className="about-anime-header__title">
+                        {locale === 'zh' ? '追番 · 科幻、动漫、推理' : '追番 · SF・アニメ・推理'}
+                    </h3>
+                </div>
+                <div className="about-anime-row">
+                    {personality.posters.map((poster) => (
+                        <div key={poster.title} className="about-anime-card">
+                            <div className="about-anime-card__bg" style={{ background: poster.gradient }} />
+                            <div className="about-anime-card__overlay" />
+                            <div className="about-anime-card__title">{poster.title}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* ═══════════════════════════════════════════
+                Music + Focus Preference
+            ═══════════════════════════════════════════ */}
+            <div className="about-pref-grid">
+                <motion.article
+                    whileHover={reduceMotion ? undefined : { y: -3 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    className="about-pref-card"
+                >
+                    <p className="about-pref-card__label">{personality.musicTitle}</p>
+                    <p className="about-pref-card__title">
+                        {locale === 'zh' ? '周杰伦、Hiphop、民谣、华语流行' : 'J-Pop, HipHop, Folk'}
+                    </p>
+                    <p className="about-pref-card__body">{personality.musicBody}</p>
+                </motion.article>
+
+                <motion.article
+                    whileHover={reduceMotion ? undefined : { y: -3 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    className="about-pref-card"
+                >
+                    <p className="about-pref-card__label">{personality.focusTitle}</p>
+                    <p className="about-pref-card__title">
+                        {locale === 'zh' ? '数码科技、人工智能' : 'テック・AI'}
+                    </p>
+                    <p className="about-pref-card__body">{personality.focusBody}</p>
+                </motion.article>
+            </div>
+
+            {/* ═══════════════════════════════════════════
+                Stats (dark) + Personal Info
+            ═══════════════════════════════════════════ */}
+            <div className="about-stats-grid">
+                {/* Dark stats card */}
+                <article className="about-stats-dark">
+                    <p className="about-stats-dark__label">{info.statsTitle}</p>
+                    <div className="about-stats-dark__row">
+                        {info.stats.slice(0, 2).map((s) => (
+                            <div key={s.label}>
+                                <p className="about-stats-dark__item-label">{s.label}</p>
+                                <p className="about-stats-dark__item-value">{s.value}</p>
                             </div>
-                            <div className="mt-5 space-y-3">
-                                {info.currentItems.map((item) => (
-                                    <div
-                                        key={item}
-                                        className="rounded-[20px] border border-[#ece7dd] bg-[#fffdfa] px-4 py-3 text-sm text-[#556980]"
-                                    >
-                                        {item}
-                                    </div>
-                                ))}
-                            </div>
-                        </article>
+                        ))}
+                    </div>
+                    <p className="about-stats-dark__footer">
+                        {locale === 'zh' ? '本站采用 51LA 网站统计' : 'Powered by 51LA Analytics'}
+                    </p>
+                </article>
+
+                {/* Personal info card */}
+                <article className="about-info-card">
+                    <div className="about-info-item">
+                        <p className="about-info-item__label">{locale === 'zh' ? '生于' : '生年'}</p>
+                        <p className="about-info-item__value about-info-item__value--blue">1999</p>
+                    </div>
+                    <div className="about-info-item">
+                        <p className="about-info-item__label">EDU</p>
+                        <p className="about-info-item__value about-info-item__value--purple">
+                            {locale === 'zh' ? '计算机专业' : 'コンピュータ'}
+                        </p>
+                    </div>
+                    <div className="about-info-item">
+                        <p className="about-info-item__label">{locale === 'zh' ? '现在职业' : '現職'}</p>
+                        <p className="about-info-item__value about-info-item__value--red">
+                            {locale === 'zh' ? '互联网' : 'IT業界'}
+                        </p>
+                    </div>
+                </article>
+            </div>
+
+            {/* ═══════════════════════════════════════════
+                Map
+            ═══════════════════════════════════════════ */}
+            <article className="about-map-card">
+                <div style={{ position: 'relative', width: '100%', height: 240 }}>
+                    <Image
+                        src="/about/map-demo.svg"
+                        alt="Map"
+                        fill
+                        className="about-map-card__img"
+                        style={{ objectFit: 'cover' }}
+                    />
+                </div>
+                <div className="about-map-card__body">
+                    <p className="about-map-card__label">{info.mapTitle}</p>
+                    <p className="about-map-card__text">{info.mapBody}</p>
+                </div>
+            </article>
+
+            {/* ═══════════════════════════════════════════
+                Journey — "Why I started"
+            ═══════════════════════════════════════════ */}
+            <article className="about-journey-card">
+                <p className="about-journey-card__label">
+                    {locale === 'zh' ? '心路历程' : '起源'}
+                </p>
+                <h3 className="about-journey-card__title">{narrative.routeTitle}</h3>
+                <p className="about-journey-card__body">{narrative.routeIntro}</p>
+            </article>
+
+            {/* ═══════════════════════════════════════════
+                Ten-Year Pact — progress bar
+            ═══════════════════════════════════════════ */}
+            <article className="about-pact-card">
+                <p className="about-pact-card__label">{narrative.pactTitle}</p>
+                <h3 className="about-pact-card__quote">
+                    {locale === 'zh'
+                        ? '一个人的寂寞，一群人的狂欢。'
+                        : '一人の孤独、皆の祝祭。'}
+                </h3>
+                <div className="about-pact-progress">
+                    <div className="about-pact-progress__fill" style={{ width: '33%' }}>
+                        33%
                     </div>
                 </div>
-            </section>
-
-            <section className="mt-10 grid gap-6 xl:grid-cols-[1.02fr_0.98fr]">
-                <article className="rounded-[34px] border border-[#ebe4d8] bg-white/88 p-6 shadow-[0_20px_54px_rgba(34,53,79,0.07)] backdrop-blur-sm sm:p-8">
-                    <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7a8aa0]">{routeLabel}</div>
-                    <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[#203047] sm:text-4xl">
-                        {narrative.routeTitle}
-                    </h2>
-                    <p className="mt-4 text-base leading-8 text-[#52657f]">{narrative.routeIntro}</p>
-                    <div className="relative mt-6 space-y-4 border-l border-[#dfe6ef] pl-6">
-                        {narrative.routeItems.map((item) => (
-                            <motion.div
-                                key={`${item.stage}-${item.title}`}
-                                whileHover={reduceMotion ? undefined : { x: 4 }}
-                                transition={{ duration: 0.25, ease: 'easeOut' }}
-                                className="relative rounded-[22px] border border-[#ece7dd] bg-[#fffdfa] p-4"
-                            >
-                                <span className="absolute -left-[33px] top-5 h-3.5 w-3.5 rounded-full border border-[#c6d8ea] bg-white shadow-[0_0_0_4px_rgba(247,251,255,1)]" />
-                                <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#8d97a8]">{item.stage}</div>
-                                <h3 className="mt-3 text-lg font-semibold text-[#203047]">{item.title}</h3>
-                                <p className="mt-2 text-sm leading-7 text-[#5b6e85]">{item.description}</p>
-                            </motion.div>
-                        ))}
-                    </div>
-                </article>
-
-                <article className="rounded-[34px] border border-[#ebe4d8] bg-[linear-gradient(160deg,#fffdfa,#f8fbff)] p-6 shadow-[0_20px_54px_rgba(34,53,79,0.07)] sm:p-8">
-                    <div className="text-xs font-semibold uppercase tracking-[0.22em] text-[#7a8aa0]">
-                        {narrative.pactTitle}
-                    </div>
-                    <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[#203047] sm:text-4xl">
-                        {narrative.pactIntro}
-                    </h2>
-                    <div className="mt-6 space-y-3">
-                        {narrative.pactItems.map((item) => (
-                            <div
-                                key={item}
-                                className="rounded-[20px] border border-[#ece7dd] bg-white px-4 py-3 text-sm leading-7 text-[#556980]"
-                            >
-                                {item}
-                            </div>
-                        ))}
-                    </div>
-                </article>
-            </section>
+                <div className="about-pact-progress__dates">
+                    <span>11/21/2022</span>
+                    <span>11/21/2032</span>
+                </div>
+            </article>
         </>
     );
 }

@@ -2,6 +2,7 @@
 
 @config "../../tailwind.config.ts";
 @import "tailwindcss";
+@import "./about.css";
 
 :root {
   --font-noto-sans: 'Noto Sans SC', 'Noto Sans JP', system-ui, sans-serif;
