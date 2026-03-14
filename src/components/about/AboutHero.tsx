@@ -1,107 +1,152 @@
 'use client';
 
-import { motion, useReducedMotion, useMotionValue, useTransform, useSpring } from 'framer-motion';
+import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect } from 'react';
-import type { AboutHeroContent } from './types'; // Although not fully used here anymore, kept for type safety
+import type { CSSProperties } from 'react';
+import type { AboutHeroContent } from './types';
 
 interface AboutHeroProps {
     locale: string;
     content: AboutHeroContent;
 }
 
-const BUBBLE_ITEMS_ZH = [
-    { label: '艺术创作', x: -180, y: -80 },
-    { label: '编程设计', x: -220, y: 30 },
-    { label: '捕捉瞬间', x: -160, y: 140 },
-    { label: '无限进步', x: 180, y: -60 },
-    { label: '重拳出击', x: 220, y: 50 },
-    { label: '唯唯诺诺', x: 150, y: 160 },
-];
+const BUBBLE_POSITIONS = [
+    { side: 'left', top: '16%' },
+    { side: 'left', top: '46%' },
+    { side: 'left', top: '75%' },
+    { side: 'right', top: '18%' },
+    { side: 'right', top: '48%' },
+    { side: 'right', top: '76%' },
+] as const;
 
-const BUBBLE_ITEMS_JA = [
-    { label: 'クリエイティブ', x: -180, y: -80 },
-    { label: 'コーディング', x: -220, y: 30 },
-    { label: '瞬間を捉える', x: -160, y: 140 },
-    { label: '無限の前進', x: 180, y: -60 },
-    { label: 'ネットの力', x: 220, y: 50 },
-    { label: 'オフは控えめ', x: 150, y: 160 },
-];
-
-export default function AboutHero({ locale }: AboutHeroProps) {
+export default function AboutHero({ locale, content }: AboutHeroProps) {
     const reduceMotion = useReducedMotion();
-    const bubbles = locale === 'zh' ? BUBBLE_ITEMS_ZH : BUBBLE_ITEMS_JA;
-
-    // Mouse tracking for parallax effect
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
-
-    const springConfig = { damping: 25, stiffness: 120, mass: 0.5 };
+    const springConfig = { damping: 28, stiffness: 120, mass: 0.7 };
     const springX = useSpring(mouseX, springConfig);
     const springY = useSpring(mouseY, springConfig);
-
-    // Subtle reverse parallax for avatar
-    const avatarX = useTransform(springX, [-1, 1], [15, -15]);
-    const avatarY = useTransform(springY, [-1, 1], [15, -15]);
-    
-    // Deeper parallax for bubbles
-    const bubblesX = useTransform(springX, [-1, 1], [40, -40]);
-    const bubblesY = useTransform(springY, [-1, 1], [40, -40]);
+    const avatarX = useTransform(springX, [-1, 1], [10, -10]);
+    const avatarY = useTransform(springY, [-1, 1], [10, -10]);
 
     useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => {
-            const innerWidth = window.innerWidth;
-            const innerHeight = window.innerHeight;
-            const nX = (e.clientX / innerWidth) * 2 - 1;
-            const nY = (e.clientY / innerHeight) * 2 - 1;
+        if (reduceMotion) return undefined;
+
+        const handleMouseMove = (event: MouseEvent) => {
+            const nX = (event.clientX / window.innerWidth) * 2 - 1;
+            const nY = (event.clientY / window.innerHeight) * 2 - 1;
             mouseX.set(nX);
             mouseY.set(nY);
         };
+
         window.addEventListener('mousemove', handleMouseMove);
         return () => window.removeEventListener('mousemove', handleMouseMove);
-    }, [mouseX, mouseY]);
+    }, [mouseX, mouseY, reduceMotion]);
 
     return (
-        <section className="relative w-full h-[400px] flex items-center justify-center mb-12">
-            {/* Center Avatar Parallax Environment Only - No Background */}
-            <motion.div 
-                className="relative flex items-center justify-center"
-                style={reduceMotion ? {} : { x: avatarX, y: avatarY }}
-            >
-                <motion.div 
-                    className="about-avatar-ring cursor-pointer"
-                    whileHover={{ scale: 1.08 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        <section className="about-hero-shell">
+            <div className="about-hero-grid">
+                <motion.article
+                    whileHover={reduceMotion ? undefined : { y: -4 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    className="about-bento-card about-hover-spring about-hero-side"
                 >
-                    <Image
-                        src="/about/avatar-demo.svg"
-                        alt="Avatar"
-                        fill
-                        className="object-cover"
-                        sizes="180px"
-                        priority
-                    />
-                </motion.div>
-                <span className="about-avatar-online" />
-            </motion.div>
+                    <span className="about-eyebrow">{content.introTitle}</span>
+                    <h2 className="about-hero-side-title">{content.name}</h2>
+                    <p className="about-hero-side-copy">{content.introBody}</p>
+                    <div className="about-hero-bullet-list">
+                        {content.introBullets.map((item) => (
+                            <div key={item} className="about-hero-bullet">
+                                {item}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="about-hero-status">{content.status}</div>
+                </motion.article>
 
-            {/* Floating Bubbles */}
-            <motion.div 
-                style={reduceMotion ? {} : { x: bubblesX, y: bubblesY }}
-                className="absolute inset-0 flex items-center justify-center pointer-events-none"
-            >
-                {bubbles.map((b) => (
-                    <motion.div
-                        key={b.label}
-                        className="about-bubble-pill shadow-[0_8px_30px_rgb(0,0,0,0.06)]"
-                        style={{ transform: `translate(${b.x}px, ${b.y}px)` }}
-                        animate={{ y: [b.y, b.y - 8, b.y] }}
-                        transition={{ duration: 4 + Math.random() * 2, repeat: Infinity, ease: 'easeInOut' }}
-                    >
-                        {b.label}
-                    </motion.div>
-                ))}
-            </motion.div>
+                <div className="about-hero-center">
+                    <span className="about-eyebrow">{content.eyebrow}</span>
+
+                    <div className="about-hero-avatar-stage">
+                        {content.floatingPills.slice(0, 6).map((item, index) => {
+                            const config = BUBBLE_POSITIONS[index];
+                            const pillStyle = {
+                                '--bubble-top': config.top,
+                            } as CSSProperties;
+
+                            return (
+                                <motion.span
+                                    key={item}
+                                    className={`about-bubble-pill about-bubble-pill--${config.side}`}
+                                    style={pillStyle}
+                                    animate={reduceMotion ? undefined : { y: [0, -6, 0] }}
+                                    transition={
+                                        reduceMotion
+                                            ? undefined
+                                            : {
+                                                duration: 3.4,
+                                                repeat: Infinity,
+                                                ease: 'easeInOut',
+                                                delay: index * 0.2,
+                                            }
+                                    }
+                                >
+                                    {item}
+                                </motion.span>
+                            );
+                        })}
+
+                        <motion.div
+                            className="about-avatar-ring"
+                            style={reduceMotion ? undefined : { x: avatarX, y: avatarY }}
+                            whileHover={reduceMotion ? undefined : { scale: 1.035 }}
+                            transition={{ type: 'spring', stiffness: 260, damping: 22 }}
+                        >
+                            <Image
+                                src="/about/avatar-demo.svg"
+                                alt={locale === 'zh' ? '个人头像' : 'Avatar'}
+                                fill
+                                className="object-cover"
+                                sizes="220px"
+                                priority
+                            />
+                            <span className="about-avatar-online" />
+                        </motion.div>
+                    </div>
+
+                    <h1 className="about-page-title">{content.name}</h1>
+                    <p className="about-hero-tagline">{content.tagline}</p>
+
+                    <div className="about-hero-cta">
+                        <Link href={`/${locale}/contact`} className="about-btn about-btn--primary">
+                            {content.primaryCta}
+                        </Link>
+                        <Link href={`/${locale}/work-with-me`} className="about-btn about-btn--secondary">
+                            {content.secondaryCta}
+                        </Link>
+                    </div>
+                </div>
+
+                <motion.article
+                    whileHover={reduceMotion ? undefined : { y: -4 }}
+                    transition={{ duration: 0.25, ease: 'easeOut' }}
+                    className="about-bento-card about-hover-spring about-hero-side"
+                >
+                    <span className="about-eyebrow">{content.journeyTitle}</span>
+                    <h2 className="about-hero-side-title">{content.journeyTitle}</h2>
+                    <p className="about-hero-side-copy">{content.journeyBody}</p>
+                    <div className="about-hero-journey-list">
+                        {content.journeyItems.map((item, index) => (
+                            <div key={item} className="about-hero-journey-item">
+                                <span className="about-hero-journey-index">0{index + 1}</span>
+                                <span>{item}</span>
+                            </div>
+                        ))}
+                    </div>
+                </motion.article>
+            </div>
         </section>
     );
 }

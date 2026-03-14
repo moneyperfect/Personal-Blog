@@ -1,0 +1,20 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="720" rx="40" fill="url(#paint0_linear)"/>
+<rect x="72" y="76" width="1056" height="568" rx="28" fill="rgba(255,255,255,0.12)"/>
+<rect x="132" y="144" width="280" height="18" rx="9" fill="#DCEBFF"/>
+<rect x="132" y="190" width="452" height="74" rx="22" fill="#F8FBFF"/>
+<rect x="132" y="298" width="392" height="20" rx="10" fill="#D3E5FF"/>
+<rect x="132" y="334" width="332" height="20" rx="10" fill="#D3E5FF"/>
+<rect x="132" y="392" width="202" height="58" rx="29" fill="#0F4CC7"/>
+<rect x="686" y="164" width="302" height="340" rx="36" fill="#F7FBFF"/>
+<circle cx="836" cy="264" r="78" fill="#C7DEFF"/>
+<path d="M742 434H932" stroke="#A9C8F3" stroke-width="18" stroke-linecap="round"/>
+<path d="M742 474H892" stroke="#C7DDFB" stroke-width="18" stroke-linecap="round"/>
+<text x="132" y="118" fill="#ECF4FF" font-family="Arial, sans-serif" font-size="34" font-weight="700">WORK 01</text>
+<defs>
+<linearGradient id="paint0_linear" x1="90" y1="58" x2="1092" y2="662" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0F4CC7"/>
+<stop offset="1" stop-color="#8AB8FF"/>
+</linearGradient>
+</defs>
+</svg>

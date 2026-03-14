@@ -1,0 +1,18 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="720" rx="40" fill="url(#paint0_linear)"/>
+<rect x="82" y="88" width="1036" height="544" rx="30" fill="rgba(255,255,255,0.14)"/>
+<circle cx="286" cy="250" r="116" fill="#FFE5D9"/>
+<circle cx="390" cy="356" r="88" fill="#FFF5EE"/>
+<rect x="606" y="148" width="378" height="84" rx="24" fill="#FFF8F2"/>
+<rect x="606" y="266" width="250" height="18" rx="9" fill="#FFD4BE"/>
+<rect x="606" y="304" width="294" height="18" rx="9" fill="#FFD4BE"/>
+<rect x="606" y="342" width="226" height="18" rx="9" fill="#FFD4BE"/>
+<rect x="606" y="418" width="148" height="54" rx="27" fill="#C2511A"/>
+<text x="606" y="204" fill="#8D3A12" font-family="Arial, sans-serif" font-size="50" font-weight="700">WORK 03</text>
+<defs>
+<linearGradient id="paint0_linear" x1="112" y1="80" x2="1088" y2="642" gradientUnits="userSpaceOnUse">
+<stop stop-color="#AE4A1B"/>
+<stop offset="1" stop-color="#FFD0B7"/>
+</linearGradient>
+</defs>
+</svg>

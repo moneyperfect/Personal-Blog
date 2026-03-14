@@ -1,0 +1,14 @@
+<svg width="900" height="1200" viewBox="0 0 900 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="900" height="1200" rx="40" fill="url(#paint0_linear)"/>
+<circle cx="640" cy="230" r="160" fill="#7BB6FF"/>
+<circle cx="298" cy="418" r="64" fill="#F6FAFF"/>
+<circle cx="444" cy="704" r="204" fill="#21457B"/>
+<path d="M96 1048C220 874 354 782 498 772C642 762 750 860 818 1014V1200H96V1048Z" fill="#0E1D38"/>
+<text x="86" y="110" fill="#E6F0FF" font-family="Arial, sans-serif" font-size="38" font-weight="700">ANIME 01</text>
+<defs>
+<linearGradient id="paint0_linear" x1="78" y1="66" x2="792" y2="1114" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0A2C63"/>
+<stop offset="1" stop-color="#7DB5FF"/>
+</linearGradient>
+</defs>
+</svg>

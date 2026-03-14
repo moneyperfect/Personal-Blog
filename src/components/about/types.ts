@@ -8,54 +8,75 @@ export interface AboutHeroContent {
     status: string;
     primaryCta: string;
     secondaryCta: string;
-    floatingSkills: string[];
-    profileSummary: string[];
+    floatingPills: string[];
     journeyTitle: string;
     journeyBody: string;
     journeyItems: string[];
 }
 
-export interface AboutSkillCategory {
+export interface AboutSkillItem {
+    label: string;
+    icon: string;
+}
+
+export interface AboutSkillDisplayGroup {
     title: string;
     summary: string;
+    icon: string;
     items: string[];
-    accent: string;
 }
 
 export interface AboutSkillContent {
     title: string;
     intro: string;
-    marquee: string[];
-    categories: AboutSkillCategory[];
+    marquee: AboutSkillItem[];
+    displayGroups: AboutSkillDisplayGroup[];
 }
 
-export interface AboutTraitCard {
+export interface AboutTalentItem {
     title: string;
     description: string;
 }
 
-export interface AboutPosterCard {
+export interface AboutMediaCard {
     title: string;
-    caption: string;
-    gradient: string;
+    description: string;
+    imageSrc: string;
+    imageAlt: string;
+    href?: string;
+    tag?: string;
+    caption?: string;
+}
+
+export interface AboutWorkCard {
+    title: string;
+    summary: string;
+    imageSrc: string;
+    imageAlt: string;
+    href?: string;
+    meta: string;
+}
+
+export interface AboutGameCard {
+    title: string;
+    summary: string;
+    imageSrc: string;
+    imageAlt: string;
+    href?: string;
+    tag: string;
 }
 
 export interface AboutPersonalityContent {
     title: string;
     intro: string;
     mbti: string;
+    mbtiLabel: string;
     mbtiSummary: string;
-    spotlightTitle: string;
-    spotlightBody: string;
-    highlights: string[];
-    musicTitle: string;
-    musicBody: string;
-    focusTitle: string;
-    focusBody: string;
-    galleryTitle: string;
-    galleryIntro: string;
-    posters: AboutPosterCard[];
-    traits: AboutTraitCard[];
+    photoTitle: string;
+    photoBody: string;
+    talentsTitle: string;
+    talentsIntro: string;
+    talents: AboutTalentItem[];
 }
 
 export interface AboutInfoContent {
@@ -95,6 +116,17 @@ export interface AboutPageContent {
     hero: AboutHeroContent;
     skills: AboutSkillContent;
     personality: AboutPersonalityContent;
+    worksTitle: string;
+    worksIntro: string;
+    works: AboutWorkCard[];
+    gamesTitle: string;
+    gamesIntro: string;
+    games: AboutGameCard[];
+    animeTitle: string;
+    animeIntro: string;
+    anime: AboutMediaCard[];
+    musicCard: AboutMediaCard;
+    focusCard: AboutMediaCard;
     info: AboutInfoContent;
     narrative: AboutNarrativeContent;
     support: AboutSupportContent;

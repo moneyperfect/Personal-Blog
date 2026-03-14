@@ -1,0 +1,8 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="720" rx="40" fill="url(#paint0_linear)"/>
+<rect x="0" y="462" width="1200" height="258" fill="rgba(10,16,31,0.34)"/>
+<circle cx="874" cy="210" r="138" fill="#2D4671"/>
+<circle cx="896" cy="214" r="102" fill="#7EA5D9"/>
+<path d="M118 536C220 438 342 392 484 398C626 404 752 472 908 486C1024 496 1116 466 1182 442V720H118V536Z" fill="#16233C"/>
+<text x="92" y="114" fill="#DBEAFF" font-family="Arial, sans-serif" font-size="32" font-weight="700">GAME A</text>
+</svg>

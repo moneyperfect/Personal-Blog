@@ -1,0 +1,17 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="720" rx="40" fill="url(#paint0_linear)"/>
+<circle cx="372" cy="360" r="188" fill="#FFF1E8"/>
+<circle cx="372" cy="360" r="132" stroke="#F97316" stroke-width="18"/>
+<circle cx="372" cy="360" r="30" fill="#F97316"/>
+<rect x="690" y="194" width="270" height="24" rx="12" fill="#FFF3E4"/>
+<rect x="690" y="250" width="346" height="18" rx="9" fill="#FFE0C4"/>
+<rect x="690" y="294" width="300" height="18" rx="9" fill="#FFE0C4"/>
+<rect x="690" y="338" width="246" height="18" rx="9" fill="#FFE0C4"/>
+<text x="692" y="184" fill="#FFF4EA" font-family="Arial, sans-serif" font-size="32" font-weight="700">MUSIC</text>
+<defs>
+<linearGradient id="paint0_linear" x1="90" y1="64" x2="1088" y2="652" gradientUnits="userSpaceOnUse">
+<stop stop-color="#C95F23"/>
+<stop offset="1" stop-color="#FFD2AA"/>
+</linearGradient>
+</defs>
+</svg>

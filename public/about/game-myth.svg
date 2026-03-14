@@ -1,0 +1,14 @@
+<svg width="1200" height="720" viewBox="0 0 1200 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="1200" height="720" rx="40" fill="url(#paint0_linear)"/>
+<rect x="0" y="458" width="1200" height="262" fill="rgba(47,17,10,0.28)"/>
+<circle cx="980" cy="170" r="132" fill="#7A3A18"/>
+<path d="M122 554C294 430 482 382 688 408C830 426 974 486 1186 530V720H122V554Z" fill="#3A150D"/>
+<path d="M690 272L760 216L852 252L912 326L838 348L742 334L690 272Z" fill="#F9D3A4"/>
+<text x="92" y="114" fill="#FFE6C7" font-family="Arial, sans-serif" font-size="32" font-weight="700">GAME B</text>
+<defs>
+<linearGradient id="paint0_linear" x1="96" y1="80" x2="1106" y2="640" gradientUnits="userSpaceOnUse">
+<stop stop-color="#3D160E"/>
+<stop offset="1" stop-color="#C96C38"/>
+</linearGradient>
+</defs>
+</svg>

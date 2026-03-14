@@ -1,0 +1,15 @@
+<svg width="900" height="1200" viewBox="0 0 900 1200" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="900" height="1200" rx="40" fill="url(#paint0_linear)"/>
+<rect x="118" y="156" width="664" height="664" rx="46" stroke="#E0FFF4" stroke-width="22"/>
+<rect x="208" y="246" width="484" height="484" rx="36" stroke="#A5F3CC" stroke-width="16"/>
+<circle cx="450" cy="488" r="114" fill="#DBFFF2"/>
+<rect x="316" y="926" width="268" height="26" rx="13" fill="#D3FAE9"/>
+<rect x="258" y="972" width="384" height="18" rx="9" fill="#B6EED6"/>
+<text x="84" y="110" fill="#D8FFF0" font-family="Arial, sans-serif" font-size="38" font-weight="700">ANIME 03</text>
+<defs>
+<linearGradient id="paint0_linear" x1="86" y1="62" x2="826" y2="1138" gradientUnits="userSpaceOnUse">
+<stop stop-color="#0A4F49"/>
+<stop offset="1" stop-color="#7AE1B7"/>
+</linearGradient>
+</defs>
+</svg>
