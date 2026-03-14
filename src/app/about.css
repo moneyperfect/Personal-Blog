@@ -5,10 +5,10 @@
 
 /* ── Global Page Base ── */
 .about-page-root {
-  background-color: #f7f9fc; /* Muted, extremely clean off-white */
+  background-color: #ffffff; /* pure white background as requested */
   color: #1a1a2e;
   min-height: 100vh;
-  padding: 60px 16px 120px;
+  padding: 80px 16px 120px;
 }
 
 .about-bento-container {
@@ -16,16 +16,16 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 24px; /* Strict, uniform rhythm */
+  gap: 32px; /* Strict, uniform rhythm, slightly larger */
 }
 
 /* ── Universal Module Card ── */
 .about-bento-card {
   position: relative;
-  background: #ffffff;
+  background: #fdfdfd; 
   border-radius: 32px; /* Large, luxurious corners */
   padding: 36px;
-  border: 1px solid rgba(0, 0, 0, 0.02);
+  border: 1px solid rgba(0, 0, 0, 0.04);
   box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03);
   overflow: hidden;
   /* Crisp typography default inside cards */
@@ -55,53 +55,7 @@
   margin-bottom: 16px;
 }
 
-/* ── Hero Section (3-col Bento) ── */
-.about-hero-grid {
-  display: grid;
-  grid-template-columns: 3fr 4fr 3fr;
-  gap: 24px;
-  height: 380px; 
-}
-@media (max-width: 900px) {
-  .about-hero-grid {
-    grid-template-columns: 1fr;
-    height: auto;
-  }
-}
-
-/* Left Hero Card */
-.about-hero-dark {
-  background: #1a1a1f;
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-.about-hero-dark .about-eyebrow {
-  color: rgba(255, 255, 255, 0.5);
-  margin-bottom: auto; /* Push to top */
-}
-.about-hero-dark h2 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 8px;
-}
-.about-hero-dark p.tagline {
-  font-size: 15px;
-  line-height: 1.6;
-  color: rgba(255, 255, 255, 0.7);
-}
-
-/* Center Avatar Card */
-.about-hero-avatar-card {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: linear-gradient(135deg, #f0f4ff 0%, #ffffff 100%);
-  position: relative;
-  /* Mouse tracking handled via framer-motion in JS */
-}
+/* Center Avatar Card (No white card background anymore) */
 .about-avatar-ring {
   position: relative;
   width: 180px;
@@ -133,35 +87,8 @@
   font-size: 13px;
   font-weight: 600;
   color: #374151;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   pointer-events: none; /* Let mouse pass through for parallax */
   white-space: nowrap;
-}
-
-/* Right Ideal Card */
-.about-hero-ideal {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-.about-hero-ideal .about-eyebrow {
-  margin-bottom: auto;
-}
-.about-ideal-text-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: auto;
-}
-.about-hero-ideal h3 {
-  font-size: 2rem;
-  font-weight: 800;
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-  color: #1a1a2e;
-}
-.about-hero-ideal h3 span.accent {
-  color: #4285f4;
 }
 
 /* ── Skills Marquee Wrapper ── */
@@ -171,7 +98,6 @@
   overflow: hidden;
   position: relative;
   box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03);
-  /* The elegant gradient mask on edges so items dissolve into white */
   -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
   mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
   padding: 40px 0;
@@ -180,7 +106,7 @@
   display: flex;
   gap: 16px;
   width: max-content;
-  animation: skill-scroll 30s linear infinite;
+  animation: skill-scroll 35s linear infinite;
   padding: 0 24px;
 }
 .about-skills-wrapper:hover .about-skills-track {
@@ -194,39 +120,43 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 24px;
+  padding: 14px 28px;
   background: #f8fafc;
   border: 1px solid #f1f5f9;
   border-radius: 100px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: #334155;
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .about-skill-pill:hover {
   background: #fff;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-  transform: translateY(-2px) scale(1.05); /* Slight pop */
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  transform: translateY(-4px) scale(1.04); /* Larger pop */
   color: #0f172a;
 }
 
-/* ── Mixed Grid section (MBTI, Data, Map, Edu) ── */
+/* ── Mixed Grid section (Bento grid spans) ── */
 .about-mixed-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 24px;
+  gap: 32px;
 }
 @media (max-width: 900px) {
   .about-mixed-grid {
     display: flex;
     flex-direction: column;
+    gap: 24px;
   }
 }
 
 /* Column spans within mixed grid */
+.ab-col-12 { grid-column: span 12; }
 .ab-col-8 { grid-column: span 8; }
-.ab-col-4 { grid-column: span 4; }
+.ab-col-7 { grid-column: span 7; }
 .ab-col-6 { grid-column: span 6; }
+.ab-col-5 { grid-column: span 5; }
+.ab-col-4 { grid-column: span 4; }
 
 /* Content within mixed cards */
 .about-mbti-card {
@@ -234,21 +164,20 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  background: #fdfdfd;
 }
 .about-mbti-text {
   flex: 1;
 }
-.about-mbti-photo {
-  width: 200px;
-  height: 200px;
-  border-radius: 24px;
-  object-fit: cover;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+.about-mbti-photo-wrapper {
+  perspective: 1000px;
   margin-left: 24px;
 }
-.about-music-card {
-  background: #fdfdfd;
+.about-mbti-photo {
+  width: 220px;
+  height: auto;
+  min-height: 220px;
+  border-radius: 24px;
+  object-fit: cover;
 }
 
 .about-bento-title {
@@ -291,24 +220,29 @@
   font-weight: 500;
 }
 
-/* ── Anime Hover Accordion (Spring physics focus) ── */
+/* ── Anime Hover Accordion (Silky smooth CSS transitions) ── */
 .about-anime-container {
   display: flex;
   gap: 12px;
-  height: 360px;
+  height: 400px; /* Taller */
   border-radius: 32px;
   overflow: hidden;
   background: #fff;
   padding: 16px;
-  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
 }
 .about-anime-panel {
   position: relative;
-  flex: 1; /* Framer motion handles flex basis */
+  /* Instead of framer handling basis, use native CSS transition for flawless 60fps smoothing */
+  flex: 1; 
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
   min-width: 0;
+  transition: flex 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.about-anime-panel.active {
+  flex: 3;
 }
 .about-anime-bg {
   position: absolute;
@@ -316,19 +250,19 @@
   object-fit: cover;
   width: 100%;
   height: 100%;
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 1.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .about-anime-panel:hover .about-anime-bg {
-  transform: scale(1.08);
+  transform: scale(1.08); /* Slow zoom */
 }
 .about-anime-gradient {
   position: absolute;
   inset: 0;
   background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 60%);
-  opacity: 0.6;
-  transition: opacity 0.4s;
+  opacity: 0.5;
+  transition: opacity 0.6s;
 }
-.about-anime-panel:hover .about-anime-gradient {
+.about-anime-panel.active .about-anime-gradient {
   opacity: 0.8;
 }
 .about-anime-text {
@@ -338,22 +272,22 @@
   right: 24px;
   color: #fff;
   opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateY(15px);
+  transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.1s; /* Slight delay for text */
 }
-.about-anime-text.active {
+.about-anime-panel.active .about-anime-text {
   opacity: 1;
   transform: translateY(0);
 }
 .about-anime-text h4 {
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .about-anime-text p {
-  font-size: 13px;
+  font-size: 14px;
   color: rgba(255,255,255,0.7);
   margin-top: 4px;
   white-space: nowrap;
@@ -361,28 +295,20 @@
   text-overflow: ellipsis;
 }
 
-/* ── Edu & Career Timeline ── */
-.about-timeline-card {
+/* ── Career progress bar (Infinite) ── */
+.about-career-bar { /* refined */
+  width: 100%;
+  height: 12px;
+  background: #f1f5f9;
+  border-radius: 100px;
+  margin-top: 24px;
+  margin-bottom: 8px;
   display: flex;
-  flex-direction: column;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
 }
-.about-edu-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
-}
-.about-edu-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #334155;
-  box-shadow: 0 0 0 4px rgba(51, 65, 85, 0.1);
-}
-.about-edu-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: #1e293b;
+.about-career-bar__seg {
+  height: 100%;
 }
 
 /* ── Support Wall (Restrained grid) ── */
@@ -418,7 +344,7 @@
 .about-support-amount {
   font-size: 12px;
   font-weight: 800;
-  color: #c2410c; /* Muted orange-red */
+  color: #c2410c; 
   background: #ffedd5;
   padding: 4px 10px;
   border-radius: 100px;
@@ -429,6 +355,47 @@
   font-size: 13px;
   color: #64748b;
   line-height: 1.5;
+}
+
+/* QR Tooltip container */
+.about-donate-tooltip {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 12px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.15);
+  display: flex;
+  gap: 16px;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(0.95);
+  transform-origin: top right;
+  transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+  z-index: 50;
+  border: 1px solid #f1f5f9;
+}
+.about-donate-wrapper:hover .about-donate-tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+.about-qr-placeholder {
+  width: 140px;
+  height: 140px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 /* Footer signature */

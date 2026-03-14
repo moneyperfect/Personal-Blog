@@ -2,8 +2,8 @@
 
 import { motion, useReducedMotion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import Image from 'next/image';
-import type { AboutHeroContent } from './types';
 import { useEffect } from 'react';
+import type { AboutHeroContent } from './types'; // Although not fully used here anymore, kept for type safety
 
 interface AboutHeroProps {
     locale: string;
@@ -11,24 +11,24 @@ interface AboutHeroProps {
 }
 
 const BUBBLE_ITEMS_ZH = [
-    { label: '艺术创作', x: -160, y: -60 },
-    { label: '编程设计', x: -180, y: 30 },
-    { label: '捕捉瞬间', x: -140, y: 120 },
-    { label: '无限进步', x: 160, y: -40 },
-    { label: '重拳出击', x: 180, y: 50 },
-    { label: '唯唯诺诺', x: 130, y: 140 },
+    { label: '艺术创作', x: -180, y: -80 },
+    { label: '编程设计', x: -220, y: 30 },
+    { label: '捕捉瞬间', x: -160, y: 140 },
+    { label: '无限进步', x: 180, y: -60 },
+    { label: '重拳出击', x: 220, y: 50 },
+    { label: '唯唯诺诺', x: 150, y: 160 },
 ];
 
 const BUBBLE_ITEMS_JA = [
-    { label: 'クリエイティブ', x: -160, y: -60 },
-    { label: 'コーディング', x: -180, y: 30 },
-    { label: '瞬間を捉える', x: -140, y: 120 },
-    { label: '無限の前進', x: 160, y: -40 },
-    { label: 'ネットの力', x: 180, y: 50 },
-    { label: 'オフは控えめ', x: 130, y: 140 },
+    { label: 'クリエイティブ', x: -180, y: -80 },
+    { label: 'コーディング', x: -220, y: 30 },
+    { label: '瞬間を捉える', x: -160, y: 140 },
+    { label: '無限の前進', x: 180, y: -60 },
+    { label: 'ネットの力', x: 220, y: 50 },
+    { label: 'オフは控えめ', x: 150, y: 160 },
 ];
 
-export default function AboutHero({ locale, content }: AboutHeroProps) {
+export default function AboutHero({ locale }: AboutHeroProps) {
     const reduceMotion = useReducedMotion();
     const bubbles = locale === 'zh' ? BUBBLE_ITEMS_ZH : BUBBLE_ITEMS_JA;
 
@@ -36,23 +36,22 @@ export default function AboutHero({ locale, content }: AboutHeroProps) {
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
-    const springConfig = { damping: 20, stiffness: 100, mass: 0.5 };
+    const springConfig = { damping: 25, stiffness: 120, mass: 0.5 };
     const springX = useSpring(mouseX, springConfig);
     const springY = useSpring(mouseY, springConfig);
 
-    // Subtle reverse parallax
+    // Subtle reverse parallax for avatar
     const avatarX = useTransform(springX, [-1, 1], [15, -15]);
     const avatarY = useTransform(springY, [-1, 1], [15, -15]);
     
     // Deeper parallax for bubbles
-    const bubblesX = useTransform(springX, [-1, 1], [30, -30]);
-    const bubblesY = useTransform(springY, [-1, 1], [30, -30]);
+    const bubblesX = useTransform(springX, [-1, 1], [40, -40]);
+    const bubblesY = useTransform(springY, [-1, 1], [40, -40]);
 
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
             const innerWidth = window.innerWidth;
             const innerHeight = window.innerHeight;
-            // Normalize mouse position between -1 and 1
             const nX = (e.clientX / innerWidth) * 2 - 1;
             const nY = (e.clientY / innerHeight) * 2 - 1;
             mouseX.set(nX);
@@ -63,75 +62,46 @@ export default function AboutHero({ locale, content }: AboutHeroProps) {
     }, [mouseX, mouseY]);
 
     return (
-        <section className="about-hero-grid">
-            {/* Left Card - Deep Dark Panel */}
-            <motion.article 
-                className="about-bento-card about-hover-spring about-hero-dark"
+        <section className="relative w-full h-[400px] flex items-center justify-center mb-12">
+            {/* Center Avatar Parallax Environment Only - No Background */}
+            <motion.div 
+                className="relative flex items-center justify-center"
+                style={reduceMotion ? {} : { x: avatarX, y: avatarY }}
             >
-                <div className="about-eyebrow">
-                    {locale === 'zh' ? '座右铭' : '座右銘'}
-                </div>
-                <h2>{content.name}</h2>
-                <p className="tagline">
-                    {locale === 'zh' 
-                        ? '倘若生活太苦，我便往里加点糖。\n热爱一切未知的创造力与审美。' 
-                        : '人生が苦いなら、砂糖を足せばいい。\n未知の表現と美を愛する。'}
-                </p>
-            </motion.article>
-
-            {/* Center Card - Avatar Parallax Environment */}
-            <motion.article className="about-bento-card about-hover-spring about-hero-avatar-card">
                 <motion.div 
-                    className="about-avatar-wrapper"
-                    style={reduceMotion ? {} : { x: avatarX, y: avatarY }}
+                    className="about-avatar-ring cursor-pointer"
+                    whileHover={{ scale: 1.08 }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 >
-                    <div className="about-avatar-ring">
-                        <Image
-                            src="/about/avatar-demo.svg"
-                            alt="Avatar"
-                            fill
-                            className="object-cover"
-                            sizes="180px"
-                            priority
-                        />
-                    </div>
-                    <span className="about-avatar-online" />
+                    <Image
+                        src="/about/avatar-demo.svg"
+                        alt="Avatar"
+                        fill
+                        className="object-cover"
+                        sizes="180px"
+                        priority
+                    />
                 </motion.div>
+                <span className="about-avatar-online" />
+            </motion.div>
 
-                <motion.div 
-                    style={reduceMotion ? {} : { x: bubblesX, y: bubblesY }}
-                    className="absolute inset-0 flex items-center justify-center pointer-events-none"
-                >
-                    {bubbles.map((b) => (
-                        <div
-                            key={b.label}
-                            className="about-bubble-pill"
-                            style={{ transform: `translate(${b.x}px, ${b.y}px)` }}
-                        >
-                            {b.label}
-                        </div>
-                    ))}
-                </motion.div>
-            </motion.article>
-
-            {/* Right Card - Ideal Text Group */}
-            <motion.article className="about-bento-card about-hover-spring about-hero-ideal">
-                <div className="about-eyebrow">
-                    {locale === 'zh' ? '极客精神' : 'Geek Spirit'}
-                </div>
-                <div className="about-ideal-text-group">
-                    <h3>{locale === 'zh' ? '源于' : '始まりは'}</h3>
-                    <h3>
-                        {locale === 'zh' ? '热爱而去 ' : '愛するために '}
-                        <span className="text-slate-400 font-normal">
-                             {locale === 'zh' ? '努力' : '努力'}
-                        </span>
-                    </h3>
-                    <h3>
-                        <span className="accent">{locale === 'zh' ? '创作' : '創作'}</span>
-                    </h3>
-                </div>
-            </motion.article>
+            {/* Floating Bubbles */}
+            <motion.div 
+                style={reduceMotion ? {} : { x: bubblesX, y: bubblesY }}
+                className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            >
+                {bubbles.map((b) => (
+                    <motion.div
+                        key={b.label}
+                        className="about-bubble-pill shadow-[0_8px_30px_rgb(0,0,0,0.06)]"
+                        style={{ transform: `translate(${b.x}px, ${b.y}px)` }}
+                        animate={{ y: [b.y, b.y - 8, b.y] }}
+                        transition={{ duration: 4 + Math.random() * 2, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                        {b.label}
+                    </motion.div>
+                ))}
+            </motion.div>
         </section>
     );
 }

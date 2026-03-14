@@ -14,7 +14,7 @@ export default function AboutSupportWall({ locale, content }: AboutSupportWallPr
     const reduceMotion = useReducedMotion();
 
     return (
-        <section className="flex flex-col gap-6 w-full mt-8">
+        <section className="flex flex-col gap-6 w-full mt-4">
             {/* ── Support Wall ── */}
             <article className="about-bento-card about-hover-spring">
                 <div className="flex justify-between items-start mb-6">
@@ -23,13 +23,28 @@ export default function AboutSupportWall({ locale, content }: AboutSupportWallPr
                         <h3 className="about-bento-title mt-2">{content.title}</h3>
                         <p className="about-bento-desc">{content.intro}</p>
                     </div>
-                    <button 
-                        type="button" 
-                        className="flex items-center gap-2 px-5 py-2.5 bg-rose-500 hover:bg-rose-600 active:scale-95 text-white text-sm font-bold rounded-full transition-all duration-300 shadow-[0_4px_14px_0_rgba(225,29,72,0.39)] hover:shadow-[0_6px_20px_rgba(225,29,72,0.23)]"
-                    >
-                        <span>❤️</span>
-                        {locale === 'zh' ? '赞赏作者' : '応援する'}
-                    </button>
+                    {/* The donate wrapper containing the tooltip */}
+                    <div className="relative about-donate-wrapper group">
+                        <button 
+                            type="button" 
+                            className="flex items-center gap-2 px-6 py-3 bg-rose-500 hover:bg-rose-600 active:scale-95 text-white text-[15px] font-bold rounded-full transition-all duration-300 shadow-[0_4px_14px_0_rgba(225,29,72,0.39)] hover:shadow-[0_6px_20px_rgba(225,29,72,0.23)]"
+                        >
+                            <span className="text-lg">❤️</span>
+                            {locale === 'zh' ? '赞赏作者' : '応援する'}
+                        </button>
+
+                        {/* QR codes tooltip appearing on hover */}
+                        <div className="about-donate-tooltip">
+                            <div className="about-qr-placeholder">
+                                <span>WeChat</span>
+                                <span className="text-[10px] text-slate-400">QR Code</span>
+                            </div>
+                            <div className="about-qr-placeholder">
+                                <span>AliPay</span>
+                                <span className="text-[10px] text-slate-400">QR Code</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="about-support-grid">
@@ -74,8 +89,8 @@ export default function AboutSupportWall({ locale, content }: AboutSupportWallPr
                     height={80} 
                     className="about-footer-avatar" 
                 />
-                <p className="font-medium text-slate-500 mb-1">
-                    {locale === 'zh' ? '这是我的客栈 / This is my Tavern' : 'ココハワタシノサカバ'}
+                <p className="font-medium text-slate-500 mb-1 tracking-wide">
+                    {locale === 'zh' ? '这是我的客栈 / THIS IS MY TAVERN' : 'ココハワタシノサカバ'}
                 </p>
                 <p className="text-xl font-bold text-slate-800 tracking-tight my-2">NAS</p>
                 <p className="text-sm italic text-slate-400">
