@@ -41,7 +41,7 @@ export default function AboutSupportWall({ locale, content }: AboutSupportWallPr
 
             <article className="about-bento-card about-hover-spring about-support-cta">
                 <div>
-                    <span className="about-eyebrow">{locale === 'zh' ? '下一步' : 'Next Step'}</span>
+                    <span className="about-eyebrow">{locale === 'zh' ? '下一步' : '次のステップ'}</span>
                     <h3 className="about-section-title about-section-title--compact">{content.ctaTitle}</h3>
                     <p className="about-section-copy">{content.ctaBody}</p>
                 </div>

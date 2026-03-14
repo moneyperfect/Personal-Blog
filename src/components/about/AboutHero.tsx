@@ -65,7 +65,7 @@ export default function AboutHero({ locale, content }: AboutHeroProps) {
                     <div className="about-avatar-ring">
                         <Image
                             src="/about/avatar-demo.svg"
-                            alt={locale === 'zh' ? '头像' : 'Avatar'}
+                            alt={locale === 'zh' ? '头像' : 'アバター'}
                             fill
                             className="object-cover"
                             sizes="240px"

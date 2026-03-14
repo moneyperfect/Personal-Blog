@@ -1,9 +1,10 @@
 'use client';
 
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
+import IntjArchitectIllustration from './IntjArchitectIllustration';
 import type { AboutPageContent } from './types';
 
 interface AboutLifeModulesProps {
@@ -13,21 +14,42 @@ interface AboutLifeModulesProps {
 
 export default function AboutLifeModules({ locale, content }: AboutLifeModulesProps) {
     const reduceMotion = useReducedMotion();
+    const artControls = useAnimationControls();
     const [activePreference, setActivePreference] = useState(0);
     const [activeWork, setActiveWork] = useState(0);
     const currentWork = content.works[activeWork];
+    const copy =
+        locale === 'zh'
+            ? {
+                  home: '首页',
+                  email: '邮箱',
+                  douyin: '抖音',
+                  previousWork: '上一个作品',
+                  nextWork: '下一个作品',
+                  viewWork: '查看作品',
+                  profileLinks: '联系与主页链接',
+              }
+            : {
+                  home: 'ホーム',
+                  email: 'メール',
+                  douyin: '抖音',
+                  previousWork: '前の作品',
+                  nextWork: '次の作品',
+                  viewWork: '作品を見る',
+                  profileLinks: 'プロフィールリンク',
+              };
     const footerLinks = [
         {
             key: 'home',
             href: `/${locale}`,
-            label: locale === 'zh' ? '首页' : 'Home',
+            label: copy.home,
             icon: <HomeIcon />,
             kind: 'internal',
         },
         {
             key: 'email',
             href: 'mailto:leizhen2046@gmail.com',
-            label: 'Email',
+            label: copy.email,
             icon: <MailIcon />,
             kind: 'mail',
         },
@@ -41,11 +63,34 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
         {
             key: 'douyin',
             href: 'https://v.douyin.com/BrWWZQDifn8/',
-            label: locale === 'zh' ? '抖音' : 'Douyin',
+            label: copy.douyin,
             icon: <DouyinIcon />,
             kind: 'external',
         },
     ];
+
+    const handleArtHoverStart = () => {
+        if (reduceMotion) return;
+
+        void artControls.start({
+            rotate: -15,
+            y: 0,
+            transition: { type: 'spring', stiffness: 220, damping: 18, mass: 0.8 },
+        });
+    };
+
+    const handleArtHoverEnd = () => {
+        if (reduceMotion) return;
+
+        void artControls.start({
+            rotate: 0,
+            y: [0, -10, 0],
+            transition: {
+                rotate: { type: 'spring', stiffness: 220, damping: 18, mass: 0.8 },
+                y: { duration: 0.48, ease: [0.22, 1, 0.36, 1] },
+            },
+        });
+    };
 
     return (
         <section className="about-life-stack">
@@ -65,13 +110,16 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                             </p>
                         </div>
                         <div className="about-personality-card__art">
-                            <Image
-                                src={content.personality.illustrationSrc}
-                                alt={content.personality.illustrationAlt}
-                                fill
-                                className="object-contain"
-                                sizes="360px"
-                            />
+                            <motion.div
+                                className="about-personality-card__artInner"
+                                initial={{ rotate: 0, y: 0 }}
+                                animate={artControls}
+                                style={reduceMotion ? undefined : { transformOrigin: '56% 90%' }}
+                                onHoverStart={handleArtHoverStart}
+                                onHoverEnd={handleArtHoverEnd}
+                            >
+                                <IntjArchitectIllustration className="about-personality-card__illustration" />
+                            </motion.div>
                         </div>
                     </div>
                 </article>
@@ -101,7 +149,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                             type="button"
                             className="about-carousel-button"
                             onClick={() => setActiveWork((current) => (current === 0 ? content.works.length - 1 : current - 1))}
-                            aria-label={locale === 'zh' ? '上一个作品' : 'Previous work'}
+                            aria-label={copy.previousWork}
                         >
                             ←
                         </button>
@@ -109,7 +157,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                             type="button"
                             className="about-carousel-button"
                             onClick={() => setActiveWork((current) => (current + 1) % content.works.length)}
-                            aria-label={locale === 'zh' ? '下一个作品' : 'Next work'}
+                            aria-label={copy.nextWork}
                         >
                             →
                         </button>
@@ -132,7 +180,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                         <p>{currentWork.summary}</p>
                         {currentWork.href ? (
                             <Link href={currentWork.href} className="about-inline-link">
-                                {locale === 'zh' ? '查看作品' : 'View work'}
+                                {copy.viewWork}
                             </Link>
                         ) : null}
                     </div>
@@ -272,7 +320,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                 </div>
             </article>
 
-            <div className="about-link-row" aria-label={locale === 'zh' ? '联系与主页链接' : 'Profile links'}>
+            <div className="about-link-row" aria-label={copy.profileLinks}>
                 {footerLinks.map((item) =>
                     item.kind === 'internal' ? (
                         <Link

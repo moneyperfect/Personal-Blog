@@ -8,17 +8,10 @@ export interface AboutHeroContent {
     idealLines: string[];
 }
 
-export interface AboutSkillTile {
-    label: string;
-    icon: string;
-    tone: 'sand' | 'indigo' | 'white' | 'green' | 'blue' | 'pink' | 'dark';
-}
-
 export interface AboutSkillContent {
     label: string;
     title: string;
     categories: string[];
-    tiles: AboutSkillTile[];
     careerLabel: string;
     careerTitle: string;
     careerItems: string[];
@@ -35,8 +28,6 @@ export interface AboutPersonalityContent {
     noteLinkLabel: string;
     noteLinkHref: string;
     noteSuffix: string;
-    illustrationSrc: string;
-    illustrationAlt: string;
     photoLabel: string;
     photoSrc: string;
     photoAlt: string;

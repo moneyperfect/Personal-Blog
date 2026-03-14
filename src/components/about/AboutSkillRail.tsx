@@ -1,21 +1,13 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { useReducedMotion } from 'framer-motion';
+import { techStack } from './techStack';
 import type { AboutSkillContent } from './types';
 
 interface AboutSkillRailProps {
     content: AboutSkillContent;
 }
-
-const TONE_CLASS_MAP: Record<AboutSkillContent['tiles'][number]['tone'], string> = {
-    sand: 'about-skill-tile--sand',
-    indigo: 'about-skill-tile--indigo',
-    white: 'about-skill-tile--white',
-    green: 'about-skill-tile--green',
-    blue: 'about-skill-tile--blue',
-    pink: 'about-skill-tile--pink',
-    dark: 'about-skill-tile--dark',
-};
 
 export default function AboutSkillRail({ content }: AboutSkillRailProps) {
     const reduceMotion = useReducedMotion();
@@ -35,12 +27,22 @@ export default function AboutSkillRail({ content }: AboutSkillRailProps) {
                     <div className={`about-skill-grid-track ${reduceMotion ? 'about-skill-grid-track--static' : ''}`}>
                         {[0, 1].map((group) => (
                             <div key={group} className="about-skill-grid" aria-hidden={group === 1}>
-                                {content.tiles.map((tile) => (
-                                    <div key={`${group}-${tile.label}`} className={`about-skill-tile ${TONE_CLASS_MAP[tile.tone]}`}>
-                                        <span className="about-skill-tile__icon">{tile.icon}</span>
-                                        <span className="about-skill-tile__label">{tile.label}</span>
-                                    </div>
-                                ))}
+                                {techStack.map((item) => {
+                                    const Icon = item.icon;
+
+                                    return (
+                                        <div
+                                            key={`${group}-${item.label}`}
+                                            className="about-skill-tile"
+                                            style={{ '--skill-brand': item.color } as CSSProperties}
+                                        >
+                                            <span className="about-skill-tile__icon" aria-hidden="true">
+                                                <Icon />
+                                            </span>
+                                            <span className="about-skill-tile__label">{item.label}</span>
+                                        </div>
+                                    );
+                                })}
                             </div>
                         ))}
                     </div>
