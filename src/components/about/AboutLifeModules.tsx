@@ -277,7 +277,14 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                     <h3 className="about-section-title about-section-title--compact">{content.preferencesTitle}</h3>
                 </div>
 
-                <div className="about-preference-panels about-preference-panels--desktop">
+                <div
+                    className="about-preference-panels about-preference-panels--desktop"
+                    onMouseLeave={() => {
+                        if (canUseHoverMotion) {
+                            setActivePreference(0);
+                        }
+                    }}
+                >
                     {content.preferences.map((item, index) => {
                         const active = activePreference === index;
 
