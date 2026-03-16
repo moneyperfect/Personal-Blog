@@ -18,7 +18,7 @@ const zhContent: AboutPageContent = {
     skills: {
         label: 'Tech & Leverage',
         title: '开启创造力',
-        summary: '从 Claude 调教 Prompt 到 Next.js + Supabase 的快速落地，我专注于打造一套能“自个儿跑”的自动化业务系统。',
+        summary: '从 Claude 调教 Prompt 到 Next.js + Supabase 落地，我专注于搭一套能自己跑的自动化系统。',
         careerLabel: '生涯',
         careerTitle: '无限进步',
         careerTimeline: [
@@ -27,14 +27,7 @@ const zhContent: AboutPageContent = {
                 title: '系统重启',
                 description: '意识觉醒，开始关注元认知与效率杠杆。',
                 tone: 'blue',
-                progress: '10%',
-            },
-            {
-                date: '2025.10',
-                title: '初探杠杆',
-                description: '利用 AI 辅助跑通校园商业服务闭环。',
-                tone: 'yellow',
-                progress: '46%',
+                progress: '12%',
             },
             {
                 date: '2026 至今',
@@ -187,7 +180,7 @@ const jaContent: AboutPageContent = {
     skills: {
         label: 'Tech & Leverage',
         title: '創造力を起動する',
-        summary: 'Claude でプロンプトを磨くところから、Next.js + Supabase で素早く形にするところまで。自走できる自動化システムを組むことに集中しています。',
+        summary: 'Claude でプロンプトを磨き、Next.js + Supabase で素早く形にする。そんな自走型の自動化システムを組んでいます。',
         careerLabel: '歩み',
         careerTitle: '進化し続ける',
         careerTimeline: [
@@ -196,14 +189,7 @@ const jaContent: AboutPageContent = {
                 title: 'システム再起動',
                 description: 'メタ認知と効率レバレッジを意識して見直し始めた時期。',
                 tone: 'blue',
-                progress: '10%',
-            },
-            {
-                date: '2025.10',
-                title: 'レバレッジの試運転',
-                description: 'AI を使って学内サービスの小さな閉ループを回し始めた段階。',
-                tone: 'yellow',
-                progress: '46%',
+                progress: '12%',
             },
             {
                 date: '2026 - 現在',

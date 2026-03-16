@@ -163,39 +163,43 @@
 }
 
 .about-card-dark {
-  min-height: 210px;
+  min-height: 188px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   background: linear-gradient(135deg, #343434 0%, #4a4a4a 100%);
   border-color: rgba(255, 255, 255, 0.04);
   color: #ffffff;
+  padding-top: 24px;
+  padding-bottom: 24px;
 }
 
 .about-card-dark__title {
-  margin-top: 20px;
+  margin-top: 14px;
   font-size: clamp(2.3rem, 3vw, 3.2rem);
   font-weight: 800;
   line-height: 1.04;
 }
 
 .about-card-dark__subtitle {
-  margin-top: 12px;
+  margin-top: 10px;
   max-width: 520px;
   font-size: 16px;
-  line-height: 1.8;
+  line-height: 1.72;
   color: rgba(255, 255, 255, 0.78);
 }
 
 .about-card-ideal {
-  min-height: 210px;
+  min-height: 188px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  padding-top: 24px;
+  padding-bottom: 24px;
 }
 
 .about-card-ideal__headline {
-  margin-top: 18px;
+  margin-top: 14px;
   max-width: 14ch;
   font-size: clamp(2rem, 2.8vw, 2.85rem);
   font-weight: 800;
@@ -204,18 +208,20 @@
 }
 
 .about-card-ideal__body {
-  margin-top: 14px;
+  margin-top: 10px;
   max-width: 34ch;
   font-size: 15px;
-  line-height: 1.85;
+  line-height: 1.74;
   color: #5f6879;
 }
 
 .about-skill-card,
 .about-career-card {
-  min-height: 404px;
+  min-height: 366px;
   display: flex;
   flex-direction: column;
+  padding-top: 24px;
+  padding-bottom: 24px;
 }
 
 .about-skill-card {
@@ -249,10 +255,10 @@
 }
 
 .about-skill-summary {
-  margin-top: 14px;
-  max-width: 35ch;
+  margin-top: 10px;
+  max-width: 31ch;
   font-size: 15px;
-  line-height: 1.75;
+  line-height: 1.64;
   color: #64748b;
 }
 
@@ -264,8 +270,8 @@
   --about-skill-track-offset: -36px;
   position: relative;
   overflow: hidden;
-  margin: 22px -28px 0;
-  padding: 8px 28px 10px;
+  margin: 18px -28px 0;
+  padding: 6px 28px 8px;
 }
 
 .about-skill-grid-shell::before,
@@ -401,11 +407,11 @@
   position: absolute;
   left: 18px;
   right: 18px;
-  bottom: 18px;
+  bottom: 14px;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 11px 14px;
+  padding: 9px 12px;
   border-radius: 18px;
   border: 1px solid rgba(148, 163, 184, 0.18);
   background: rgba(255, 255, 255, 0.8);
@@ -477,8 +483,8 @@
 
 .about-career-list {
   display: grid;
-  gap: 18px;
-  margin-top: 20px;
+  gap: 14px;
+  margin-top: 16px;
 }
 
 .about-career-entry {
@@ -538,13 +544,13 @@
 
 .about-career-progress {
   margin-top: auto;
-  padding-top: 34px;
+  padding-top: 24px;
 }
 
 .about-career-progress__legend {
   display: inline-flex;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
   font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -590,7 +596,7 @@
 .about-career-years {
   display: flex;
   justify-content: space-between;
-  margin-top: 14px;
+  margin-top: 10px;
   font-size: 14px;
   font-weight: 700;
   color: #c0c4cc;
@@ -993,7 +999,7 @@
 }
 
 .about-game-card {
-  min-height: 260px;
+  min-height: 338px;
   padding: 0;
 }
 
@@ -1027,37 +1033,56 @@
 }
 
 .about-preference-card {
-  padding-bottom: 24px;
+  padding-bottom: 20px;
 }
 
 .about-preference-card__header {
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .about-preference-panels--desktop {
   display: flex;
-  gap: 12px;
-  min-height: 360px;
+  gap: 0;
+  min-height: 356px;
+  overflow: hidden;
+  padding-inline: 6px;
+  align-items: stretch;
 }
 
 .about-preference-panel {
   position: relative;
   flex: 1 1 0;
   min-width: 0;
+  margin-left: -34px;
   border: 0;
   border-radius: 22px;
   overflow: hidden;
   cursor: pointer;
   background: transparent;
   isolation: isolate;
+  z-index: 1;
+  clip-path: polygon(16% 0, 100% 0, 84% 100%, 0 100%);
+  filter: saturate(0.82) brightness(0.84);
   transition:
     flex 0.58s cubic-bezier(0.22, 1, 0.36, 1),
     transform 0.28s ease,
-    filter 0.28s ease;
+    filter 0.28s ease,
+    margin-left 0.58s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-preference-panel:first-child {
+  margin-left: 0;
+  clip-path: polygon(0 0, 100% 0, 84% 100%, 0 100%);
+}
+
+.about-preference-panel:last-child {
+  clip-path: polygon(16% 0, 100% 0, 100% 100%, 0 100%);
 }
 
 .about-preference-panel.is-active {
-  flex: 2.3 1 0;
+  flex: 2.8 1 0;
+  z-index: 3;
+  filter: none;
 }
 
 .about-preference-panel__media {
@@ -1065,13 +1090,29 @@
   inset: 0;
 }
 
+.about-preference-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background:
+    linear-gradient(108deg, transparent 0 12.8%, rgba(255, 255, 255, 0.34) 13.2%, transparent 13.8%);
+  opacity: 0.78;
+  mix-blend-mode: screen;
+  pointer-events: none;
+}
+
+.about-preference-panel:first-child::before {
+  background: none;
+}
+
 .about-preference-panel__overlay {
   position: absolute;
   inset: 0;
   z-index: 1;
   background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.08), rgba(15, 23, 42, 0.82) 72%),
-    radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.18), transparent 38%);
+    linear-gradient(180deg, rgba(15, 23, 42, 0.1), rgba(15, 23, 42, 0.88) 78%),
+    radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.16), transparent 38%);
   transition: opacity 0.36s ease;
 }
 
@@ -1085,13 +1126,13 @@
 }
 
 .about-preference-panel__peek {
-  left: 18px;
-  right: 18px;
+  left: 34px;
+  right: 16px;
   bottom: 18px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  opacity: 0.95;
+  opacity: 0.92;
   transform: translateY(0);
   transition: opacity 0.34s ease, transform 0.34s ease;
 }
@@ -1117,50 +1158,52 @@
 
 .about-preference-panel__peek strong {
   display: block;
-  max-width: 12ch;
-  font-size: 17px;
+  max-width: 8ch;
+  font-size: 18px;
   font-weight: 800;
   line-height: 1.2;
   text-shadow: 0 12px 24px rgba(15, 23, 42, 0.3);
 }
 
 .about-preference-panel__content {
-  left: 22px;
-  right: 22px;
-  bottom: 22px;
+  inset: 18px 24px 18px 38px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   opacity: 0;
-  transform: translateY(18px);
+  transform: translateX(-12px);
   transition: opacity 0.38s ease, transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .about-preference-panel__content h4,
 .about-preference-mobile__copy h4 {
   margin-top: 12px;
-  font-size: 22px;
+  font-size: clamp(2.05rem, 2.7vw, 2.9rem);
   font-weight: 800;
-  line-height: 1.08;
+  line-height: 0.96;
+  letter-spacing: -0.05em;
   text-shadow: 0 14px 30px rgba(15, 23, 42, 0.34);
 }
 
 .about-preference-panel__content p,
 .about-preference-mobile__copy p {
-  margin-top: 10px;
-  max-width: 34ch;
+  margin-top: auto;
+  max-width: 25ch;
   font-size: 14px;
-  line-height: 1.75;
+  line-height: 1.7;
   color: rgba(255, 255, 255, 0.86);
 }
 
 .about-preference-panel.is-active .about-preference-panel__content,
 .about-preference-panel:focus-visible .about-preference-panel__content {
   opacity: 1;
-  transform: translateY(0);
+  transform: translateX(0);
 }
 
 .about-preference-panel.is-active .about-preference-panel__peek,
 .about-preference-panel:focus-visible .about-preference-panel__peek {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateX(-10px);
 }
 
 .about-preference-mobile {
@@ -1214,12 +1257,16 @@
 
 @media (hover: hover) {
   .about-preference-panel:hover {
-    transform: translateY(-2px);
+    transform: translateY(-1px);
   }
 
   .about-preference-panel:hover .about-preference-panel__overlay,
   .about-preference-panel.is-active .about-preference-panel__overlay {
     opacity: 0.92;
+  }
+
+  .about-preference-panel:not(.is-active):hover {
+    filter: saturate(0.92) brightness(0.9);
   }
 }
 
