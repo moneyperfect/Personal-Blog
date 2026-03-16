@@ -16,6 +16,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
     const reduceMotion = useReducedMotion();
     const artControls = useAnimationControls();
     const [activePreference, setActivePreference] = useState(0);
+    const [hoveredPreference, setHoveredPreference] = useState<number | null>(null);
     const [activeWork, setActiveWork] = useState(0);
     const [isArtFocused, setIsArtFocused] = useState(false);
     const [supportsHover, setSupportsHover] = useState(false);
@@ -36,6 +37,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
 
     const currentWork = content.works[activeWork] ?? content.works[0];
     const currentPreference = content.preferences[activePreference] ?? content.preferences[0];
+    const desktopActivePreference = hoveredPreference;
     const canUseHoverMotion = supportsHover && !reduceMotion;
     const calibratorSignals = ['SCAN', 'ALIGN', 'LOCK'];
 
@@ -281,12 +283,12 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                     className="about-preference-panels about-preference-panels--desktop"
                     onMouseLeave={() => {
                         if (canUseHoverMotion) {
-                            setActivePreference(0);
+                            setHoveredPreference(null);
                         }
                     }}
                 >
                     {content.preferences.map((item, index) => {
-                        const active = activePreference === index;
+                        const active = desktopActivePreference === index;
 
                         return (
                             <button
@@ -295,14 +297,21 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                                 className={`about-preference-panel ${active ? 'is-active' : ''}`}
                                 onMouseEnter={() => {
                                     if (canUseHoverMotion) {
-                                        setActivePreference(index);
+                                        setHoveredPreference(index);
                                     }
                                 }}
-                                onFocus={() => setActivePreference(index)}
-                                onClick={() => setActivePreference(index)}
+                                onFocus={() => setHoveredPreference(index)}
+                                onClick={() => {
+                                    setActivePreference(index);
+                                    setHoveredPreference(index);
+                                }}
                                 aria-pressed={active}
                             >
-                                <PreferenceMedia item={item} sizes="320px" position={item.imagePosition} />
+                                <PreferenceMedia
+                                    item={item}
+                                    sizes="(max-width: 900px) 100vw, (max-width: 1280px) 38vw, 540px"
+                                    position={item.imagePosition}
+                                />
                                 <div className="about-preference-panel__overlay" />
                                 <div className="about-preference-panel__peek">
                                     <span>{item.label}</span>
@@ -462,7 +471,7 @@ function PreferenceMedia({
                 src={item.imageSrc}
                 alt={item.imageAlt}
                 fill
-                className="object-cover"
+                className="about-preference-panel__image object-cover"
                 sizes={sizes}
                 style={position ? { objectPosition: position } : undefined}
             />

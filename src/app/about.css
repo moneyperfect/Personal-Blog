@@ -1041,6 +1041,7 @@
 }
 
 .about-preference-panels--desktop {
+  --about-preference-slice: 54px;
   display: flex;
   gap: 0;
   min-height: 356px;
@@ -1053,7 +1054,7 @@
   position: relative;
   flex: 1 1 0;
   min-width: 0;
-  margin-left: -42px;
+  margin-left: calc(var(--about-preference-slice) * -1);
   border: 0;
   border-radius: 22px;
   overflow: hidden;
@@ -1061,7 +1062,7 @@
   background: transparent;
   isolation: isolate;
   z-index: 1;
-  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+  clip-path: polygon(var(--about-preference-slice) 0, 100% 0, calc(100% - var(--about-preference-slice)) 100%, 0 100%);
   filter: saturate(0.82) brightness(0.84);
   transition:
     flex 0.58s cubic-bezier(0.22, 1, 0.36, 1),
@@ -1072,15 +1073,15 @@
 
 .about-preference-panel:first-child {
   margin-left: 0;
-  clip-path: polygon(0 0, 100% 0, 86% 100%, 0 100%);
+  clip-path: polygon(0 0, 100% 0, calc(100% - var(--about-preference-slice)) 100%, 0 100%);
 }
 
 .about-preference-panel:last-child {
-  clip-path: polygon(14% 0, 100% 0, 100% 100%, 0 100%);
+  clip-path: polygon(var(--about-preference-slice) 0, 100% 0, 100% 100%, 0 100%);
 }
 
 .about-preference-panel.is-active {
-  flex: 2.8 1 0;
+  flex: 2.3 1 0;
   z-index: 3;
   filter: none;
 }
@@ -1090,14 +1091,19 @@
   inset: 0;
 }
 
+.about-preference-panel__image {
+  transform: translate3d(0, 0, 0);
+  transition: filter 0.42s ease;
+}
+
 .about-preference-panel::before {
   content: '';
   position: absolute;
   inset: 0;
   z-index: 2;
   background:
-    linear-gradient(108deg, transparent 0 12.7%, rgba(255, 255, 255, 0.16) 13.05%, rgba(255, 255, 255, 0.04) 13.35%, transparent 13.7%);
-  opacity: 0.42;
+    linear-gradient(108deg, transparent 0 calc(var(--about-preference-slice) - 2px), rgba(255, 255, 255, 0.14) calc(var(--about-preference-slice) - 1px), rgba(255, 255, 255, 0.03) calc(var(--about-preference-slice) + 1px), transparent calc(var(--about-preference-slice) + 2px));
+  opacity: 0.34;
   mix-blend-mode: screen;
   pointer-events: none;
 }
@@ -1214,6 +1220,11 @@
   transform: translateX(0);
 }
 
+.about-preference-panel.is-active .about-preference-panel__image,
+.about-preference-panel:focus-visible .about-preference-panel__image {
+  filter: saturate(1.02) contrast(1.02);
+}
+
 .about-preference-panel.is-active .about-preference-panel__peek,
 .about-preference-panel:focus-visible .about-preference-panel__peek {
   opacity: 0;
@@ -1270,10 +1281,6 @@
 }
 
 @media (hover: hover) {
-  .about-preference-panel:hover {
-    transform: translateY(-1px);
-  }
-
   .about-preference-panel:hover .about-preference-panel__overlay,
   .about-preference-panel.is-active .about-preference-panel__overlay {
     opacity: 0.92;
