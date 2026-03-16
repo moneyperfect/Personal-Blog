@@ -343,6 +343,20 @@
     filter 0.28s ease;
 }
 
+.about-skill-tile--flow {
+  position: relative;
+}
+
+.about-skill-tile--flow::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border-radius: 18px;
+  border: 1px solid rgba(59, 130, 246, 0.08);
+  opacity: 0;
+  transition: opacity 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+}
+
 .about-skill-tile__icon {
   display: inline-flex;
   align-items: center;
@@ -373,8 +387,92 @@
   filter: saturate(1.04);
 }
 
+.about-skill-card.is-spotlit .about-skill-tile--flow::after {
+  opacity: 1;
+  border-color: rgba(59, 130, 246, 0.28);
+  box-shadow: inset 0 0 0 1px rgba(191, 219, 254, 0.3);
+}
+
 .about-skill-card.is-spotlit .about-skill-tile__label {
   color: #334155;
+}
+
+.about-skill-assembly {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border-radius: 18px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 18px 36px -30px rgba(15, 23, 42, 0.34);
+  opacity: 0;
+  transform: translateY(14px);
+  pointer-events: none;
+  transition: opacity 0.32s ease, transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-skill-card.is-spotlit .about-skill-assembly {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.about-skill-assembly__label {
+  flex: none;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #475569;
+}
+
+.about-skill-assembly__flow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  width: 100%;
+}
+
+.about-skill-assembly__segment {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1 1 0;
+}
+
+.about-skill-assembly__step {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.about-skill-assembly__connector {
+  display: block;
+  flex: 1 1 auto;
+  min-width: 12px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.18), rgba(59, 130, 246, 0.84));
+  transform: scaleX(0.3);
+  transform-origin: left center;
+  transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.about-skill-card.is-spotlit .about-skill-assembly__connector {
+  transform: scaleX(1);
 }
 
 .about-career-list {
@@ -557,6 +655,121 @@
   min-height: 220px;
 }
 
+.about-personality-card__artScene {
+  position: relative;
+  width: min(100%, 328px);
+  min-height: 236px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.about-personality-card__grid,
+.about-personality-card__trajectory,
+.about-personality-card__signal {
+  position: absolute;
+  pointer-events: none;
+}
+
+.about-personality-card__grid {
+  inset: 16px 8px 24px 28px;
+  border-radius: 26px;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.16) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: radial-gradient(circle at 62% 58%, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.36) 70%, transparent 100%);
+  opacity: 0.4;
+  transition: opacity 0.45s ease, transform 0.55s ease;
+}
+
+.about-personality-card__trajectory {
+  inset: 18px 10px 28px 24px;
+}
+
+.about-personality-card__beam,
+.about-personality-card__focus-ring,
+.about-personality-card__node {
+  position: absolute;
+}
+
+.about-personality-card__beam {
+  left: 32px;
+  top: 116px;
+  width: 164px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0), rgba(59, 130, 246, 0.96));
+  transform: scaleX(0.2);
+  transform-origin: left center;
+  opacity: 0.36;
+  transition: transform 0.52s cubic-bezier(0.23, 1, 0.32, 1), opacity 0.32s ease;
+}
+
+.about-personality-card__node {
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.92);
+  background: #cbd5e1;
+  box-shadow: 0 8px 18px -14px rgba(15, 23, 42, 0.7);
+  transition:
+    background-color 0.32s ease,
+    box-shadow 0.4s ease,
+    transform 0.4s ease;
+}
+
+.about-personality-card__node--one {
+  left: 26px;
+  top: 110px;
+}
+
+.about-personality-card__node--two {
+  left: 104px;
+  top: 82px;
+}
+
+.about-personality-card__node--three {
+  left: 184px;
+  top: 62px;
+}
+
+.about-personality-card__focus-ring {
+  right: 22px;
+  top: 34px;
+  width: 74px;
+  height: 74px;
+  border-radius: 999px;
+  border: 1px solid rgba(37, 99, 235, 0.2);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.44);
+  opacity: 0.52;
+  transform: scale(0.9);
+  transition: opacity 0.38s ease, transform 0.52s ease;
+}
+
+.about-personality-card__signal {
+  top: 10px;
+  right: 6px;
+  display: flex;
+  gap: 6px;
+}
+
+.about-personality-card__signal span {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(191, 219, 254, 0.64);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(10px);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #64748b;
+  transition: transform 0.32s ease, border-color 0.32s ease, color 0.32s ease, background-color 0.32s ease;
+}
+
 .about-personality-card__artInner {
   width: min(100%, 308px);
   will-change: transform;
@@ -581,6 +794,44 @@
 
 .about-personality-card__artInner.is-focused .about-personality-card__illustration svg {
   filter: drop-shadow(10px 30px 30px rgba(15, 23, 42, 0.2));
+}
+
+.about-personality-card__artScene.is-calibrated .about-personality-card__grid {
+  opacity: 0.78;
+  transform: translateX(4px);
+}
+
+.about-personality-card__artScene.is-calibrated .about-personality-card__beam {
+  transform: scaleX(1);
+  opacity: 0.96;
+}
+
+.about-personality-card__artScene.is-calibrated .about-personality-card__node {
+  background: #3b82f6;
+  box-shadow: 0 12px 22px -14px rgba(37, 99, 235, 0.75);
+}
+
+.about-personality-card__artScene.is-calibrated .about-personality-card__node--two {
+  transform: translate(4px, -2px);
+}
+
+.about-personality-card__artScene.is-calibrated .about-personality-card__node--three {
+  transform: translate(8px, -4px);
+}
+
+.about-personality-card__artScene.is-calibrated .about-personality-card__focus-ring {
+  opacity: 0.92;
+  transform: scale(1);
+}
+
+.about-personality-card__artScene.is-calibrated .about-personality-card__signal span {
+  border-color: rgba(96, 165, 250, 0.55);
+  background: rgba(239, 246, 255, 0.88);
+  color: #1d4ed8;
+}
+
+.about-personality-card__artScene.is-calibrated .about-personality-card__signal span:nth-child(2) {
+  transform: translateY(-2px);
 }
 
 .about-photo-card__media {
@@ -1123,6 +1374,10 @@
   .about-personality-card__note {
     margin-top: 34px;
   }
+
+  .about-personality-card__artScene {
+    min-height: 228px;
+  }
 }
 
 @media (max-width: 900px) {
@@ -1157,6 +1412,26 @@
     --about-skill-track-offset: -28px;
     margin-inline: -22px;
     padding-inline: 22px;
+  }
+
+  .about-skill-assembly {
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .about-skill-assembly__flow {
+    width: 100%;
+    gap: 8px;
+    overflow-x: auto;
+  }
+
+  .about-skill-assembly__segment {
+    min-width: max-content;
+    flex: 0 0 auto;
   }
 
   .about-skill-grid-shell::before,
@@ -1235,6 +1510,10 @@
 
   .about-photo-card {
     min-height: 360px;
+  }
+
+  .about-personality-card__signal {
+    right: 0;
   }
 
   .about-link-row {

@@ -37,6 +37,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
     const currentWork = content.works[activeWork] ?? content.works[0];
     const currentPreference = content.preferences[activePreference] ?? content.preferences[0];
     const canUseHoverMotion = supportsHover && !reduceMotion;
+    const calibratorSignals = ['SCAN', 'ALIGN', 'LOCK'];
 
     const copy = useMemo(
         () =>
@@ -103,12 +104,12 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
         setIsArtFocused(true);
 
         void artControls.start({
-            rotate: 13.5,
-            x: 10,
-            y: 12,
-            scale: 1.018,
+            rotate: 5.5,
+            x: 4,
+            y: 8,
+            scale: 1.01,
             transition: {
-                duration: 0.58,
+                duration: 0.62,
                 ease: [0.23, 1, 0.32, 1],
             },
         });
@@ -128,7 +129,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
             y: 0,
             scale: 1,
             transition: {
-                duration: 0.72,
+                duration: 0.76,
                 ease: [0.16, 1, 0.3, 1],
             },
         });
@@ -153,16 +154,33 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                         </div>
 
                         <div className="about-personality-card__art">
-                            <motion.div
-                                className={`about-personality-card__artInner ${isArtFocused ? 'is-focused' : ''}`}
-                                initial={{ rotate: 0, x: 0, y: 0, scale: 1 }}
-                                animate={artControls}
-                                style={canUseHoverMotion ? { transformOrigin: '72% 86%' } : undefined}
-                                onHoverStart={handleArtHoverStart}
-                                onHoverEnd={handleArtHoverEnd}
+                            <div
+                                className={`about-personality-card__artScene ${isArtFocused ? 'is-calibrated' : ''}`}
+                                onMouseEnter={handleArtHoverStart}
+                                onMouseLeave={handleArtHoverEnd}
                             >
-                                <IntjArchitectIllustration className="about-personality-card__illustration" />
-                            </motion.div>
+                                <div className="about-personality-card__grid" aria-hidden="true" />
+                                <div className="about-personality-card__trajectory" aria-hidden="true">
+                                    <span className="about-personality-card__beam" />
+                                    <span className="about-personality-card__node about-personality-card__node--one" />
+                                    <span className="about-personality-card__node about-personality-card__node--two" />
+                                    <span className="about-personality-card__node about-personality-card__node--three" />
+                                    <span className="about-personality-card__focus-ring" />
+                                </div>
+                                <div className="about-personality-card__signal" aria-hidden="true">
+                                    {calibratorSignals.map((item) => (
+                                        <span key={item}>{item}</span>
+                                    ))}
+                                </div>
+                                <motion.div
+                                    className={`about-personality-card__artInner ${isArtFocused ? 'is-focused' : ''}`}
+                                    initial={{ rotate: 0, x: 0, y: 0, scale: 1 }}
+                                    animate={artControls}
+                                    style={canUseHoverMotion ? { transformOrigin: '72% 86%' } : undefined}
+                                >
+                                    <IntjArchitectIllustration className="about-personality-card__illustration" />
+                                </motion.div>
+                            </div>
                         </div>
                     </div>
                 </article>

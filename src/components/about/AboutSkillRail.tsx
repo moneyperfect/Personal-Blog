@@ -15,6 +15,8 @@ export default function AboutSkillRail({ content }: AboutSkillRailProps) {
     const cardRef = useRef<HTMLElement | null>(null);
     const [supportsHover, setSupportsHover] = useState(false);
     const [isSpotlit, setIsSpotlit] = useState(false);
+    const flowNodes = new Set(['Claude', 'Next.js', 'Supabase', 'Vercel']);
+    const assemblySteps = ['Prompt', 'Build', 'Data', 'Ship'];
 
     useEffect(() => {
         if (typeof window === 'undefined') {
@@ -84,7 +86,7 @@ export default function AboutSkillRail({ content }: AboutSkillRailProps) {
                                     return (
                                         <div
                                             key={`${group}-${item.label}`}
-                                            className="about-skill-tile"
+                                            className={`about-skill-tile ${flowNodes.has(item.label) ? 'about-skill-tile--flow' : ''}`}
                                             style={{ '--skill-brand': item.color } as CSSProperties}
                                         >
                                             <span className="about-skill-tile__icon" aria-hidden="true">
@@ -94,6 +96,20 @@ export default function AboutSkillRail({ content }: AboutSkillRailProps) {
                                         </div>
                                     );
                                 })}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className={`about-skill-assembly ${isSpotlit ? 'is-active' : ''}`} aria-hidden="true">
+                    <span className="about-skill-assembly__label">System Assembly</span>
+                    <div className="about-skill-assembly__flow">
+                        {assemblySteps.map((item, index) => (
+                            <div key={item} className="about-skill-assembly__segment">
+                                <span className="about-skill-assembly__step">{item}</span>
+                                {index < assemblySteps.length - 1 ? (
+                                    <span className="about-skill-assembly__connector" />
+                                ) : null}
                             </div>
                         ))}
                     </div>
