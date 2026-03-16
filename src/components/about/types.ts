@@ -65,6 +65,8 @@ export interface AboutPreferenceCard {
     subtitle: string;
     imageSrc: string;
     imageAlt: string;
+    imagePosition?: string;
+    mobileImagePosition?: string;
     href?: string;
 }
 

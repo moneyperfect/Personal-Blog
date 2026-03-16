@@ -1,7 +1,8 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import type { CSSProperties, PointerEvent as ReactPointerEvent } from 'react';
 import { useReducedMotion } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
 import { techStack } from './techStack';
 import type { AboutSkillContent } from './types';
 
@@ -11,10 +12,64 @@ interface AboutSkillRailProps {
 
 export default function AboutSkillRail({ content }: AboutSkillRailProps) {
     const reduceMotion = useReducedMotion();
+    const cardRef = useRef<HTMLElement | null>(null);
+    const [supportsHover, setSupportsHover] = useState(false);
+    const [isSpotlit, setIsSpotlit] = useState(false);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') {
+            return undefined;
+        }
+
+        const mediaQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
+        const syncHoverCapability = () => setSupportsHover(mediaQuery.matches);
+
+        syncHoverCapability();
+        mediaQuery.addEventListener('change', syncHoverCapability);
+
+        return () => mediaQuery.removeEventListener('change', syncHoverCapability);
+    }, []);
+
+    const handlePointerEnter = () => {
+        if (!supportsHover || reduceMotion || !cardRef.current) {
+            return;
+        }
+
+        cardRef.current.style.setProperty('--skill-spotlight-x', '50%');
+        cardRef.current.style.setProperty('--skill-spotlight-y', '38%');
+        setIsSpotlit(true);
+    };
+
+    const handlePointerMove = (event: ReactPointerEvent<HTMLElement>) => {
+        if (!supportsHover || reduceMotion || !cardRef.current) {
+            return;
+        }
+
+        const bounds = cardRef.current.getBoundingClientRect();
+        const offsetX = event.clientX - bounds.left;
+        const offsetY = event.clientY - bounds.top;
+
+        cardRef.current.style.setProperty('--skill-spotlight-x', `${offsetX}px`);
+        cardRef.current.style.setProperty('--skill-spotlight-y', `${offsetY}px`);
+    };
+
+    const handlePointerLeave = () => {
+        if (!supportsHover || reduceMotion) {
+            return;
+        }
+
+        setIsSpotlit(false);
+    };
 
     return (
         <section className="about-skill-row">
-            <article className="about-bento-card about-hover-spring about-skill-card">
+            <article
+                ref={cardRef}
+                className={`about-bento-card about-hover-spring about-skill-card ${isSpotlit ? 'is-spotlit' : ''}`}
+                onPointerEnter={handlePointerEnter}
+                onPointerMove={handlePointerMove}
+                onPointerLeave={handlePointerLeave}
+            >
                 <span className="about-eyebrow">{content.label}</span>
                 <h2 className="about-section-title about-section-title--compact">{content.title}</h2>
                 <p className="about-skill-summary">{content.summary}</p>

@@ -1,147 +1,74 @@
 'use client';
 
-import Image from 'next/image';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
-type MediaKind = 'avatar' | 'portrait';
+const STATIC_AVATAR_PATH = '/about/avatar-nas.jpg';
+const STATIC_PORTRAIT_PATH = '/about/portrait-intj.png';
 
 interface AboutMediaResponse {
     media?: {
-        avatarUrl?: string | null;
         portraitUrl?: string | null;
         updatedAt?: string | null;
     };
     error?: string;
 }
 
-const ALLOWED_MEDIA_TYPES = ['image/webp', 'image/jpeg', 'image/png'];
-
-const SLOT_META: Record<MediaKind, { label: string; ratio: string; recommendation: string }> = {
-    avatar: {
-        label: '头像',
-        ratio: '1:1',
-        recommendation: '建议使用 WebP，最少 800 x 800，适合作为 Hero 区圆形头像。',
-    },
-    portrait: {
-        label: '个人照片',
-        ratio: '4:5',
-        recommendation: '建议使用 WebP，至少 1200 x 1500，适合作为 About 照片卡展示。',
-    },
-};
-
-function formatTimestamp(value: string | null | undefined) {
-    if (!value) return '尚未保存';
-
-    const date = new Date(value);
-    if (Number.isNaN(date.getTime())) {
-        return '尚未保存';
-    }
-
-    return date.toLocaleString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-}
-
 export default function AboutMediaPanel() {
-    const avatarInputRef = useRef<HTMLInputElement>(null);
-    const portraitInputRef = useRef<HTMLInputElement>(null);
+    const [portraitUrl, setPortraitUrl] = useState('');
+    const [updatedAt, setUpdatedAt] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
-    const [uploadingKind, setUploadingKind] = useState<MediaKind | null>(null);
-    const [statusMessage, setStatusMessage] = useState<string | null>(null);
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-    const [draft, setDraft] = useState({
-        avatarUrl: '',
-        portraitUrl: '',
-        updatedAt: null as string | null,
-    });
+    const [message, setMessage] = useState<string | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        const loadMedia = async () => {
+        let active = true;
+
+        const load = async () => {
+            setLoading(true);
+            setError(null);
+
             try {
                 const response = await fetch('/api/admin/about-media');
                 const data = (await response.json()) as AboutMediaResponse;
 
                 if (!response.ok) {
-                    throw new Error(data.error || '读取 About 图片配置失败。');
+                    throw new Error(data.error || '读取 About 媒体配置失败。');
                 }
 
-                setDraft({
-                    avatarUrl: data.media?.avatarUrl || '',
-                    portraitUrl: data.media?.portraitUrl || '',
-                    updatedAt: data.media?.updatedAt || null,
-                });
-            } catch (error) {
-                setErrorMessage(error instanceof Error ? error.message : '读取 About 图片配置失败。');
+                if (!active) {
+                    return;
+                }
+
+                setPortraitUrl(data.media?.portraitUrl ?? '');
+                setUpdatedAt(data.media?.updatedAt ?? null);
+            } catch (loadError) {
+                if (!active) {
+                    return;
+                }
+
+                setError(loadError instanceof Error ? loadError.message : '读取 About 媒体配置失败。');
             } finally {
-                setLoading(false);
+                if (active) {
+                    setLoading(false);
+                }
             }
         };
 
-        void loadMedia();
+        void load();
+
+        return () => {
+            active = false;
+        };
     }, []);
 
-    const handleUpload = async (kind: MediaKind, file: File | null) => {
-        if (!file) {
-            return;
-        }
-
-        setStatusMessage(null);
-        setErrorMessage(null);
-
-        if (!ALLOWED_MEDIA_TYPES.includes(file.type)) {
-            setErrorMessage('只支持 WebP、JPEG 或 PNG。请重新选择图片。');
-            return;
-        }
-
-        setUploadingKind(kind);
-
-        try {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('bucket', 'blog-assets');
-            formData.append('folder', 'about/profile');
-
-            const response = await fetch('/api/admin/upload', {
-                method: 'POST',
-                body: formData,
-            });
-
-            const data = await response.json();
-
-            if (!response.ok || !data.url) {
-                throw new Error(data.error || '上传失败，请稍后重试。');
-            }
-
-            setDraft((current) => ({
-                ...current,
-                avatarUrl: kind === 'avatar' ? data.url : current.avatarUrl,
-                portraitUrl: kind === 'portrait' ? data.url : current.portraitUrl,
-            }));
-            setStatusMessage(`${SLOT_META[kind].label}已上传完成，确认无误后记得点击保存。`);
-        } catch (error) {
-            setErrorMessage(error instanceof Error ? error.message : '上传失败，请稍后重试。');
-        } finally {
-            setUploadingKind(null);
-
-            if (kind === 'avatar' && avatarInputRef.current) {
-                avatarInputRef.current.value = '';
-            }
-
-            if (kind === 'portrait' && portraitInputRef.current) {
-                portraitInputRef.current.value = '';
-            }
-        }
-    };
+    const previewSrc = useMemo(() => portraitUrl.trim() || STATIC_PORTRAIT_PATH, [portraitUrl]);
+    const updatedLabel = updatedAt ? new Date(updatedAt).toLocaleString('zh-CN') : '尚未保存过覆盖链接';
 
     const handleSave = async () => {
         setSaving(true);
-        setStatusMessage(null);
-        setErrorMessage(null);
+        setMessage(null);
+        setError(null);
 
         try {
             const response = await fetch('/api/admin/about-media', {
@@ -150,143 +77,112 @@ export default function AboutMediaPanel() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    avatarUrl: draft.avatarUrl,
-                    portraitUrl: draft.portraitUrl,
+                    portraitUrl,
                 }),
             });
 
             const data = (await response.json()) as AboutMediaResponse;
 
             if (!response.ok) {
-                throw new Error(data.error || '保存 About 图片配置失败。');
+                throw new Error(data.error || '保存 About 媒体配置失败。');
             }
 
-            setDraft((current) => ({
-                ...current,
-                avatarUrl: data.media?.avatarUrl || '',
-                portraitUrl: data.media?.portraitUrl || '',
-                updatedAt: data.media?.updatedAt || null,
-            }));
-            setStatusMessage('About 页头像与个人照片已保存，前台刷新后会读取最新资源。');
-        } catch (error) {
-            setErrorMessage(error instanceof Error ? error.message : '保存 About 图片配置失败。');
+            setUpdatedAt(data.media?.updatedAt ?? null);
+            setPortraitUrl(data.media?.portraitUrl ?? '');
+            setMessage('人物照覆盖链接已保存。留空时会自动回退到站内静态图片。');
+        } catch (saveError) {
+            setError(saveError instanceof Error ? saveError.message : '保存 About 媒体配置失败。');
         } finally {
             setSaving(false);
         }
     };
 
-    const renderMediaSlot = (kind: MediaKind) => {
-        const slot = SLOT_META[kind];
-        const url = kind === 'avatar' ? draft.avatarUrl : draft.portraitUrl;
-
-        return (
-            <div key={kind} className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div>
-                        <h3 className="text-sm font-semibold text-slate-900">{slot.label}</h3>
-                        <p className="mt-1 text-xs text-slate-500">建议比例 {slot.ratio}</p>
-                    </div>
-                    <button
-                        type="button"
-                        onClick={() => (kind === 'avatar' ? avatarInputRef.current : portraitInputRef.current)?.click()}
-                        className="rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-slate-400 hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-60"
-                        disabled={uploadingKind !== null || loading}
-                    >
-                        {uploadingKind === kind ? '上传中...' : `上传${slot.label}`}
-                    </button>
-                </div>
-
-                <input
-                    ref={kind === 'avatar' ? avatarInputRef : portraitInputRef}
-                    type="file"
-                    accept="image/webp,image/jpeg,image/png"
-                    className="hidden"
-                    onChange={(event) => void handleUpload(kind, event.target.files?.[0] || null)}
-                />
-
-                <div className="mt-4 overflow-hidden rounded-2xl border border-dashed border-slate-300 bg-white">
-                    {url ? (
-                        <Image
-                            src={url}
-                            alt={`${slot.label}预览`}
-                            width={kind === 'avatar' ? 800 : 1200}
-                            height={kind === 'avatar' ? 800 : 1500}
-                            className={`block h-auto w-full object-cover ${kind === 'avatar' ? 'aspect-square' : 'aspect-[4/5]'}`}
-                            unoptimized
-                        />
-                    ) : (
-                        <div
-                            className={`flex w-full items-center justify-center bg-slate-100 text-sm text-slate-400 ${
-                                kind === 'avatar' ? 'aspect-square' : 'aspect-[4/5]'
-                            }`}
-                        >
-                            暂未上传
-                        </div>
-                    )}
-                </div>
-
-                <p className="mt-3 text-xs leading-6 text-slate-500">{slot.recommendation}</p>
-                <button
-                    type="button"
-                    onClick={() =>
-                        setDraft((current) => ({
-                            ...current,
-                            avatarUrl: kind === 'avatar' ? '' : current.avatarUrl,
-                            portraitUrl: kind === 'portrait' ? '' : current.portraitUrl,
-                        }))
-                    }
-                    className="mt-3 text-xs font-medium text-slate-500 transition hover:text-slate-900"
-                >
-                    清空并回退到站内默认图
-                </button>
-            </div>
-        );
-    };
-
     return (
         <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+            <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
                 <div>
-                    <h2 className="text-sm font-semibold text-slate-900">About 图片上传</h2>
-                    <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-                        这轮只接入头像和个人照片。作品图、游戏爱好、偏好图片继续走站内静态资源，避免后台改动范围过大。
+                    <h2 className="text-base font-semibold text-slate-900">About 媒体覆盖</h2>
+                    <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600">
+                        头像现在固定使用站内静态资源，不再走上传同步。这里仅保留“人物照外链覆盖”的最小入口，
+                        如果留空，about 页会继续使用 <span className="font-mono text-slate-700">{STATIC_PORTRAIT_PATH}</span>。
                     </p>
                 </div>
-                <div className="text-xs text-slate-400">最近保存：{formatTimestamp(draft.updatedAt)}</div>
+                <div className="text-xs text-slate-500">最近更新：{updatedLabel}</div>
             </div>
 
-            {loading ? (
-                <div className="mt-6 rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-4 py-8 text-sm text-slate-500">
-                    正在读取 About 图片配置...
-                </div>
-            ) : (
-                <div className="mt-6 grid gap-4 lg:grid-cols-2">{(['avatar', 'portrait'] as MediaKind[]).map(renderMediaSlot)}</div>
-            )}
+            <div className="mt-6 grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
+                <div className="space-y-5">
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+                        <div className="text-sm font-semibold text-slate-900">静态头像</div>
+                        <p className="mt-2 text-sm leading-6 text-slate-600">
+                            当前头像固定读取
+                            <span className="ml-1 font-mono text-slate-700">{STATIC_AVATAR_PATH}</span>，
+                            后续如果要换图，直接替换同名文件即可。
+                        </p>
+                    </div>
 
-            {errorMessage ? (
-                <div className="mt-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-                    {errorMessage}
-                </div>
-            ) : null}
+                    <label className="block">
+                        <div className="mb-2 text-sm font-semibold text-slate-900">人物照覆盖链接</div>
+                        <textarea
+                            value={portraitUrl}
+                            onChange={(event) => setPortraitUrl(event.target.value)}
+                            placeholder="https://example.com/about-portrait.webp"
+                            rows={4}
+                            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
+                        />
+                    </label>
 
-            {statusMessage ? (
-                <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-                    {statusMessage}
-                </div>
-            ) : null}
+                    <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 p-4 text-sm leading-6 text-slate-600">
+                        建议只填写稳定的公网图片链接，格式优先使用 <strong>WebP / JPG / PNG</strong>。
+                        如果暂时不想用外链，直接清空后保存即可。
+                    </div>
 
-            <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-5">
-                <p className="text-xs leading-6 text-slate-500">
-                    格式要求：头像建议 1:1，最少 800 x 800；个人照片建议 4:5，最少 1200 x 1500。首轮不做在线裁剪，请尽量在上传前处理好比例。
-                </p>
-                <button
-                    type="button"
-                    onClick={() => void handleSave()}
-                    disabled={loading || saving}
-                    className="rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                    {saving ? '保存中...' : '保存 About 图片配置'}
-                </button>
+                    <div className="flex flex-wrap gap-3">
+                        <button
+                            type="button"
+                            onClick={() => setPortraitUrl('')}
+                            className="inline-flex items-center rounded-full border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                        >
+                            清空覆盖
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => void handleSave()}
+                            disabled={loading || saving}
+                            className="inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+                        >
+                            {saving ? '保存中...' : '保存链接'}
+                        </button>
+                    </div>
+
+                    {message ? <p className="text-sm text-emerald-600">{message}</p> : null}
+                    {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+                </div>
+
+                <div className="rounded-[28px] border border-slate-200 bg-slate-50/70 p-4">
+                    <div className="mb-3 flex items-center justify-between gap-3">
+                        <div>
+                            <div className="text-sm font-semibold text-slate-900">预览</div>
+                            <div className="text-xs text-slate-500">
+                                {loading ? '正在读取当前配置...' : portraitUrl.trim() ? '外链覆盖中' : '使用站内静态图片'}
+                            </div>
+                        </div>
+                        <span className="rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-600 shadow-sm">
+                            {portraitUrl.trim() ? 'Override' : 'Static'}
+                        </span>
+                    </div>
+
+                    <div className="overflow-hidden rounded-[24px] border border-white bg-white shadow-sm">
+                        <div className="relative aspect-[4/5] bg-slate-100">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={previewSrc}
+                                alt="About 人物照预览"
+                                className="h-full w-full object-cover"
+                            />
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
     );

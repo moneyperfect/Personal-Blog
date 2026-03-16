@@ -3,9 +3,9 @@
 import { motion, useAnimationControls, useReducedMotion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import IntjArchitectIllustration from './IntjArchitectIllustration';
-import type { AboutPageContent } from './types';
+import type { AboutPageContent, AboutPreferenceCard, AboutWorkCard } from './types';
 
 interface AboutLifeModulesProps {
     locale: string;
@@ -18,27 +18,51 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
     const [activePreference, setActivePreference] = useState(0);
     const [activeWork, setActiveWork] = useState(0);
     const [isArtFocused, setIsArtFocused] = useState(false);
-    const currentWork = content.works[activeWork];
-    const copy =
-        locale === 'zh'
-            ? {
-                  home: '首页',
-                  email: '邮箱',
-                  douyin: '抖音',
-                  previousWork: '上一个作品',
-                  nextWork: '下一个作品',
-                  viewWork: '查看作品',
-                  profileLinks: '联系与主页链接',
-              }
-            : {
-                  home: 'ホーム',
-                  email: 'メール',
-                  douyin: '抖音',
-                  previousWork: '前の作品',
-                  nextWork: '次の作品',
-                  viewWork: '作品を見る',
-                  profileLinks: 'プロフィールリンク',
-              };
+    const [supportsHover, setSupportsHover] = useState(false);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') {
+            return undefined;
+        }
+
+        const mediaQuery = window.matchMedia('(hover: hover) and (pointer: fine)');
+        const syncHoverCapability = () => setSupportsHover(mediaQuery.matches);
+
+        syncHoverCapability();
+
+        mediaQuery.addEventListener('change', syncHoverCapability);
+        return () => mediaQuery.removeEventListener('change', syncHoverCapability);
+    }, []);
+
+    const currentWork = content.works[activeWork] ?? content.works[0];
+    const currentPreference = content.preferences[activePreference] ?? content.preferences[0];
+    const canUseHoverMotion = supportsHover && !reduceMotion;
+
+    const copy = useMemo(
+        () =>
+            locale === 'zh'
+                ? {
+                      home: '首页',
+                      email: '邮箱',
+                      douyin: '抖音',
+                      previousWork: '查看上一个作品',
+                      nextWork: '查看下一个作品',
+                      viewWork: '查看作品',
+                      profileLinks: '个人链接',
+                      preferenceSelector: '偏好切换',
+                  }
+                : {
+                      home: 'ホーム',
+                      email: 'メール',
+                      douyin: '抖音',
+                      previousWork: '前の作品を見る',
+                      nextWork: '次の作品を見る',
+                      viewWork: '作品を見る',
+                      profileLinks: 'プロフィールリンク',
+                      preferenceSelector: '嗜好の切り替え',
+                  },
+        [locale],
+    );
 
     const footerLinks = [
         {
@@ -72,26 +96,31 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
     ];
 
     const handleArtHoverStart = () => {
+        if (!canUseHoverMotion) {
+            return;
+        }
+
         setIsArtFocused(true);
 
-        if (reduceMotion) return;
-
         void artControls.start({
-            rotate: 15,
-            x: 2,
-            y: 8,
-            scale: 1.012,
+            rotate: 13.5,
+            x: 10,
+            y: 12,
+            scale: 1.018,
             transition: {
                 duration: 0.58,
-                ease: [0.22, 1, 0.36, 1],
+                ease: [0.23, 1, 0.32, 1],
             },
         });
     };
 
     const handleArtHoverEnd = () => {
-        setIsArtFocused(false);
+        if (!canUseHoverMotion) {
+            setIsArtFocused(false);
+            return;
+        }
 
-        if (reduceMotion) return;
+        setIsArtFocused(false);
 
         void artControls.start({
             rotate: 0,
@@ -99,8 +128,8 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
             y: 0,
             scale: 1,
             transition: {
-                duration: 0.68,
-                ease: [0.22, 1, 0.36, 1],
+                duration: 0.72,
+                ease: [0.16, 1, 0.3, 1],
             },
         });
     };
@@ -122,12 +151,13 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                                 {content.personality.noteSuffix}
                             </p>
                         </div>
+
                         <div className="about-personality-card__art">
                             <motion.div
                                 className={`about-personality-card__artInner ${isArtFocused ? 'is-focused' : ''}`}
                                 initial={{ rotate: 0, x: 0, y: 0, scale: 1 }}
                                 animate={artControls}
-                                style={reduceMotion ? undefined : { transformOrigin: '58% 84%' }}
+                                style={canUseHoverMotion ? { transformOrigin: '72% 86%' } : undefined}
                                 onHoverStart={handleArtHoverStart}
                                 onHoverEnd={handleArtHoverEnd}
                             >
@@ -138,14 +168,12 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                 </article>
 
                 <article className="about-bento-card about-hover-spring about-photo-card">
-                    <span className="about-eyebrow">{content.personality.photoLabel}</span>
                     <div className="about-photo-card__media">
-                        <Image
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
                             src={content.personality.photoSrc}
                             alt={content.personality.photoAlt}
-                            fill
-                            className="object-cover"
-                            sizes="480px"
+                            className="about-photo-card__image"
                         />
                     </div>
                 </article>
@@ -177,27 +205,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                     </div>
                 </div>
 
-                <div className="about-work-card__stage">
-                    <div className="about-work-card__media">
-                        <Image
-                            src={currentWork.imageSrc}
-                            alt={currentWork.imageAlt}
-                            fill
-                            className="object-cover"
-                            sizes="900px"
-                        />
-                    </div>
-                    <div className="about-work-card__body">
-                        <span className="about-work-card__meta">{currentWork.meta}</span>
-                        <h4>{currentWork.title}</h4>
-                        <p>{currentWork.summary}</p>
-                        {currentWork.href ? (
-                            <Link href={currentWork.href} className="about-inline-link">
-                                {copy.viewWork}
-                            </Link>
-                        ) : null}
-                    </div>
-                </div>
+                {currentWork ? <WorkStage work={currentWork} viewWorkLabel={copy.viewWork} /> : null}
 
                 <div className="about-work-card__thumbs">
                     {content.works.map((item, index) => (
@@ -206,6 +214,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                             type="button"
                             className={`about-work-thumb ${index === activeWork ? 'is-active' : ''}`}
                             onClick={() => setActiveWork(index)}
+                            aria-pressed={index === activeWork}
                         >
                             <div className="about-work-thumb__image">
                                 <Image
@@ -226,8 +235,8 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                 {content.games.map((item) => (
                     <motion.article
                         key={item.imageAlt}
-                        whileHover={reduceMotion ? undefined : { y: -4 }}
-                        transition={{ duration: 0.25, ease: 'easeOut' }}
+                        whileHover={canUseHoverMotion ? { y: -4 } : undefined}
+                        transition={{ duration: 0.24, ease: 'easeOut' }}
                         className="about-bento-card about-hover-spring about-game-card"
                     >
                         <div className="about-game-card__media">
@@ -239,7 +248,7 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                                 sizes="560px"
                             />
                         </div>
-                        <span className="about-game-card__label">{item.label}</span>
+                        {item.label ? <span className="about-game-card__label">{item.label}</span> : null}
                     </motion.article>
                 ))}
             </div>
@@ -249,7 +258,8 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                     <span className="about-eyebrow">{content.preferencesTitle}</span>
                     <h3 className="about-section-title about-section-title--compact">{content.preferencesTitle}</h3>
                 </div>
-                <div className="about-preference-panels">
+
+                <div className="about-preference-panels about-preference-panels--desktop">
                     {content.preferences.map((item, index) => {
                         const active = activePreference === index;
 
@@ -258,22 +268,23 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                                 key={item.title}
                                 type="button"
                                 className={`about-preference-panel ${active ? 'is-active' : ''}`}
-                                onMouseEnter={() => !reduceMotion && setActivePreference(index)}
+                                onMouseEnter={() => {
+                                    if (canUseHoverMotion) {
+                                        setActivePreference(index);
+                                    }
+                                }}
                                 onFocus={() => setActivePreference(index)}
                                 onClick={() => setActivePreference(index)}
+                                aria-pressed={active}
                             >
-                                <div className="about-preference-panel__image">
-                                    <Image
-                                        src={item.imageSrc}
-                                        alt={item.imageAlt}
-                                        fill
-                                        className="object-cover"
-                                        sizes="280px"
-                                    />
-                                </div>
+                                <PreferenceMedia item={item} sizes="320px" position={item.imagePosition} />
                                 <div className="about-preference-panel__overlay" />
-                                <div className="about-preference-panel__text">
+                                <div className="about-preference-panel__peek">
                                     <span>{item.label}</span>
+                                    <strong>{item.title}</strong>
+                                </div>
+                                <div className="about-preference-panel__content">
+                                    <span className="about-preference-panel__status">{item.label}</span>
                                     <h4>{item.title}</h4>
                                     <p>{item.subtitle}</p>
                                 </div>
@@ -281,6 +292,38 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                         );
                     })}
                 </div>
+
+                {currentPreference ? (
+                    <div className="about-preference-mobile">
+                        <div className="about-preference-mobile__tabs" aria-label={copy.preferenceSelector}>
+                            {content.preferences.map((item, index) => (
+                                <button
+                                    key={item.title}
+                                    type="button"
+                                    className={`about-preference-mobile__tab ${index === activePreference ? 'is-active' : ''}`}
+                                    onClick={() => setActivePreference(index)}
+                                    aria-pressed={index === activePreference}
+                                >
+                                    {item.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="about-preference-mobile__stage">
+                            <PreferenceMedia
+                                item={currentPreference}
+                                sizes="100vw"
+                                position={currentPreference.mobileImagePosition || currentPreference.imagePosition}
+                            />
+                            <div className="about-preference-mobile__overlay" />
+                            <div className="about-preference-mobile__copy">
+                                <span className="about-preference-mobile__status">{currentPreference.label}</span>
+                                <h4>{currentPreference.title}</h4>
+                                <p>{currentPreference.subtitle}</p>
+                            </div>
+                        </div>
+                    </div>
+                ) : null}
             </article>
 
             <div className="about-grid about-grid--info">
@@ -350,6 +393,55 @@ export default function AboutLifeModules({ locale, content }: AboutLifeModulesPr
                 )}
             </div>
         </section>
+    );
+}
+
+function WorkStage({ work, viewWorkLabel }: { work: AboutWorkCard; viewWorkLabel: string }) {
+    return (
+        <div className="about-work-card__stage">
+            <div className="about-work-card__media">
+                <Image
+                    src={work.imageSrc}
+                    alt={work.imageAlt}
+                    fill
+                    className="object-cover"
+                    sizes="900px"
+                />
+            </div>
+            <div className="about-work-card__body">
+                <span className="about-work-card__meta">{work.meta}</span>
+                <h4>{work.title}</h4>
+                <p>{work.summary}</p>
+                {work.href ? (
+                    <Link href={work.href} className="about-inline-link">
+                        {viewWorkLabel}
+                    </Link>
+                ) : null}
+            </div>
+        </div>
+    );
+}
+
+function PreferenceMedia({
+    item,
+    position,
+    sizes,
+}: {
+    item: AboutPreferenceCard;
+    position?: string;
+    sizes: string;
+}) {
+    return (
+        <div className="about-preference-panel__media">
+            <Image
+                src={item.imageSrc}
+                alt={item.imageAlt}
+                fill
+                className="object-cover"
+                sizes={sizes}
+                style={position ? { objectPosition: position } : undefined}
+            />
+        </div>
     );
 }
 

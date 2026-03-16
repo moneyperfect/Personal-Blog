@@ -1,18 +1,14 @@
 import type { AboutPageContent } from '@/components/about/types';
-import {
-    ABOUT_PROFILE_MEDIA_DEFAULTS,
-    resolveAboutProfileMedia,
-    type AboutProfileMedia,
-} from '@/lib/about-profile-media';
+import { ABOUT_PROFILE_MEDIA_DEFAULTS, type AboutProfileMedia } from '@/lib/about-profile-media';
 
 const zhContent: AboutPageContent = {
     hero: {
         pageTitle: '关于 NAS',
-        floatingPills: ['Vibe Coder', '系统构建者', '元认知践行者', 'AI 杠杆驱动', '商业闭环探索', '极简效率派'],
+        floatingPills: ['Vibe Coder', '系统构建者', '元认知实践者', 'AI 杠杆驱动', '闭环探索中', '极简效率派'],
         avatarSrc: ABOUT_PROFILE_MEDIA_DEFAULTS.avatarUrl,
         avatarAlt: 'NAS 的头像',
         aboutKicker: '核心定位',
-        aboutTitle: '让系统跑起来，而且必须有效率',
+        aboutTitle: '让系统跑起来，而且必须有效率。',
         aboutSubtitle:
             '比起从零去造轮子，我更着迷于寻找那个能放大十倍能力的“杠杆”。不管是一个校园跑腿的商业小闭环，还是帮甲方搞定复杂流程的 AI Agent，我的目的只有一个：让系统跑起来，而且必须有效率。',
         idealLabel: '行动准则',
@@ -43,7 +39,7 @@ const zhContent: AboutPageContent = {
             {
                 date: '2026 至今',
                 title: '构建数字分身',
-                description: '落地个人品牌站，将能力模块化。',
+                description: '落地个人品牌站，将能力逐步模块化。',
                 tone: 'green',
                 progress: '82%',
             },
@@ -60,29 +56,29 @@ const zhContent: AboutPageContent = {
         noteLinkLabel: '16personalities',
         noteLinkHref: 'https://www.16personalities.com/',
         noteSuffix: ' 了解更多关于 建筑师',
-        photoLabel: '照片',
+        photoLabel: '',
         photoSrc: ABOUT_PROFILE_MEDIA_DEFAULTS.portraitUrl,
-        photoAlt: 'NAS 的个人照片',
+        photoAlt: 'NAS 的人物照片',
     },
     worksTitle: '我的作品',
     works: [
         {
             title: 'Personal Brand Site',
-            summary: '把个人主页、内容系统和产品承接整合为统一的品牌表达，持续打磨展示与转化之间的平衡。',
+            summary: '把个人主页、内容系统和作品承接整理成统一的表达界面，让展示、叙事和后续转化放进同一套结构里。',
             imageSrc: '/about/work-portfolio-01.png',
             imageAlt: '个人品牌站作品预览',
             meta: 'Brand / Web',
         },
         {
             title: 'Growth Console',
-            summary: '围绕内容发布、后台编辑与作品整理，搭建更适合长期积累与迭代的个人操作台。',
+            summary: '围绕内容发布、后台编辑与作品归档，搭一个更适合长期积累和持续迭代的个人操作台。',
             imageSrc: '/about/work-systems.svg',
             imageAlt: '增长控制台作品预览',
             meta: 'System / Content',
         },
         {
             title: 'Visual Studio',
-            summary: '持续实验页面节奏、交互动效和视觉模块，把这个站点当成长期进化中的个人实验室。',
+            summary: '持续实验页面节奏、交互动效与视觉秩序，把这个站点当成我长期升级中的个人实验室。',
             imageSrc: '/about/work-studio.svg',
             imageAlt: '视觉工作室作品预览',
             meta: 'Motion / Layout',
@@ -91,45 +87,53 @@ const zhContent: AboutPageContent = {
     gamesTitle: '游戏爱好',
     games: [
         {
-            label: '游戏爱好',
+            label: '',
             imageSrc: '/about/game-elden-ring.webp',
-            imageAlt: '游戏爱好展示 1',
+            imageAlt: '艾尔登法环游戏画面',
         },
         {
-            label: '游戏爱好',
+            label: '',
             imageSrc: '/about/game-sekiro.webp',
-            imageAlt: '游戏爱好展示 2',
+            imageAlt: '只狼游戏画面',
         },
     ],
     preferencesTitle: '爱好与偏好',
     preferences: [
         {
-            label: '喜欢的动漫',
+            label: '追番',
             title: 'Steins;Gate / 命运石之门',
             subtitle: '《命运石之门》。偏爱这种把逻辑、时空闭环和叙事诡计玩儿到极致的硬核作品，懂的都懂。',
             imageSrc: '/about/anime-steins-gate.jpg',
-            imageAlt: '动漫偏好展示',
+            imageAlt: '命运石之门海报',
+            imagePosition: '48% 42%',
+            mobileImagePosition: '56% 42%',
         },
         {
-            label: '音乐偏好',
+            label: '音乐',
             title: 'AKASAKI / AI Music',
-            subtitle: '喜欢带情绪张力、同时又有一点生成感与实验性的声音纹理，适合长时间工作时反复循环。',
+            subtitle: '喜欢带一点生成感、又不丢情绪张力的声音纹理，适合在高强度工作时反复循环。',
             imageSrc: '/about/preference-music.jpg',
-            imageAlt: '音乐偏好展示',
+            imageAlt: '音乐偏好氛围图',
+            imagePosition: '50% 42%',
+            mobileImagePosition: '50% 40%',
         },
         {
             label: '关注点',
             title: '元认知与高理性状态',
             subtitle: '持续关注如何用更高层次的认知框架管理决策、状态与执行，让人和系统一起提效。',
             imageSrc: '/about/preference-metacognition.png',
-            imageAlt: '关注点展示',
+            imageAlt: '元认知主题图片',
+            imagePosition: '50% 24%',
+            mobileImagePosition: '50% 18%',
         },
         {
-            label: '第四栏待补充',
+            label: '保留位',
             title: 'Coming Soon',
-            subtitle: '这里暂时保留给之后新增的图片、链接或长期偏好，留白也是一种结构上的准备。',
+            subtitle: '这里先留给之后新增的图片、链接或长期偏好，留白本身也是一种结构准备。',
             imageSrc: '/about/preference-future.svg',
-            imageAlt: '预留偏好展示',
+            imageAlt: '预留偏好占位图',
+            imagePosition: '50% 50%',
+            mobileImagePosition: '50% 50%',
         },
     ],
     info: {
@@ -152,7 +156,7 @@ const zhContent: AboutPageContent = {
         aboutParagraphs: [
             '老实说，我连代码小白都算不上，因为从零手敲代码对我来说太没效率了。',
             '我真正的习惯是：遇到问题，先找杠杆。与其自己死磕底层逻辑，我更喜欢用 AI 当我的“超级义体”，把脑子里的商业想法和产品架构直接跑通。',
-            '去年五月算是我的一次“出厂设置重置”，也就是开始有意识地进行元认知训练。从那之后我发现，不管是跨语言去啃下日语 N2，还是在校园里跑通一个小服务，本质上都是在搭系统，把复杂的问题拆解，然后让它自动化运转。',
+            '去年五月算是我的一次“出厂设置重置”，也就是开始有意识地进行元认知训练。从那之后我发现，不管是跨语言去啃下日语 N2，还是在校园里跑通一个小服务，本质上都是在搭系统——把复杂的问题拆解，然后让它自动化运转。',
             '我建这个站，不是为了秀技术，而是想展示我解决问题的思路和执行力。如果你也着迷于“如何用最小的摩擦力撬动最大的现实结果”，那我们大概率能聊得来。',
         ],
         educationTitle: '教育经历',
@@ -162,29 +166,28 @@ const zhContent: AboutPageContent = {
     },
     narrative: {
         routeTitle: '系列路程：从产品小白到系统构建者',
-        routeIntro:
-            '我不懂怎么写出最优雅的代码，但我知道怎么把模糊的需求拼装成能运转的系统。核心逻辑只有一个：找到杠杆，让它跑起来。',
+        routeIntro: '我不懂怎么写出最优雅的代码，但我知道怎么把模糊的需求拼装成能运转的系统。核心逻辑只有一个：找到杠杆，让它跑起来。',
     },
 };
 
 const jaContent: AboutPageContent = {
     hero: {
-        pageTitle: 'NAS について',
-        floatingPills: ['Vibe Coder', 'システムビルダー', 'メタ認知実践者', 'AI レバレッジ志向', 'ビジネス検証中', 'ミニマル効率派'],
+        pageTitle: 'NASについて',
+        floatingPills: ['Vibe Coder', 'システムビルダー', 'メタ認知の実践', 'AIレバレッジ', '小さな閉ループ', 'ミニマル志向'],
         avatarSrc: ABOUT_PROFILE_MEDIA_DEFAULTS.avatarUrl,
-        avatarAlt: 'NAS のアバター',
+        avatarAlt: 'NASのアバター',
         aboutKicker: 'コアポジション',
-        aboutTitle: '仕組みを動かす。そして効率で勝つ。',
+        aboutTitle: '仕組みを動かす。しかも、ちゃんと効率よく。',
         aboutSubtitle:
-            'ゼロからすべてを作るより、十倍の力を生むレバレッジを探すことに惹かれます。学内サービスでも、複雑な業務フローを整理する AI Agent でも、目的はひとつです。仕組みを動かし、現実の中で機能させること。',
+            'ゼロから全部を作るより、能力を何倍にも増幅してくれる「レバレッジ」を見つけるほうに強く惹かれます。学内の小さなサービスでも、複雑な業務フローを整理する AI Agent でも、目標はひとつ。仕組みを動かし、現実の中でちゃんと機能させることです。',
         idealLabel: '行動原則',
-        idealHeadline: '認知が高くなるほど、境界は広がる。',
-        idealBody: 'AI は代替ではなく、効率の天井を突き破るための増幅器だと考えています。',
+        idealHeadline: '認知が一段上がれば、打てる手は一気に増える。',
+        idealBody: 'AIは代役ではなく、効率の天井を突き破るための増幅器だと捉えています。',
     },
     skills: {
         label: 'Tech & Leverage',
         title: '創造力を起動する',
-        summary: 'Claude でのプロンプト調整から Next.js + Supabase の素早い実装まで、動き続ける自動化システムを組み上げることに集中しています。',
+        summary: 'Claude でプロンプトを磨くところから、Next.js + Supabase で素早く形にするところまで。自走できる自動化システムを組むことに集中しています。',
         careerLabel: '歩み',
         careerTitle: '進化し続ける',
         careerTimeline: [
@@ -197,7 +200,7 @@ const jaContent: AboutPageContent = {
             },
             {
                 date: '2025.10',
-                title: 'レバレッジ探索',
+                title: 'レバレッジの試運転',
                 description: 'AI を使って学内サービスの小さな閉ループを回し始めた段階。',
                 tone: 'yellow',
                 progress: '46%',
@@ -205,7 +208,7 @@ const jaContent: AboutPageContent = {
             {
                 date: '2026 - 現在',
                 title: 'デジタル分身を構築',
-                description: '個人ブランドサイトを軸に、能力をモジュール化して整理中。',
+                description: '個人ブランドサイトを軸に、能力をモジュール化しながら整理中。',
                 tone: 'green',
                 progress: '82%',
             },
@@ -222,45 +225,45 @@ const jaContent: AboutPageContent = {
         noteLinkLabel: '16personalities',
         noteLinkHref: 'https://www.16personalities.com/',
         noteSuffix: ' で建築家タイプを詳しく見る',
-        photoLabel: '写真',
+        photoLabel: '',
         photoSrc: ABOUT_PROFILE_MEDIA_DEFAULTS.portraitUrl,
-        photoAlt: 'NAS のポートレート',
+        photoAlt: 'NASのポートレート',
     },
     worksTitle: '制作物',
     works: [
         {
             title: 'Personal Brand Site',
-            summary: 'プロフィール、コンテンツ運用、作品導線をひとつのブランド体験としてまとめた個人サイトです。',
+            summary: 'プロフィール、コンテンツ導線、作品紹介をひとつのブランド体験としてまとめた個人サイトです。',
             imageSrc: '/about/work-portfolio-01.png',
             imageAlt: '作品プレビュー 1',
-            meta: 'ブランド / Web',
+            meta: 'Brand / Web',
         },
         {
             title: 'Growth Console',
-            summary: '公開・編集・整理の流れを一つの運用導線にまとめ、長期的に積み上げやすい形へ整えています。',
+            summary: '公開、編集、整理の流れを一つの運用導線にまとめ、長期で積み上げやすい個人の操作台にしています。',
             imageSrc: '/about/work-systems.svg',
             imageAlt: '作品プレビュー 2',
-            meta: 'システム / コンテンツ',
+            meta: 'System / Content',
         },
         {
             title: 'Visual Studio',
-            summary: 'モーション、レイアウト、視線誘導を試しながら、サイト全体を実験場として磨き続けています。',
+            summary: 'ページのテンポ、レイアウト、視覚の秩序を試しながら、このサイト自体を長期進化中の実験場として扱っています。',
             imageSrc: '/about/work-studio.svg',
             imageAlt: '作品プレビュー 3',
-            meta: 'モーション / レイアウト',
+            meta: 'Motion / Layout',
         },
     ],
-    gamesTitle: 'ゲームの好み',
+    gamesTitle: 'ゲーム',
     games: [
         {
-            label: 'ゲームの好み',
+            label: '',
             imageSrc: '/about/game-elden-ring.webp',
-            imageAlt: 'ゲームプレビュー 1',
+            imageAlt: 'エルデンリングのゲーム画面',
         },
         {
-            label: 'ゲームの好み',
+            label: '',
             imageSrc: '/about/game-sekiro.webp',
-            imageAlt: 'ゲームプレビュー 2',
+            imageAlt: 'SEKIRO のゲーム画面',
         },
     ],
     preferencesTitle: '趣味と嗜好',
@@ -268,77 +271,84 @@ const jaContent: AboutPageContent = {
         {
             label: '好きなアニメ',
             title: 'Steins;Gate / シュタインズ・ゲート',
-            subtitle: '論理、時間ループ、叙述トリックが緻密に噛み合う、こういう硬派な作品に惹かれます。',
+            subtitle: '論理、時間ループ、叙述トリックが極限まで噛み合う、こういう硬派な作品にどうしても惹かれます。',
             imageSrc: '/about/anime-steins-gate.jpg',
             imageAlt: 'アニメの好み',
+            imagePosition: '48% 42%',
+            mobileImagePosition: '56% 42%',
         },
         {
-            label: '音楽の好み',
+            label: '音の好み',
             title: 'AKASAKI / AI Music',
-            subtitle: '感情の張りと少しの生成感、そして実験性を含んだ音像が長時間作業にちょうどいいです。',
+            subtitle: '少し人工的な質感を残しつつ、感情の波もしっかりある音像を、作業中に長く流すのが好きです。',
             imageSrc: '/about/preference-music.jpg',
-            imageAlt: '音楽の好み',
+            imageAlt: '音の好み',
+            imagePosition: '50% 42%',
+            mobileImagePosition: '50% 40%',
         },
         {
             label: '関心領域',
             title: 'メタ認知と高い合理性',
-            subtitle: '判断、状態管理、実行をより高い視点で扱うための認知フレームに関心があります。',
+            subtitle: '判断、状態管理、実行をひとつ上の視点で組み直し、人とシステムの両方を強くする方法に関心があります。',
             imageSrc: '/about/preference-metacognition.png',
-            imageAlt: '関心領域の紹介',
+            imageAlt: '関心領域のビジュアル',
+            imagePosition: '50% 24%',
+            mobileImagePosition: '50% 18%',
         },
         {
-            label: '4つ目のスロット',
-            title: '準備中',
-            subtitle: '今後の追加画像やリンク、長期的な嗜好のために残している余白です。',
+            label: '余白',
+            title: 'Coming Soon',
+            subtitle: 'ここは、これから増える嗜好や長期テーマのために残している余白です。',
             imageSrc: '/about/preference-future.svg',
             imageAlt: '予備スロット',
+            imagePosition: '50% 50%',
+            mobileImagePosition: '50% 50%',
         },
     ],
     info: {
         principlesTitle: '中核の運転原則',
         principles: [
             {
-                title: 'ミニマル',
-                description: '限界利益が下がる動きは切り捨てる。',
+                title: 'ミニマリズム',
+                description: '限界利益が薄い動きは切り落とす。',
             },
             {
                 title: 'レバレッジ優先',
                 description: '同じ車輪を何度も作る作業はしない。',
             },
             {
-                title: '現実に出す',
-                description: 'どれだけ良いアイデアでも、実装しなければゼロ。',
+                title: '現実に落とす',
+                description: 'どれだけ良い着想でも、実装しなければゼロです。',
             },
         ],
         aboutTitle: '私について',
         aboutParagraphs: [
-            '私は単なる情報システム領域の探求者というより、問題を動く仕組みに変える「システムビルダー」でありたいと思っています。',
-            'AI をレバレッジとして使い、曖昧な構想を現実で動く構造に変えることに価値を感じています。',
+            '正直に言うと、私は「コードを一から美しく書くこと」に強い執着があるタイプではありません。',
+            'むしろ問題に出会ったら、最初に考えるのはレバレッジです。AI を相棒として使いながら、頭の中の事業アイデアや構想を、実際に動く仕組みへ変えていくほうに自然と向かいます。',
+            '2025年5月は、自分にとって一度リセットが入った時期でした。そこからメタ認知を意識的に鍛え始め、日本語 N2 の積み直しも、学内サービスの小さな実験も、本質的には同じく「仕組みを組むこと」だと見えるようになりました。',
+            'このサイトは技術自慢のためではなく、問題のほどき方と実行のしかたを見せるために作っています。小さな摩擦で現実の結果を大きく動かすことに惹かれるなら、きっと話が合うと思います。',
         ],
-        educationTitle: '学歴',
+        educationTitle: '学び',
         educationBody: '天津工業大学 | 情報システム専攻 | システム工学の視点',
         currentTitle: '現在の状態',
         currentBody: 'AI レバレッジを探る | 独立プロダクトを磨く | 日本語 N2 を継続強化中',
     },
     narrative: {
-        routeTitle: 'シリーズの道のり：初心者からシステム構築者へ',
-        routeIntro:
-            '最も美しいコードを書くことより、曖昧な要求を動くシステムへ組み上げることに価値を感じます。核にあるのは、レバレッジを見つけて走らせることです。',
+        routeTitle: '歩み: プロダクト初心者からシステム構築者へ',
+        routeIntro: '最も美しいコードを書くことより、曖昧な要求を動く仕組みへ組み上げることに惹かれます。核にあるのは、レバレッジを見つけて走らせることです。',
     },
 };
 
 function withProfileMedia(content: AboutPageContent, media: AboutProfileMedia): AboutPageContent {
-    const resolved = resolveAboutProfileMedia(media);
-
     return {
         ...content,
         hero: {
             ...content.hero,
-            avatarSrc: resolved.avatarUrl,
+            avatarSrc: ABOUT_PROFILE_MEDIA_DEFAULTS.avatarUrl,
         },
         personality: {
             ...content.personality,
-            photoSrc: resolved.portraitUrl,
+            photoSrc: media.portraitUrl || content.personality.photoSrc,
         },
     };
 }
@@ -351,7 +361,7 @@ export function getAboutMetadata(locale: string) {
     if (locale === 'zh') {
         return {
             title: '关于我',
-            description: '围绕头像、创造力引擎、人格画像、照片与兴趣偏好构建的 About 页面。',
+            description: '围绕头像、创造力、人格、照片与兴趣偏好构建的 About 页面。',
         };
     }
 
