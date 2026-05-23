@@ -47,10 +47,10 @@ export default function AboutSupportWall({ locale, content }: AboutSupportWallPr
                 </div>
 
                 <div className="about-hero-cta about-hero-cta--compact">
-                    <Link href={`/${locale}/contact`} className="about-btn about-btn--primary">
+                    <Link href={`/${locale}/about`} className="about-btn about-btn--primary">
                         {content.primaryCta}
                     </Link>
-                    <Link href={`/${locale}/notes`} className="about-btn about-btn--secondary">
+                    <Link href={`/${locale}/blog`} className="about-btn about-btn--secondary">
                         {content.secondaryCta}
                     </Link>
                 </div>

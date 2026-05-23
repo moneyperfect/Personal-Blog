@@ -1,26 +1,17 @@
 {
     "metadata": {
-        "title": "デジタルプロダクトスタジオ",
-        "description": "高品質なデジタル製品とリソースで、プロジェクトを素早く立ち上げ"
+        "title": "NAS Build",
+        "description": "プロダクト思考、技術共有、起業の知見"
     },
     "nav": {
-        "home": "ホーム",
-        "products": "製品",
-        "saas": "SaaS",
-        "library": "リソース",
-        "workWithMe": "お仕事依頼",
-        "playbooks": "Playbooks",
-        "cases": "事例",
-        "notes": "ノート",
-        "posts": "記事",
-        "projects": "プロジェクト"
+        "blog": "ブログ",
+        "projects": "プロジェクト",
+        "about": "概要"
     },
     "footer": {
         "about": "概要",
         "privacy": "プライバシー",
-        "terms": "利用規約",
-        "contact": "お問い合わせ",
-        "copyright": "© 2024 デジタルプロダクトスタジオ. All rights reserved."
+        "terms": "利用規約"
     },
     "home": {
         "intro": {
@@ -31,8 +22,8 @@
             "title": "プロジェクト",
             "viewAll": "すべて見る"
         },
-        "latestPosts": {
-            "title": "最新記事",
+        "latestBlog": {
+            "title": "ブログ",
             "viewAll": "すべて見る"
         }
     },
@@ -43,65 +34,18 @@
         "visit": "プロジェクトを見る",
         "source": "ソースコード"
     },
-    "products": {
-        "title": "デジタル製品",
-        "description": "検証済みのデジタル製品で、時間を節約し効率を向上",
+    "blog": {
+        "title": "ブログ",
+        "description": "プロダクト思考、技術共有、起業の知見",
         "filterAll": "すべて",
-        "buyNow": "今すぐ購入",
-        "preorder": "予約販売中"
+        "relatedPosts": "関連記事"
     },
-    "library": {
-        "title": "リソースライブラリ",
-        "description": "無料のテンプレート、チェックリスト、Prompt、SOPで効率アップ",
-        "filterAll": "すべて",
-        "types": {
-            "template": "テンプレート",
-            "checklist": "チェックリスト",
-            "sop": "SOP",
-            "prompt": "Prompt"
-        },
-        "copy": "コピー",
-        "copied": "コピー完了",
-        "download": "ダウンロード"
-    },
-    "saas": {
-        "title": "SaaS製品",
-        "subtitle": "次世代ツール、現在開発中",
-        "roadmap": "製品ロードマップ",
-        "waitlist": {
-            "title": "ウェイトリストに参加",
-            "description": "製品リリースとベータ版へのアクセスを最初にお届け",
-            "name": "お名前",
-            "email": "メール",
-            "role": "役割",
-            "rolePlaceholder": "例：独立開発者、デザイナー、PM",
-            "needs": "期待する機能",
-            "needsPlaceholder": "ご要望をお聞かせください...",
-            "submit": "参加する",
-            "success": "送信完了！近日中にご連絡いたします。"
-        }
-    },
-    "playbooks": {
-        "title": "実践Playbook",
-        "description": "アイデアからローンチまでステップバイステップでガイド"
-    },
-    "cases": {
-        "title": "成功事例",
-        "description": "他のクリエイターがどのように製品やリソースを活用しているか"
-    },
-    "notes": {
-        "title": "ノート",
-        "description": "製品思考、起業の知見、技術共有"
-    },
-    "posts": {
-        "title": "記事",
-        "description": "プロダクト思考、技術共有、起業の知見"
+    "topics": {
+        "title": "トピック",
+        "description": "トピックで記事を閲覧"
     },
     "about": {
         "title": "概要"
-    },
-    "contact": {
-        "title": "お問い合わせ"
     },
     "privacy": {
         "title": "プライバシーポリシー"
@@ -109,19 +53,10 @@
     "terms": {
         "title": "利用規約"
     },
-    "workWithMe": {
-        "title": "お仕事依頼",
-        "description": "コンサルティング、カスタム開発、コラボレーション"
-    },
     "common": {
         "readMore": "続きを読む",
         "backTo": "戻る",
         "loading": "読み込み中...",
-        "notFound": "コンテンツが見つかりません",
-        "suitable": "こんな方におすすめ",
-        "notSuitable": "こんな方には向いていません",
-        "faq": "よくある質問",
-        "deliverables": "納品物",
-        "painPoints": "解決する課題"
+        "notFound": "コンテンツが見つかりません"
     }
 }

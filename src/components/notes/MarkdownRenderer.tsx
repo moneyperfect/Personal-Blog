@@ -115,7 +115,7 @@ export default function MarkdownRenderer({
         ),
         a: ({ href, className: linkClassName, children, title, ...props }) => {
             const mergedClassName = joinClasses(
-                'break-words font-medium text-primary-700 underline decoration-primary-200 underline-offset-4 transition-colors hover:text-primary-900 hover:decoration-primary-400',
+                'break-words font-medium text-accent underline decoration-accent/30 underline-offset-4 transition-colors hover:opacity-85',
                 linkClassName
             );
 
@@ -159,7 +159,7 @@ export default function MarkdownRenderer({
                 <ul
                     className={joinClasses(
                         'my-5 space-y-3 text-[1.02rem] leading-8 text-surface-800',
-                        isTaskList ? 'list-none ps-0' : 'list-disc ps-6 marker:text-primary-500',
+                        isTaskList ? 'list-none ps-0' : 'list-disc ps-6 marker:text-accent',
                         listClassName
                     )}
                     {...withoutNode(props)}
@@ -189,7 +189,7 @@ export default function MarkdownRenderer({
             <input
                 checked={checked}
                 className={joinClasses(
-                    'mr-3 h-4 w-4 rounded border-surface-400 align-middle accent-primary-600',
+                    'mr-3 h-4 w-4 rounded border-surface-400 align-middle accent-accent',
                     inputClassName
                 )}
                 disabled
@@ -201,7 +201,7 @@ export default function MarkdownRenderer({
         blockquote: ({ className: quoteClassName, ...props }) => (
             <blockquote
                 className={joinClasses(
-                    'my-8 rounded-r-google-lg border-l-4 border-primary-500 bg-primary-50/70 px-5 py-4 text-surface-700 shadow-sm',
+                    'my-8 rounded-r-google-lg border-l-4 border-accent bg-surface-200 px-5 py-4 text-surface-700',
                     quoteClassName
                 )}
                 {...withoutNode(props)}
@@ -209,12 +209,12 @@ export default function MarkdownRenderer({
         ),
         hr: ({ className: ruleClassName, ...props }) => (
             <hr
-                className={joinClasses('my-10 border-surface-200', ruleClassName)}
+                className={joinClasses('my-10 border-surface-300', ruleClassName)}
                 {...withoutNode(props)}
             />
         ),
         table: ({ className: tableClassName, ...props }) => (
-            <div className="my-8 overflow-x-auto rounded-google-lg border border-surface-200 bg-white shadow-card">
+            <div className="my-8 overflow-x-auto rounded-google-lg border border-surface-300 bg-surface-200">
                 <table
                     className={joinClasses(
                         'min-w-full border-collapse text-left text-sm leading-6',
@@ -226,20 +226,20 @@ export default function MarkdownRenderer({
         ),
         thead: ({ className: tableHeadClassName, ...props }) => (
             <thead
-                className={joinClasses('bg-surface-100/90', tableHeadClassName)}
+                className={joinClasses('bg-surface-200', tableHeadClassName)}
                 {...withoutNode(props)}
             />
         ),
         tbody: ({ className: tableBodyClassName, ...props }) => (
             <tbody
-                className={joinClasses('bg-white', tableBodyClassName)}
+                className={joinClasses('bg-surface-100', tableBodyClassName)}
                 {...withoutNode(props)}
             />
         ),
         tr: ({ className: rowClassName, ...props }) => (
             <tr
                 className={joinClasses(
-                    'border-b border-surface-200 last:border-b-0 even:bg-surface-50/50',
+                    'border-b border-surface-300 last:border-b-0 even:bg-surface-200/50',
                     rowClassName
                 )}
                 {...withoutNode(props)}
@@ -263,7 +263,7 @@ export default function MarkdownRenderer({
         pre: ({ className: preClassName, ...props }) => (
             <pre
                 className={joinClasses(
-                    'my-8 overflow-x-auto rounded-google-lg border border-surface-700/20 bg-[#17202b] px-4 py-4 text-sm leading-7 text-surface-100 shadow-elevated-1 sm:px-5',
+                    'my-8 overflow-x-auto rounded-google-lg border border-surface-700/20 bg-[#1D1D1F] px-4 py-4 text-sm leading-7 text-surface-100 sm:px-5',
                     preClassName
                 )}
                 {...withoutNode(props)}
@@ -290,7 +290,7 @@ export default function MarkdownRenderer({
             return (
                 <code
                     className={joinClasses(
-                        'rounded-md border border-surface-200 bg-surface-100 px-1.5 py-1 font-mono text-[0.92em] text-primary-900',
+                        'rounded-md border border-surface-300 bg-surface-200 px-1.5 py-1 font-mono text-[0.92em] text-accent',
                         codeClassName
                     )}
                     {...withoutNode(props)}
@@ -305,8 +305,7 @@ export default function MarkdownRenderer({
             }
 
             return (
-                <figure className="my-8 overflow-hidden rounded-google-lg border border-surface-200 bg-white shadow-card">
-                    {/* Using img keeps markdown image URLs flexible for CMS-hosted and external assets. */}
+                <figure className="my-8 overflow-hidden rounded-google-lg border border-surface-300 bg-surface-200">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                         src={src}
@@ -317,7 +316,7 @@ export default function MarkdownRenderer({
                         {...withoutImageRuntimeProps(props)}
                     />
                     {alt ? (
-                        <figcaption className="border-t border-surface-200 bg-surface-50 px-4 py-3 text-sm leading-6 text-surface-600">
+                        <figcaption className="border-t border-surface-300 bg-surface-100 px-4 py-3 text-sm leading-6 text-surface-600">
                             {alt}
                         </figcaption>
                     ) : null}
@@ -325,7 +324,7 @@ export default function MarkdownRenderer({
             );
         },
         iframe: ({ src, ...props }) => (
-            <div className="my-8 overflow-hidden rounded-google-lg border border-surface-200 shadow-card">
+            <div className="my-8 overflow-hidden rounded-google-lg border border-surface-300">
                 <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
                     <iframe
                         src={src}

@@ -1,5 +1,4 @@
-import { getAllPosts } from '@/lib/posts';
-import { getAllNotes } from '@/lib/mdx';
+import { getAllPosts } from '@/lib/blog';
 import { getSiteUrl } from '@/lib/seo';
 
 export const revalidate = 60;
@@ -17,25 +16,14 @@ export async function GET() {
     const baseUrl = getSiteUrl();
     const locale = 'zh';
 
-    const posts = getAllPosts(locale).map((post) => ({
-        title: post.frontmatter.title,
-        description: post.frontmatter.description,
-        link: `${baseUrl}/${locale}/posts/${post.slug}`,
-        date: new Date(post.frontmatter.date).toUTCString(),
-        guid: `${baseUrl}/${locale}/posts/${post.slug}`,
-    }));
-
-    const allNotes = await getAllNotes(locale);
-    const notes = allNotes.map((note) => ({
-        title: note.frontmatter.title,
-        description: note.frontmatter.summary || '',
-        link: `${baseUrl}/${locale}/notes/${note.slug}`,
-        date: new Date(note.frontmatter.updatedAt).toUTCString(),
-        guid: `${baseUrl}/${locale}/notes/${note.slug}`,
-    }));
-
-    const items = [...posts, ...notes]
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    const items = getAllPosts(locale)
+        .map((post) => ({
+            title: post.frontmatter.title,
+            description: post.frontmatter.description,
+            link: `${baseUrl}/${locale}/blog/${post.slug}`,
+            date: new Date(post.frontmatter.date).toUTCString(),
+            guid: `${baseUrl}/${locale}/blog/${post.slug}`,
+        }))
         .slice(0, 20);
 
     const rss = `<?xml version="1.0" encoding="UTF-8"?>

@@ -112,7 +112,7 @@ export default async function ProjectDetailPage({ params }: Props) {
                 </nav>
 
                 {project.image && (
-                    <div className="mt-6 overflow-hidden rounded-google-lg border border-surface-200 shadow-card">
+                    <div className="mt-6 overflow-hidden rounded-google-lg border border-surface-300">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                             src={project.image}

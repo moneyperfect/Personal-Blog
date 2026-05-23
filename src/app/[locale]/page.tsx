@@ -3,7 +3,7 @@ import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import { Reveal, StaggerGroup, StaggerItem } from '@/components/ui';
 import { getAllProjects } from '@/lib/projects';
-import { getAllPosts } from '@/lib/posts';
+import { getAllPosts } from '@/lib/blog';
 import { buildHomeJsonLd, localizedMetadata } from '@/lib/seo';
 import { Locale } from '@/i18n/routing';
 import { getAboutContent } from './about/content';
@@ -165,24 +165,24 @@ function HomeContent({
                     </Reveal>
                 )}
 
-                {/* 最新文章 */}
+                {/* 博客 */}
                 {posts.length > 0 && (
                     <Reveal direction="up" delay={0.1}>
                         <section className="section pb-12 sm:pb-16">
                             <div className="section-header">
-                                <h2 className="section-title">{t('latestPosts.title')}</h2>
+                                <h2 className="section-title">{t('latestBlog.title')}</h2>
                                 <Link
-                                    href={`/${locale}/posts`}
+                                    href={`/${locale}/blog`}
                                     className="link text-sm font-medium"
                                 >
-                                    {t('latestPosts.viewAll')}
+                                    {t('latestBlog.viewAll')}
                                 </Link>
                             </div>
                             <div className="space-y-4">
                                 {posts.map((post) => (
                                     <Link
                                         key={post.slug}
-                                        href={`/${locale}/posts/${post.slug}`}
+                                        href={`/${locale}/blog/${post.slug}`}
                                         className="group block list-card"
                                     >
                                         <div className="flex flex-wrap gap-2 mb-2">
@@ -192,7 +192,7 @@ function HomeContent({
                                                 </span>
                                             ))}
                                         </div>
-                                        <h3 className="text-lg font-semibold text-surface-900 group-hover:text-primary-600 mb-2">
+                                        <h3 className="text-lg font-semibold text-surface-900 group-hover:text-accent mb-2">
                                             {post.frontmatter.title}
                                         </h3>
                                         <p className="text-surface-600 line-clamp-2">

@@ -1,7 +1,7 @@
 import Link from 'next/link';
-import { setRequestLocale } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { Locale } from '@/i18n/routing';
-import { getAllNotes, getAllTags } from '@/lib/mdx';
+import { getAllPosts, getAllPostTags, getAllCategories } from '@/lib/blog';
 import { localeAlternates } from '@/lib/seo';
 
 type Props = {
@@ -13,10 +13,10 @@ export async function generateMetadata({ params }: Props) {
     const isZh = locale === 'zh';
 
     return {
-        title: isZh ? '主题导航' : 'トピックナビ',
+        title: isZh ? '主题' : 'トピック',
         description: isZh
-            ? '按主题快速找到相关文章，构建连续阅读路径。'
-            : 'トピック別に関連記事を素早く探せます。',
+            ? '按主题浏览所有文章'
+            : 'トピックで記事を閲覧',
         alternates: localeAlternates('/topics', locale as Locale),
     };
 }
@@ -24,56 +24,67 @@ export async function generateMetadata({ params }: Props) {
 export default async function TopicsPage({ params }: Props) {
     const { locale } = await params;
     setRequestLocale(locale);
-    const isZh = locale === 'zh';
 
-    const notes = await getAllNotes(locale as Locale);
-    const tags = getAllTags(notes);
+    const t = await getTranslations({ locale, namespace: 'topics' });
+    const posts = getAllPosts(locale as Locale);
+    const tags = getAllPostTags(locale as Locale);
+    const categories = getAllCategories(locale as Locale);
 
-    const grouped = tags
-        .map((tag) => ({
-            tag,
-            notes: notes.filter((note) => note.frontmatter.tags.includes(tag)).slice(0, 4),
-            count: notes.filter((note) => note.frontmatter.tags.includes(tag)).length,
-        }))
-        .sort((a, b) => b.count - a.count);
+    // Build topic list from both tags and categories
+    const topics: { name: string; type: 'tag' | 'category'; count: number }[] = [];
+
+    for (const cat of categories) {
+        const count = posts.filter(
+            (p) => p.frontmatter.category === cat
+        ).length;
+        topics.push({ name: cat, type: 'category', count });
+    }
+
+    for (const tag of tags) {
+        // Skip if a category with the same name exists
+        if (categories.includes(tag)) continue;
+        const count = posts.filter((p) =>
+            p.frontmatter.tags.includes(tag)
+        ).length;
+        topics.push({ name: tag, type: 'tag', count });
+    }
+
+    topics.sort((a, b) => b.count - a.count);
 
     return (
         <div className="page-shell">
             <div className="page-container page-width">
                 <header className="page-header">
-                    <h1 className="page-title">{isZh ? '主题导航' : 'トピックナビ'}</h1>
-                    <p className="page-description">
-                        {isZh ? '从主题切入，连续阅读相关内容。' : 'トピック単位で関連ノートを連続して読めます。'}
-                    </p>
+                    <h1 className="page-title">{t('title')}</h1>
+                    <p className="page-description">{t('description')}</p>
                 </header>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                    {grouped.map((group) => (
-                        <section key={group.tag} className="card p-5">
-                            <div className="flex items-center justify-between mb-3">
-                                <h2 className="text-lg font-semibold text-surface-900">#{group.tag}</h2>
-                                <Link
-                                    href={`/${locale}/notes?tag=${encodeURIComponent(group.tag)}`}
-                                    className="text-xs text-primary-600 hover:underline"
-                                >
-                                    {isZh ? '查看全部' : 'すべて見る'}
-                                </Link>
-                            </div>
-                            <ul className="space-y-2">
-                                {group.notes.map((note) => (
-                                    <li key={note.slug}>
-                                        <Link
-                                            href={`/${locale}/notes/${note.slug}`}
-                                            className="text-sm text-surface-700 hover:text-primary-600"
-                                        >
-                                            {note.frontmatter.title}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </section>
-                    ))}
-                </div>
+                <section className="section pb-12 sm:pb-16">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                        {topics.map((topic) => (
+                            <Link
+                                key={`${topic.type}-${topic.name}`}
+                                href={`/${locale}/topics/${encodeURIComponent(topic.name)}`}
+                                className="card card-hover block p-5"
+                            >
+                                <div className="flex items-center justify-between mb-2">
+                                    <span
+                                        className={`chip text-[11px] ${
+                                            topic.type === 'category'
+                                                ? 'chip-active'
+                                                : 'chip-muted'
+                                        }`}
+                                    >
+                                        {topic.type === 'category' ? topic.name : `#${topic.name}`}
+                                    </span>
+                                    <span className="text-sm text-surface-500">
+                                        {topic.count} {topic.count === 1 ? 'article' : 'articles'}
+                                    </span>
+                                </div>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
             </div>
         </div>
     );
