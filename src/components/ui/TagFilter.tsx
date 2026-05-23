@@ -11,7 +11,7 @@ interface TagFilterProps {
 }
 
 export function TagFilter({ tags, selectedTags, onChange, allLabel }: TagFilterProps) {
-    const t = useTranslations('products');
+    const t = useTranslations('blog');
 
     const handleTagClick = (tag: string) => {
         if (selectedTags.includes(tag)) {

@@ -66,7 +66,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1a73e8",
+  themeColor: "#C46849",
 };
 
 // AdSense configuration
