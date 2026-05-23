@@ -324,6 +324,19 @@ export default function MarkdownRenderer({
                 </figure>
             );
         },
+        iframe: ({ src, ...props }) => (
+            <div className="my-8 overflow-hidden rounded-google-lg border border-surface-200 shadow-card">
+                <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+                    <iframe
+                        src={src}
+                        className="absolute top-0 left-0 h-full w-full"
+                        frameBorder="0"
+                        allowFullScreen
+                        {...withoutNode(props)}
+                    />
+                </div>
+            </div>
+        ),
         strong: ({ className: strongClassName, ...props }) => (
             <strong
                 className={joinClasses('font-semibold text-surface-900', strongClassName)}

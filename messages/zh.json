@@ -11,7 +11,9 @@
     "workWithMe": "合作",
     "playbooks": "Playbooks",
     "cases": "案例",
-    "notes": "笔记"
+    "notes": "笔记",
+    "posts": "文章",
+    "projects": "项目"
   },
   "footer": {
     "about": "关于",
@@ -21,25 +23,25 @@
     "copyright": "© 2024 数字产品工作室. All rights reserved."
   },
   "home": {
-    "hero": {
-      "title": "让创作者更快变现",
-      "subtitle": "精选数字产品、实战 Playbook、高效资源模板",
-      "cta": "浏览产品"
+    "intro": {
+      "kicker": "核心定位",
+      "cta": "了解更多"
     },
-    "featured": {
-      "title": "精选产品",
+    "projects": {
+      "title": "项目作品",
       "viewAll": "查看全部"
     },
-    "resources": {
-      "title": "免费资源",
+    "latestPosts": {
+      "title": "最新文章",
       "viewAll": "查看全部"
-    },
-    "newsletter": {
-      "title": "订阅更新",
-      "description": "获取最新产品发布、限时优惠与独家资源",
-      "placeholder": "输入邮箱地址",
-      "button": "订阅"
     }
+  },
+  "projects": {
+    "title": "项目",
+    "description": "我的作品与开源项目",
+    "techStack": "技术栈",
+    "visit": "访问项目",
+    "source": "源码"
   },
   "products": {
     "title": "数字产品",
@@ -90,6 +92,10 @@
   "notes": {
     "title": "笔记",
     "description": "产品思考、创业心得与技术分享"
+  },
+  "posts": {
+    "title": "文章",
+    "description": "产品思考、技术分享与创业心得"
   },
   "about": {
     "title": "关于我们"

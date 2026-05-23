@@ -9,9 +9,11 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 
 const navItems = [
     { key: 'home', href: '' },
+    { key: 'projects', href: '/projects' },
     { key: 'products', href: '/products' },
     { key: 'saas', href: '/saas' },
     { key: 'library', href: '/library' },
+    { key: 'posts', href: '/posts' },
     { key: 'about', href: '/about' },
     { key: 'workWithMe', href: '/work-with-me' },
 ];

@@ -2,6 +2,8 @@ import { MetadataRoute } from 'next';
 import { routing } from '@/i18n/routing';
 import { getAllSlugs } from '@/lib/mdx';
 import { getAllProductSlugs } from '@/lib/products';
+import { getAllProjectSlugs } from '@/lib/projects';
+import { getAllPostSlugs } from '@/lib/posts';
 import { getSiteUrl } from '@/lib/seo';
 
 const baseUrl = getSiteUrl();
@@ -15,12 +17,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         '/playbooks',
         '/cases',
         '/notes',
+        '/posts',
         '/topics',
         '/about',
         '/privacy',
         '/terms',
         '/contact',
         '/work-with-me',
+        '/projects',
     ];
 
     const staticPages = routing.locales.flatMap((locale) =>
@@ -33,6 +37,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     );
 
     const dynamicPages: MetadataRoute.Sitemap = [];
+
+    // Projects
+    const projectSlugs = getAllProjectSlugs();
+    for (const locale of routing.locales) {
+        projectSlugs.forEach((slug) => {
+            dynamicPages.push({
+                url: `${baseUrl}/${locale}/projects/${slug}`,
+                lastModified: new Date(),
+                changeFrequency: 'monthly',
+                priority: 0.7,
+            });
+        });
+    }
 
     // Products
     for (const locale of routing.locales) {
@@ -95,6 +112,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                 lastModified: new Date(),
                 changeFrequency: 'weekly',
                 priority: 0.5,
+            });
+        });
+    }
+
+    // Posts
+    for (const locale of routing.locales) {
+        const slugs = getAllPostSlugs(locale);
+        slugs.forEach((slug) => {
+            dynamicPages.push({
+                url: `${baseUrl}/${locale}/posts/${slug}`,
+                lastModified: new Date(),
+                changeFrequency: 'weekly',
+                priority: 0.6,
             });
         });
     }

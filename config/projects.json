@@ -1,0 +1,21 @@
+[
+  {
+    "slug": "personal-brand-site",
+    "name": {
+      "zh": "个人品牌站",
+      "ja": "個人ブランドサイト"
+    },
+    "description": {
+      "zh": "基于 Next.js 16 + Supabase 的全栈个人博客与数字产品平台，支持中日双语、Admin 后台、支付集成与 SEO 优化。",
+      "ja": "Next.js 16 + Supabase によるフルスタック個人ブログ＆デジタル商品プラットフォーム。中日バイリンガル対応、Admin管理画面、決済連携、SEO最適化済み。"
+    },
+    "techStack": ["Next.js", "TypeScript", "Supabase", "Tailwind CSS", "Framer Motion"],
+    "link": "https://nasbuild.dev",
+    "github": "https://github.com/moneyperfect/Personal-Blog",
+    "image": "/images/projects/personal-brand-site.jpg",
+    "content": {
+      "zh": "## 项目背景\n\n作为一个独立开发者，我需要一个能展示自己作品、发布技术文章、销售数字产品的统一平台。现有的 SaaS 建站工具要么太重，要么无法满足我对 SEO 和性能的要求。\n\n## 核心功能\n\n- **中日双语国际化**：基于 next-intl 的完整 i18n 方案，所有内容支持中文和日文\n- **Markdown 驱动的内容系统**：纯 `.md` 文件推入即上线，零配置发布\n- **Admin 管理后台**：基于 HMAC 会话的认证系统，支持笔记和产品的 CRUD\n- **Supabase 集成**：笔记存储、产品管理、文件上传、访问统计\n- **SEO 全覆盖**：JSON-LD 结构化数据、Open Graph、Sitemap、RSS Feed\n- **PWA 支持**：Service Worker + 离线缓存\n\n## 技术选型\n\n选择 Next.js 16 App Router 是因为其对 SSG/ISR 的原生支持，配合 Supabase 实现了零服务器成本的全栈方案。Tailwind CSS v4 提供了原子化的样式系统，Framer Motion 负责交互动画。\n\n## 项目链接\n\n- 线上地址：[nasbuild.dev](https://nasbuild.dev)\n- 源码：[GitHub](https://github.com/moneyperfect/Personal-Blog)",
+      "ja": "## プロジェクト背景\n\n独立開発者として、作品展示・技術記事投稿・デジタル商品販売を統合できるプラットフォームが必要でした。既存のSaaSサイトビルダーは重すぎたり、SEO・パフォーマンスの要件を満たせなかったりします。\n\n## コア機能\n\n- **中日バイリンガル対応**：next-intl による完全なi18nソリューション\n- **Markdown駆動コンテンツシステム**：`.md` ファイルを置くだけで公開、ゼロ設定\n- **Admin管理画面**：HMAC セッション認証、ノート・商品のCRUD対応\n- **Supabase連携**：ノート保存、商品管理、ファイルアップロード、アクセス解析\n- **SEO完全対応**：JSON-LD、Open Graph、Sitemap、RSS Feed\n- **PWA対応**：Service Worker + オフラインキャッシュ\n\n## 技術選択\n\nNext.js 16 App Router を選んだのは、SSG/ISR のネイティブサポートが理由です。Supabase と組み合わせることで、サーバーコストゼロのフルスタックソリューションを実現。Tailwind CSS v4 でアトミックなスタイル、Framer Motion でアニメーションを担当。\n\n## プロジェクトリンク\n\n- 本番環境：[nasbuild.dev](https://nasbuild.dev)\n- ソースコード：[GitHub](https://github.com/moneyperfect/Personal-Blog)"
+    }
+  }
+]

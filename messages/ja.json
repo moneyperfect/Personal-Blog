@@ -11,7 +11,9 @@
         "workWithMe": "お仕事依頼",
         "playbooks": "Playbooks",
         "cases": "事例",
-        "notes": "ノート"
+        "notes": "ノート",
+        "posts": "記事",
+        "projects": "プロジェクト"
     },
     "footer": {
         "about": "概要",
@@ -21,25 +23,25 @@
         "copyright": "© 2024 デジタルプロダクトスタジオ. All rights reserved."
     },
     "home": {
-        "hero": {
-            "title": "クリエイターの収益化を加速",
-            "subtitle": "厳選されたデジタル製品、実践的なPlaybook、効率的なテンプレート",
-            "cta": "製品を見る"
+        "intro": {
+            "kicker": "コアポジション",
+            "cta": "詳しく見る"
         },
-        "featured": {
-            "title": "おすすめ製品",
+        "projects": {
+            "title": "プロジェクト",
             "viewAll": "すべて見る"
         },
-        "resources": {
-            "title": "無料リソース",
+        "latestPosts": {
+            "title": "最新記事",
             "viewAll": "すべて見る"
-        },
-        "newsletter": {
-            "title": "ニュースレター",
-            "description": "最新の製品リリース、限定オファー、独占リソースを入手",
-            "placeholder": "メールアドレスを入力",
-            "button": "登録"
         }
+    },
+    "projects": {
+        "title": "プロジェクト",
+        "description": "作品とオープンソースプロジェクト",
+        "techStack": "技術スタック",
+        "visit": "プロジェクトを見る",
+        "source": "ソースコード"
     },
     "products": {
         "title": "デジタル製品",
@@ -90,6 +92,10 @@
     "notes": {
         "title": "ノート",
         "description": "製品思考、起業の知見、技術共有"
+    },
+    "posts": {
+        "title": "記事",
+        "description": "プロダクト思考、技術共有、起業の知見"
     },
     "about": {
         "title": "概要"
