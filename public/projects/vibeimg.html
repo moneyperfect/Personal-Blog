@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VibeImg — 3 天从想法到第一个付费用户</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAF7F1;
+    --bg-card: #F3EFE8;
+    --text-primary: #1D1D1F;
+    --text-secondary: #6B6B6F;
+    --text-tertiary: #9B9B9F;
+    --accent: #C46849;
+    --accent-light: #E8D5CC;
+    --border: #E5E0D8;
+    --black: #1D1D1F;
+    --white: #FFFFFF;
+    --serif: 'Playfair Display', 'Georgia', 'Times New Roman', serif;
+    --sans: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text-primary);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* Navigation */
+  nav {
+    padding: 24px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  nav .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  nav a {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+
+  nav .back {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  nav .back:hover { color: var(--text-primary); }
+
+  /* Hero */
+  .hero {
+    padding: 100px 0 80px;
+    text-align: center;
+  }
+
+  .hero-tag {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-size: 48px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1.2;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+  }
+
+  .hero-sub {
+    font-size: 18px;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto;
+    font-weight: 300;
+    line-height: 1.8;
+  }
+
+  /* Divider */
+  .divider {
+    width: 48px;
+    height: 1px;
+    background: var(--border);
+    margin: 0 auto;
+  }
+
+  /* Stats */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 64px;
+    padding: 64px 0;
+  }
+
+  .stat { text-align: center; }
+
+  .stat-number {
+    font-family: var(--serif);
+    font-size: 40px;
+    font-weight: 600;
+    color: var(--text-primary);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-top: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Section */
+  .section {
+    padding: 80px 0;
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+  }
+
+  .section h2 {
+    font-family: var(--serif);
+    font-size: 32px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 32px;
+    line-height: 1.3;
+  }
+
+  .section p {
+    font-size: 16px;
+    color: var(--text-secondary);
+    max-width: 620px;
+    margin-bottom: 16px;
+    line-height: 1.8;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 36px;
+    margin-top: 48px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    bottom: 8px;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 48px;
+  }
+
+  .timeline-item:last-child { margin-bottom: 0; }
+
+  .timeline-dot {
+    position: absolute;
+    left: -36px;
+    top: 8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--accent);
+  }
+
+  .timeline-item:last-child .timeline-dot {
+    background: var(--accent);
+  }
+
+  .timeline-date {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--accent);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+  }
+
+  .timeline-title {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .timeline-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* Product */
+  .product-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 40px;
+  }
+
+  .product-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    aspect-ratio: 16/10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-tertiary);
+    font-size: 14px;
+    overflow: hidden;
+  }
+
+  .product-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Tech */
+  .tech-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+  }
+
+  .tech-item {
+    font-size: 13px;
+    color: var(--text-secondary);
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    border-radius: 100px;
+  }
+
+  /* Lessons */
+  .lesson {
+    padding: 32px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+
+  .lesson h3 {
+    font-family: var(--serif);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .lesson p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* Quote */
+  .quote-block {
+    padding: 48px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-top: 48px;
+    text-align: center;
+  }
+
+  .quote-text {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.6;
+    max-width: 560px;
+    margin: 0 auto 20px;
+  }
+
+  .quote-body {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* CTA */
+  .cta {
+    text-align: center;
+    padding: 96px 0;
+  }
+
+  .cta-button {
+    display: inline-block;
+    padding: 16px 40px;
+    background: var(--black);
+    color: var(--white);
+    text-decoration: none;
+    border-radius: 100px;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    transition: opacity 0.2s;
+  }
+
+  .cta-button:hover { opacity: 0.85; }
+
+  .cta-sub {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    margin-top: 16px;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    text-align: center;
+  }
+
+  footer a {
+    font-size: 13px;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  footer a:hover { color: var(--text-primary); }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .hero { padding: 64px 0 48px; }
+    .hero h1 { font-size: 32px; }
+    .hero-sub { font-size: 16px; }
+    .stats { gap: 32px; flex-wrap: wrap; }
+    .stat-number { font-size: 32px; }
+    .section { padding: 56px 0; }
+    .section h2 { font-size: 26px; }
+    .product-grid { grid-template-columns: 1fr; }
+    .quote-block { padding: 32px 24px; }
+    .quote-text { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Nav -->
+<nav>
+  <div class="container">
+    <a href="https://nasbuild.dev">NAS</a>
+    <a href="https://nasbuild.dev/projects" class="back">← 返回项目</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="container">
+    <span class="hero-tag">项目案例</span>
+    <h1>3 天，从想法<br>到第一个付费用户</h1>
+    <p class="hero-sub">GPT 最新生图模型在国内直接可用。无需长提示词，内置热门素材模板，选一个直接出图。</p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-number">72h</div>
+    <div class="stat-label">从 idea 到上线</div>
+  </div>
+  <div class="stat">
+    <div class="stat-number">41</div>
+    <div class="stat-label">注册用户</div>
+  </div>
+  <div class="stat">
+    <div class="stat-number">12</div>
+    <div class="stat-label">付费用户</div>
+  </div>
+  <div class="stat">
+    <div class="stat-number">800+</div>
+    <div class="stat-label">访问量</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- Story -->
+<section class="section">
+  <div class="container">
+    <div class="section-label">经过</div>
+    <h2>72 小时发生了什么</h2>
+    <p>2025 年 4 月，OpenAI 发布了最新的 GPT 图像生成模型，效果碾压当时市面上的所有方案。国内热度很高，但没有好用的中文产品。</p>
+
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">4 月 27 日</div>
+        <div class="timeline-title">有了 idea</div>
+        <div class="timeline-desc">GPT 生图在国内火了，但没有直连可用的中文产品。做一个，把门槛降到最低。</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">4 月 28 日</div>
+        <div class="timeline-title">搭建 + 部署</div>
+        <div class="timeline-desc">完成核心功能：生图引擎、热门素材模板、用户系统、支付流程。买服务器、配域名、部署上线。</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-date">4 月 29 日</div>
+        <div class="timeline-title">上线，第一位用户付费</div>
+        <div class="timeline-desc">开放注册，开始推广。当天产生了第一位付费用户。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Product -->
+<section class="section">
+  <div class="container">
+    <div class="section-label">产品</div>
+    <h2>核心思路：降低门槛</h2>
+    <p>GPT 生图效果好，但 prompt 写起来门槛高。VibeImg 做了一件事——内置热门素材模板，用户选一个模板直接出图，不需要自己写长提示词。</p>
+
+    <div class="product-grid">
+      <div class="product-card">
+        <img src="/images/projects/vibeimg-home.webp" alt="VibeImg 产品首页">
+      </div>
+      <div class="product-card">
+        <img src="/images/projects/vibeimg-templates.webp" alt="VibeImg 素材模板">
+      </div>
+    </div>
+
+    <div class="tech-list">
+      <span class="tech-item">Next.js</span>
+      <span class="tech-item">TypeScript</span>
+      <span class="tech-item">OpenAI API</span>
+      <span class="tech-item">Supabase</span>
+      <span class="tech-item">Vercel</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- Lessons -->
+<section class="section">
+  <div class="container">
+    <div class="section-label">复盘</div>
+    <h2>踩过的坑</h2>
+
+    <div class="lesson">
+      <h3>邀请码机制挡住了用户</h3>
+      <p>上线时担心用户剧增，做了邀请码限制。结果反而把想用的人挡在了门外。应该直接用邮件验证码——防风险不能以牺牲增长为代价。</p>
+    </div>
+
+    <div class="lesson">
+      <h3>推广没跟上，同行先到了</h3>
+      <p>产品上线后没有持续投入推广，很快有了大量同类产品。窗口期比想象的短得多。</p>
+    </div>
+
+    <div class="quote-block">
+      <div class="quote-text">AI 时代，技术能力是基本功，获客能力才是分水岭。</div>
+      <p class="quote-body">获客是痛苦的，所以很容易陷进"再优化一下产品"的舒适区。做 VibeImg 最大的教训不是技术上的，而是——明明知道推广更重要，却花了更多时间在代码上。因为写代码是舒服的，找用户是不舒服的。</p>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+  <div class="container">
+    <a href="https://vibeimg.cc" class="cta-button" target="_blank">访问 vibeimg.cc</a>
+    <p class="cta-sub">在线可用，无需下载</p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <a href="https://nasbuild.dev">← 返回 nasbuild.dev</a>
+  </div>
+</footer>
+
+</body>
+</html>
