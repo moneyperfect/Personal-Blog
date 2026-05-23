@@ -18,6 +18,7 @@ interface ProjectRaw {
     github?: string;
     image: string;
     content: LocalizedString;
+    detailPage?: string;
 }
 
 export interface Project {
@@ -29,6 +30,7 @@ export interface Project {
     github?: string;
     image: string;
     content: string;
+    detailPage?: string;
 }
 
 function readProjectsRaw(): ProjectRaw[] {
@@ -49,6 +51,7 @@ function localize(item: ProjectRaw, locale: Locale): Project {
         github: item.github,
         image: item.image,
         content: item.content[locale] || item.content.zh,
+        detailPage: item.detailPage,
     };
 }
 

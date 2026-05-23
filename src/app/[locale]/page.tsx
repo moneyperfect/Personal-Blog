@@ -129,7 +129,7 @@ function HomeContent({
                                 {projects.map((project) => (
                                     <StaggerItem key={project.slug}>
                                         <Link
-                                            href={`/${locale}/projects/${project.slug}`}
+                                            href={project.detailPage || `/${locale}/projects/${project.slug}`}
                                             className="card card-hover block overflow-hidden h-full"
                                         >
                                             {project.image && (

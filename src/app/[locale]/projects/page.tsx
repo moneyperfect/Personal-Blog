@@ -43,7 +43,7 @@ export default async function ProjectsPage({ params }: Props) {
                         {projects.map((project) => (
                             <Link
                                 key={project.slug}
-                                href={`/${locale}/projects/${project.slug}`}
+                                href={project.detailPage || `/${locale}/projects/${project.slug}`}
                                 className="card card-hover block overflow-hidden h-full"
                             >
                                 {project.image && (
