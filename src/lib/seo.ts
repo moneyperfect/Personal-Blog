@@ -10,22 +10,8 @@ const legacyOrPlaceholderHosts = new Set([
     'www.yourdomain.com',
 ]);
 
-function normalizeSiteUrl(siteUrl: string) {
-    return siteUrl.endsWith('/') ? siteUrl.slice(0, -1) : siteUrl;
-}
-
-function shouldUseCanonicalSiteUrl(siteUrl: string) {
-    try {
-        const url = new URL(siteUrl);
-        return legacyOrPlaceholderHosts.has(url.hostname);
-    } catch {
-        return true;
-    }
-}
-
 export function getSiteUrl() {
-    const configuredSiteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL || canonicalSiteUrl);
-    return shouldUseCanonicalSiteUrl(configuredSiteUrl) ? canonicalSiteUrl : configuredSiteUrl;
+    return canonicalSiteUrl;
 }
 
 export function absoluteUrl(pathname: string) {
