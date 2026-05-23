@@ -1,71 +1,30 @@
 ---
-title: "你好世界"
-date: "2026-05-23"
-tags: ["独立开发", "博客"]
-coverImage: ""
-description: "这是第一篇通过 Markdown 文件发布的文章，演示了基本的 Markdown 语法、图片嵌入和视频嵌入功能。"
-lang: zh
+title: "你好，这是我的博客"
+date: 2026-05-23
+tags: [博客, 独立开发]
+category: 技术
+description: "nasbuild.dev 的第一篇文章。记录这个博客是什么、用了什么技术、为什么做。"
 ---
 
-## 开始写作
+这是 nasbuild.dev 的第一篇文章。
 
-这是一篇示例文章，展示了 Markdown 驱动的内容发布系统的基本功能。
+## 这个博客是什么
 
-只需将 `.md` 文件放入 `content/posts/` 目录，配置好 Frontmatter，文章就会自动上线。
+我的个人站点，用来展示项目、记录技术笔记、沉淀产品思考。
 
-## Markdown 基础语法
+技术栈：Next.js 16 + Supabase + Vercel，部署在 nasbuild.dev，支持中文和日语。内容用 Markdown 写，推代码就发布。全站由 AI Agent（Akari）辅助维护。
 
-### 文本格式
+## 为什么做
 
-- **粗体文本** 使用双星号
-- *斜体文本* 使用单星号
-- ~~删除线~~ 使用双波浪号
-- `行内代码` 使用反引号
+我需要一个自己拥有的平台。社交平台的内容 48 小时就沉了，但博客上的文章会被搜索引擎收录，持续带来流量。
 
-### 列表
+更重要的是，博客能完整地展示一个人做了什么、怎么想问题。这比任何社交动态都更有说服力。
 
-1. 第一项
-2. 第二项
-3. 第三项
+## 这里会写什么
 
-### 引用
+- 独立开发：产品从 0 到 1 的过程、踩坑、数据
+- AI 工具：实际使用体验，不是评测，是我怎么用它干活
+- 技术笔记：Next.js、Supabase、Agent 开发相关的记录
+- 产品复盘：VibeImg 和后续产品的运营数据和反思
 
-> 代码是写给人看的，附带能在机器上运行。
-> — Harold Abelson
-
-### 代码块
-
-```javascript
-function greet(name) {
-    return `你好，${name}！`;
-}
-```
-
-## 插入图片
-
-在 Markdown 中使用标准图片语法即可插入图片：
-
-![示例图片描述](/images/posts/example.jpg)
-
-## 嵌入视频
-
-### B站视频
-
-直接使用 HTML 的 `<iframe>` 标签嵌入 B站视频：
-
-<iframe src="//player.bilibili.com/player.html?bvid=BV1xx411c7mD&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"></iframe>
-
-### YouTube 视频
-
-同样支持 YouTube 视频嵌入：
-
-<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-## 总结
-
-这个系统的优势在于：
-
-1. **零配置发布** — 推入 `.md` 文件即上线
-2. **内容与代码分离** — 文章独立于代码库
-3. **富媒体支持** — 图片、视频、代码块一应俱全
-4. **标签筛选** — 通过 Frontmatter 中的 `tags` 字段实现前端筛选
+更新频率大概每周 1-2 篇。

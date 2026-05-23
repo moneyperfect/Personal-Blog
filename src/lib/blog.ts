@@ -57,16 +57,28 @@ export function getAllPosts(locale: Locale): BlogItem[] {
 
     const posts = files
         .map(parsePostFile)
-        .filter((post): post is BlogItem => post !== null)
-        .filter((post) => post.frontmatter.lang === locale);
+        .filter((post): post is BlogItem => post !== null);
 
-    posts.sort((a, b) => {
+    // Group by slug, prefer locale-specific version, fallback to zh
+    const slugMap = new Map<string, BlogItem>();
+    for (const post of posts) {
+        const existing = slugMap.get(post.slug);
+        if (!existing) {
+            slugMap.set(post.slug, post);
+        } else if (post.frontmatter.lang === locale) {
+            slugMap.set(post.slug, post);
+        }
+    }
+
+    const result = Array.from(slugMap.values());
+
+    result.sort((a, b) => {
         const dateA = new Date(a.frontmatter.date).getTime();
         const dateB = new Date(b.frontmatter.date).getTime();
         return dateB - dateA;
     });
 
-    return posts;
+    return result;
 }
 
 export function getPostBySlug(slug: string, locale: Locale): BlogItem | null {
@@ -90,7 +102,7 @@ export function getPostBySlug(slug: string, locale: Locale): BlogItem | null {
             lang: data.lang || 'zh',
         };
 
-        if (frontmatter.lang !== locale) {
+        if (frontmatter.lang !== locale && frontmatter.lang !== 'zh') {
             return null;
         }
 
