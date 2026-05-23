@@ -666,7 +666,7 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                                     </button>
                                     <button
                                         type="button"
-                                        onClick={() => wrapSelection('[', '](https://example.com)', '链接标题')}
+                                            onClick={() => wrapSelection('[', '](https://nasbuild.dev)', '链接标题')}
                                         className="btn btn-text !px-3 !py-1.5 text-xs text-surface-600 hover:text-surface-900"
                                     >
                                         链接

@@ -126,7 +126,7 @@ export default function AboutMediaPanel() {
                         <textarea
                             value={portraitUrl}
                             onChange={(event) => setPortraitUrl(event.target.value)}
-                            placeholder="https://example.com/about-portrait.webp"
+              placeholder="https://nasbuild.dev/about-portrait.webp"
                             rows={4}
                             className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none transition focus:border-slate-400 focus:ring-2 focus:ring-slate-200"
                         />

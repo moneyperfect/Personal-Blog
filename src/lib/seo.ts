@@ -1,24 +1,61 @@
+import type { Metadata } from 'next';
 import type { Locale } from '@/i18n/routing';
 
-const fallbackSiteUrl = 'https://example.com';
+export const canonicalSiteUrl = 'https://nasbuild.dev';
+
+const legacyOrPlaceholderHosts = new Set([
+    'example.com',
+    'www.example.com',
+    'yourdomain.com',
+    'www.yourdomain.com',
+]);
 
 function normalizeSiteUrl(siteUrl: string) {
     return siteUrl.endsWith('/') ? siteUrl.slice(0, -1) : siteUrl;
 }
 
+function shouldUseCanonicalSiteUrl(siteUrl: string) {
+    try {
+        const url = new URL(siteUrl);
+        return legacyOrPlaceholderHosts.has(url.hostname);
+    } catch {
+        return true;
+    }
+}
+
 export function getSiteUrl() {
-    return normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL || fallbackSiteUrl);
+    const configuredSiteUrl = normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL || canonicalSiteUrl);
+    return shouldUseCanonicalSiteUrl(configuredSiteUrl) ? canonicalSiteUrl : configuredSiteUrl;
 }
 
 export function absoluteUrl(pathname: string) {
+    if (/^https?:\/\//i.test(pathname)) {
+        const parsed = new URL(pathname);
+        if (legacyOrPlaceholderHosts.has(parsed.hostname)) {
+            return `${getSiteUrl()}${parsed.pathname}${parsed.search}${parsed.hash}`;
+        }
+
+        return pathname;
+    }
+
     const path = pathname.startsWith('/') ? pathname : `/${pathname}`;
     return `${getSiteUrl()}${path}`;
 }
 
-export function localeAlternates(pathnameWithoutLocale: string, locale: Locale) {
-    const normalized = pathnameWithoutLocale.startsWith('/')
-        ? pathnameWithoutLocale
-        : `/${pathnameWithoutLocale}`;
+function normalizePathname(pathname: string) {
+    if (!pathname || pathname === '/') {
+        return '';
+    }
+
+    const normalized = pathname.startsWith('/')
+        ? pathname
+        : `/${pathname}`;
+
+    return normalized.endsWith('/') ? normalized.slice(0, -1) : normalized;
+}
+
+export function localeAlternates(pathnameWithoutLocale: string, locale: Locale | string) {
+    const normalized = normalizePathname(pathnameWithoutLocale);
 
     return {
         canonical: absoluteUrl(`/${locale}${normalized}`),
@@ -27,6 +64,72 @@ export function localeAlternates(pathnameWithoutLocale: string, locale: Locale) 
             ja: absoluteUrl(`/ja${normalized}`),
             'x-default': absoluteUrl(`/zh${normalized}`),
         },
+    };
+}
+
+export function localizedMetadata(
+    pathnameWithoutLocale: string,
+    locale: Locale | string,
+    metadata: Metadata
+): Metadata {
+    const alternates = localeAlternates(pathnameWithoutLocale, locale);
+
+    return {
+        ...metadata,
+        alternates: {
+            ...alternates,
+            ...(metadata.alternates || {}),
+        },
+        openGraph: {
+            url: alternates.canonical,
+            images: [
+                {
+                    url: seoImageUrl('/icons/icon-512.png'),
+                    width: 512,
+                    height: 512,
+                    alt: 'NAS Build',
+                },
+            ],
+            ...(metadata.openGraph || {}),
+        },
+    };
+}
+
+export function seoImageUrl(image?: string) {
+    return absoluteUrl(image || '/icons/icon-512.png');
+}
+
+export function buildHomeJsonLd(locale: Locale | string) {
+    const siteUrl = getSiteUrl();
+    const language = locale === 'ja' ? 'ja-JP' : 'zh-CN';
+
+    return {
+        '@context': 'https://schema.org',
+        '@graph': [
+            {
+                '@type': 'Organization',
+                '@id': `${siteUrl}/#organization`,
+                name: 'NAS Build',
+                url: siteUrl,
+                logo: {
+                    '@type': 'ImageObject',
+                    url: seoImageUrl('/icons/icon-512.png'),
+                    width: 512,
+                    height: 512,
+                },
+                sameAs: ['https://github.com/moneyperfect'],
+            },
+            {
+                '@type': 'WebSite',
+                '@id': `${siteUrl}/#website`,
+                url: siteUrl,
+                name: 'NAS Build',
+                inLanguage: language,
+                publisher: {
+                    '@id': `${siteUrl}/#organization`,
+                },
+            },
+        ],
     };
 }
 

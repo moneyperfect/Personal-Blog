@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import { getAllProductSlugs, getProductBySlug } from '@/lib/products';
 import { Locale, routing } from '@/i18n/routing';
+import { absoluteUrl, localizedMetadata, seoImageUrl } from '@/lib/seo';
 import { ProductDetailClient } from './ProductDetailClient';
 
 type Props = {
@@ -33,16 +34,28 @@ export async function generateMetadata({ params }: Props) {
         return { title: 'Product Not Found' };
     }
 
-    return {
+    const title = product.frontmatter.seoTitle || product.frontmatter.title;
+    const description = product.frontmatter.seoDescription || product.frontmatter.summary;
+    const path = `/products/${slug}`;
+    const image = seoImageUrl(product.frontmatter.coverImage);
+
+    return localizedMetadata(path, locale, {
         title: product.frontmatter.seoTitle || product.frontmatter.title,
         description: product.frontmatter.seoDescription || product.frontmatter.summary,
         openGraph: {
-            title: product.frontmatter.seoTitle || product.frontmatter.title,
-            description: product.frontmatter.seoDescription || product.frontmatter.summary,
+            title,
+            description,
             type: 'article',
-            images: product.frontmatter.coverImage ? [product.frontmatter.coverImage] : undefined,
+            url: absoluteUrl(`/${locale}${path}`),
+            images: [{ url: image }],
         },
-    };
+        twitter: {
+            card: 'summary_large_image',
+            title,
+            description,
+            images: [image],
+        },
+    });
 }
 
 export default async function ProductDetailPage({ params }: Props) {

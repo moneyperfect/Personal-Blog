@@ -1,5 +1,6 @@
 import type { AboutPageContent } from '@/components/about/types';
 import { ABOUT_PROFILE_MEDIA_DEFAULTS, type AboutProfileMedia } from '@/lib/about-profile-media';
+import { localizedMetadata } from '@/lib/seo';
 
 const zhContent: AboutPageContent = {
     hero: {
@@ -345,14 +346,14 @@ export function getAboutContent(locale: string, media: AboutProfileMedia): About
 
 export function getAboutMetadata(locale: string) {
     if (locale === 'zh') {
-        return {
+        return localizedMetadata('/about', locale, {
             title: '关于我',
             description: '围绕头像、创造力、人格、照片与兴趣偏好构建的 About 页面。',
-        };
+        });
     }
 
-    return {
+    return localizedMetadata('/about', locale, {
         title: '私について',
         description: 'アバター、創造力、性格、写真、趣味と嗜好で構成した About ページです。',
-    };
+    });
 }

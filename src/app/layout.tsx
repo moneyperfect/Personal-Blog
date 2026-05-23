@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 import { GoogleAnalytics } from "@/lib/analytics";
 import { PwaRegister } from "@/components/PwaRegister";
-import { getSiteUrl } from "@/lib/seo";
+import { getSiteUrl, seoImageUrl } from "@/lib/seo";
 import { WebVitalsReporter } from "@/components/analytics/WebVitalsReporter";
 import { PageViewTracker } from "@/components/analytics/PageViewTracker";
 
@@ -20,6 +20,9 @@ export const metadata: Metadata = {
   authors: [{ name: "NAS Digital Products" }],
   creator: "NAS Digital Products",
   manifest: "/manifest.webmanifest",
+  alternates: {
+    canonical: siteUrl,
+  },
   icons: {
     icon: [
       { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
@@ -40,7 +43,7 @@ export const metadata: Metadata = {
     siteName: "NAS Digital Products",
     images: [
       {
-        url: "/icons/icon-512.png",
+        url: seoImageUrl('/icons/icon-512.png'),
         width: 512,
         height: 512,
         alt: "NAS Digital Products",
@@ -50,11 +53,15 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     creator: "@nas",
-    images: ["/icons/icon-512.png"],
+    images: [seoImageUrl('/icons/icon-512.png')],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
   },
 };
 

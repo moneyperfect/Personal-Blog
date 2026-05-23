@@ -1,10 +1,11 @@
 import { setRequestLocale } from 'next-intl/server';
+import { localizedMetadata } from '@/lib/seo';
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props) {
     const { locale } = await params;
-    return { title: locale === 'zh' ? '隐私政策' : 'プライバシーポリシー' };
+    return localizedMetadata('/privacy', locale, { title: locale === 'zh' ? '隐私政策' : 'プライバシーポリシー' });
 }
 
 export default async function PrivacyPage({ params }: Props) {

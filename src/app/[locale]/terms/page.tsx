@@ -1,10 +1,11 @@
 import { setRequestLocale } from 'next-intl/server';
+import { localizedMetadata } from '@/lib/seo';
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props) {
     const { locale } = await params;
-    return { title: locale === 'zh' ? '服务条款' : '利用規約' };
+    return localizedMetadata('/terms', locale, { title: locale === 'zh' ? '服务条款' : '利用規約' });
 }
 
 export default async function TermsPage({ params }: Props) {

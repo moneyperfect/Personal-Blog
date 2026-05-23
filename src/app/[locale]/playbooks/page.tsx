@@ -2,6 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import { getAllPlaybooks } from '@/lib/mdx';
 import { Locale } from '@/i18n/routing';
+import { localizedMetadata } from '@/lib/seo';
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -9,12 +10,12 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
     const { locale } = await params;
-    return {
+    return localizedMetadata('/playbooks', locale, {
         title: locale === 'zh' ? '实战 Playbook' : '実践Playbook',
         description: locale === 'zh'
             ? '一步步带你从想法到上线'
             : 'アイデアからローンチまでステップバイステップでガイド',
-    };
+    });
 }
 
 export default async function PlaybooksPage({ params }: Props) {

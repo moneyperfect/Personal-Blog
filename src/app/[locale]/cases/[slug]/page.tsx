@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import { getCaseBySlug, getAllSlugs } from '@/lib/mdx';
 import { Locale, routing } from '@/i18n/routing';
+import { localizedMetadata } from '@/lib/seo';
 
 type Props = {
     params: Promise<{ locale: string; slug: string }>;
@@ -24,10 +25,10 @@ export async function generateMetadata({ params }: Props) {
     const { locale, slug } = await params;
     const caseItem = getCaseBySlug(slug, locale as Locale);
     if (!caseItem) return { title: 'Case Not Found' };
-    return {
+    return localizedMetadata(`/cases/${slug}`, locale, {
         title: caseItem.frontmatter.title,
         description: caseItem.frontmatter.summary,
-    };
+    });
 }
 
 export default async function CaseDetailPage({ params }: Props) {

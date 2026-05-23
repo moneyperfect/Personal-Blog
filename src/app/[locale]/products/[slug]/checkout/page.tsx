@@ -4,9 +4,23 @@ import { setRequestLocale } from 'next-intl/server';
 import ContactGuidePanel from '@/components/contact/ContactGuidePanel';
 import { getProductBySlug } from '@/lib/products';
 import { Locale } from '@/i18n/routing';
+import { localizedMetadata } from '@/lib/seo';
 
 interface PageProps {
   params: Promise<{ locale: string; slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps) {
+  const { locale, slug } = await params;
+  const product = await getProductBySlug(slug, locale as Locale);
+  const title = locale === 'zh' ? '联系购买' : '購入前のご連絡';
+
+  return localizedMetadata(`/products/${slug}/checkout`, locale, {
+    title: product ? `${title}: ${product.frontmatter.title}` : title,
+    description: locale === 'zh'
+      ? '当前站点通过联系沟通方式确认购买需求。'
+      : '現在は連絡を通じて購入内容を確認しています。',
+  });
 }
 
 export default async function ProductCheckoutPage({ params }: PageProps) {

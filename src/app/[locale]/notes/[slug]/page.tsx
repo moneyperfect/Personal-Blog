@@ -10,6 +10,7 @@ import {
     buildArticleJsonLd,
     buildBreadcrumbJsonLd,
     localeAlternates,
+    seoImageUrl,
 } from '@/lib/seo';
 import NoteReaderClient from '@/components/notes/NoteReaderClient';
 import NoteCtaActions from '@/components/notes/NoteCtaActions';
@@ -105,7 +106,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const title = note.frontmatter.seoTitle || note.frontmatter.title;
     const description = note.frontmatter.seoDescription || note.frontmatter.summary || '';
     const path = `/notes/${slug}`;
-    const image = note.frontmatter.coverImage || '/icons/icon-512.png';
+    const image = seoImageUrl(note.frontmatter.coverImage);
 
     return {
         title,

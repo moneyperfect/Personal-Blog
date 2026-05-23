@@ -1,6 +1,7 @@
 import { setRequestLocale } from 'next-intl/server';
 import { getAllResources } from '@/lib/mdx';
 import { Locale } from '@/i18n/routing';
+import { localizedMetadata } from '@/lib/seo';
 import { LibraryClient } from './LibraryClient';
 
 export const revalidate = 60; // Cache for 60 seconds
@@ -11,12 +12,12 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
     const { locale } = await params;
-    return {
+    return localizedMetadata('/library', locale, {
         title: locale === 'zh' ? '资源库' : 'リソースライブラリ',
         description: locale === 'zh'
             ? '免费模板、清单、Prompt、SOP 与笔记'
             : '無料のテンプレート、チェックリスト、Prompt、SOP、ノート',
-    };
+    });
 }
 
 export default async function LibraryPage({ params }: Props) {

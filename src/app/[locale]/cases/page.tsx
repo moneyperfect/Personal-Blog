@@ -2,6 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
 import { getAllCases } from '@/lib/mdx';
 import { Locale } from '@/i18n/routing';
+import { localizedMetadata } from '@/lib/seo';
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -9,9 +10,9 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
     const { locale } = await params;
-    return {
+    return localizedMetadata('/cases', locale, {
         title: locale === 'zh' ? '成功案例' : '成功事例',
-    };
+    });
 }
 
 export default async function CasesPage({ params }: Props) {

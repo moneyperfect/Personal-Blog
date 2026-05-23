@@ -6,6 +6,7 @@ import { NewsletterSignup } from '@/components/forms';
 import { Reveal, StaggerGroup, StaggerItem } from '@/components/ui';
 import { getAllLibraryItems } from '@/lib/mdx';
 import { getAllProducts } from '@/lib/products';
+import { buildHomeJsonLd, localizedMetadata } from '@/lib/seo';
 import { Locale } from '@/i18n/routing';
 
 type Props = {
@@ -13,6 +14,18 @@ type Props = {
 };
 
 export const revalidate = 60;
+
+export async function generateMetadata({ params }: Props) {
+    const { locale } = await params;
+    const isZh = locale === 'zh';
+
+    return localizedMetadata('', locale, {
+        title: isZh ? '首页' : 'ホーム',
+        description: isZh
+            ? 'NAS Build 的个人博客、数字产品和 AI 自动化资源。'
+            : 'NAS Build のブログ、デジタル商品、AI 自動化リソース。',
+    });
+}
 
 export default async function HomePage({ params }: Props) {
     const { locale } = await params;
@@ -22,8 +35,17 @@ export default async function HomePage({ params }: Props) {
     const featuredProducts = allProducts.filter((product) => product.frontmatter.featured);
     const products = (featuredProducts.length > 0 ? featuredProducts : allProducts).slice(0, 3);
     const resources = getAllLibraryItems(locale as Locale).slice(0, 4);
+    const homeJsonLd = buildHomeJsonLd(locale);
 
-    return <HomeContent locale={locale} products={products} resources={resources} />;
+    return (
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(homeJsonLd) }}
+            />
+            <HomeContent locale={locale} products={products} resources={resources} />
+        </>
+    );
 }
 
 function HomeContent({

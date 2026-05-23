@@ -4,6 +4,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import { getPlaybookBySlug, getAllSlugs } from '@/lib/mdx';
 import { Locale, routing } from '@/i18n/routing';
+import { localizedMetadata } from '@/lib/seo';
 
 type Props = {
     params: Promise<{ locale: string; slug: string }>;
@@ -30,10 +31,10 @@ export async function generateMetadata({ params }: Props) {
         return { title: 'Playbook Not Found' };
     }
 
-    return {
+    return localizedMetadata(`/playbooks/${slug}`, locale, {
         title: playbook.frontmatter.title,
         description: playbook.frontmatter.summary,
-    };
+    });
 }
 
 export default async function PlaybookDetailPage({ params }: Props) {

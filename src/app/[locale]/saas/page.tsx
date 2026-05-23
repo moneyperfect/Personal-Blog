@@ -1,6 +1,7 @@
 import { useTranslations } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { WaitlistForm } from '@/components/forms';
+import { localizedMetadata } from '@/lib/seo';
 
 type Props = {
     params: Promise<{ locale: string }>;
@@ -8,12 +9,12 @@ type Props = {
 
 export async function generateMetadata({ params }: Props) {
     const { locale } = await params;
-    return {
+    return localizedMetadata('/saas', locale, {
         title: locale === 'zh' ? 'SaaS 产品' : 'SaaS製品',
         description: locale === 'zh'
             ? '下一代工具，正在打造中'
             : '次世代ツール、現在開発中',
-    };
+    });
 }
 
 export default async function SaaSPage({ params }: Props) {

@@ -1,6 +1,7 @@
 import { setRequestLocale } from 'next-intl/server';
 import { getAllProductTags, getAllProducts } from '@/lib/products';
 import { Locale } from '@/i18n/routing';
+import { localizedMetadata } from '@/lib/seo';
 import { ProductsClient } from './ProductsClient';
 
 type Props = {
@@ -12,12 +13,12 @@ export const revalidate = 60;
 export async function generateMetadata({ params }: Props) {
   const { locale } = await params;
 
-  return {
+  return localizedMetadata('/products', locale, {
     title: locale === 'zh' ? '数字产品' : 'デジタル商品',
     description: locale === 'zh'
       ? '购买可交付的数字产品，支持站内支付与产品详情浏览。'
       : 'デジタル商品の詳細を確認し、サイト内でそのまま購入できます。',
-  };
+  });
 }
 
 export default async function ProductsPage({ params }: Props) {

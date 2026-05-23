@@ -6,6 +6,7 @@ import { getLibraryItemBySlug, getAllSlugs } from '@/lib/mdx';
 import { Locale, routing } from '@/i18n/routing';
 import { CopyButton } from '@/components/ui/CopyButton';
 import { DownloadButton } from '@/components/ui/DownloadButton';
+import { localizedMetadata } from '@/lib/seo';
 
 type Props = {
     params: Promise<{ locale: string; slug: string }>;
@@ -32,10 +33,10 @@ export async function generateMetadata({ params }: Props) {
         return { title: 'Resource Not Found' };
     }
 
-    return {
+    return localizedMetadata(`/library/${slug}`, locale, {
         title: item.frontmatter.title,
         description: item.frontmatter.summary,
-    };
+    });
 }
 
 export default async function LibraryItemPage({ params }: Props) {
