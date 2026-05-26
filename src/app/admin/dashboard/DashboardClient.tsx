@@ -317,7 +317,7 @@ export default function DashboardClient() {
     return (
       <div className="page-shell">
         <div className="page-container page-width py-20 text-center">
-          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-primary-600" />
+          <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-surface-900" />
           <p className="mt-4 text-surface-600">正在加载后台数据...</p>
         </div>
       </div>
@@ -326,39 +326,34 @@ export default function DashboardClient() {
 
   return (
     <AdminShell
-      title="数据与笔记"
-      description="管理您的内容发布状态、分类与内容入口，保持发布节奏清晰可控。"
+      title="概览"
+      description="系统状态、数据概览与快速操作。"
       actions={(
-        <>
-          <button type="button" onClick={() => void refreshDashboard()} className="px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-md text-sm font-medium hover:bg-slate-50 transition-colors shadow-sm">
-            刷新同步
-          </button>
-          <button type="button" onClick={() => router.push('/admin/editor')} className="px-4 py-2 bg-indigo-600 text-white rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors shadow-sm">
-            新建笔记
-          </button>
-        </>
+        <button type="button" onClick={() => void refreshDashboard()} className="px-4 py-2 bg-surface-200 text-surface-700 border border-surface-300 rounded-full text-sm font-medium hover:bg-surface-300 transition-colors">
+          刷新
+        </button>
       )}
     >
       {health ? (
-        <div className={`mb-8 p-4 rounded-xl border ${health.ok ? 'border-emerald-200 bg-emerald-50/50' : 'border-rose-200 bg-rose-50/50'}`}>
+        <div className={`mb-8 p-4 rounded-google-xl border ${health.ok ? 'border-emerald-200 bg-emerald-50/30' : 'border-red-200 bg-red-50/30'}`}>
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <div className="text-sm font-semibold text-surface-900">
-                {health.ok ? '服务状态正常' : '服务状态异常'}
+                {health.ok ? '服务正常' : '服务异常'}
               </div>
-              <div className="mt-1 text-sm text-surface-700">{health.message}</div>
+              <div className="mt-1 text-xs text-surface-600">{health.message}</div>
             </div>
-            <button type="button" onClick={fetchHealth} className="btn btn-tonal">
+            <button type="button" onClick={fetchHealth} className="px-3 py-1.5 text-xs font-medium bg-surface-200 text-surface-700 border border-surface-300 rounded-full hover:bg-surface-300 transition-colors">
               重新检查
             </button>
           </div>
           {health.checks ? (
-            <div className="mt-4 flex flex-wrap gap-2 text-xs">
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${health.checks.config ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>配置: {health.checks.config ? 'OK' : 'FAIL'}</span>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${health.checks.database ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>数据库: {health.checks.database ? 'OK' : 'FAIL'}</span>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${health.checks.storage ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>存储: {health.checks.storage ? 'OK' : 'FAIL'}</span>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${health.checks.schema ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800'}`}>表结构: {health.checks.schema ? 'OK' : 'FAIL'}</span>
-              {health.requestId ? <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-800">请求 ID: {health.requestId}</span> : null}
+            <div className="mt-3 flex flex-wrap gap-1.5 text-[11px]">
+              {Object.entries(health.checks).map(([key, ok]) => (
+                <span key={key} className={`inline-flex items-center px-2 py-0.5 rounded-full font-medium ${ok ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
+                  {key === 'config' ? '配置' : key === 'database' ? '数据库' : key === 'storage' ? '存储' : '表结构'}: {ok ? 'OK' : 'FAIL'}
+                </span>
+              ))}
             </div>
           ) : null}
         </div>
@@ -367,184 +362,100 @@ export default function DashboardClient() {
       <div className="space-y-8">
         <AboutMediaPanel />
 
-        {/* Analytics Bento Grid */}
+        {/* Analytics Stats */}
         <section>
-          <h2 className="text-sm font-semibold text-slate-900 mb-4 px-1">数据大盘概览</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {/* Primary Stat */}
-            <div className="sm:col-span-2 lg:col-span-1 xl:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-center shadow-sm relative overflow-hidden">
-               <div className="absolute top-0 right-0 p-4 opacity-10">
-                 <svg className="w-24 h-24 text-indigo-600" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6z" /></svg>
-               </div>
-               <p className="text-sm font-medium text-slate-500 mb-1 relative z-10">总笔记数</p>
-               <div className="flex items-baseline gap-2 relative z-10">
-                 <p className="text-4xl font-bold tracking-tight text-slate-900">{stats.totalNotes}</p>
-                 <span className="text-sm font-medium text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">+{stats.publishedNotes} 发布</span>
-               </div>
-               <p className="text-xs text-slate-400 mt-4 relative z-10">主分类专注方向: {stats.topCategory}</p>
+          <h2 className="text-sm font-semibold text-surface-900 mb-4 px-1">数据概览</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="bg-surface-200 rounded-google-xl border border-surface-300 p-5">
+              <p className="text-xs font-medium text-surface-500">总文章</p>
+              <p className="text-3xl font-bold tracking-tight text-surface-900 mt-1">{stats.totalNotes}</p>
+              <p className="text-[11px] text-surface-500 mt-1">{stats.publishedNotes} 已发布</p>
             </div>
-
-            {/* Smaller Stats */}
-            {overviewCards.slice(2).map((card, idx) => (
-              <div key={card.label} className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm flex flex-col">
-                <p className="text-sm font-medium text-slate-500">{card.label}</p>
-                <p className="text-2xl font-bold tracking-tight text-slate-900 mt-2">{card.value}</p>
-                <div className="mt-auto pt-4">
-                  <p className="text-xs text-slate-400">{card.hint}</p>
-                </div>
+            {overviewCards.slice(2).map((card) => (
+              <div key={card.label} className="bg-surface-200 rounded-google-xl border border-surface-300 p-5">
+                <p className="text-xs font-medium text-surface-500">{card.label}</p>
+                <p className="text-2xl font-bold tracking-tight text-surface-900 mt-1">{card.value}</p>
               </div>
             ))}
           </div>
         </section>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Main Table Area (Notes) */}
+          {/* Recent Posts Quick View */}
           <section className="lg:col-span-2 space-y-4">
             <div className="flex items-center justify-between px-1">
-               <h2 className="text-sm font-semibold text-slate-900">内容管理</h2>
+               <h2 className="text-sm font-semibold text-surface-900">最近内容</h2>
+               <button
+                 type="button"
+                 onClick={() => router.push('/admin/blog')}
+                 className="text-xs font-medium text-accent hover:underline"
+               >
+                 查看全部
+               </button>
             </div>
-            
-            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead>
-                    <tr className="border-b border-slate-200 bg-slate-50/50 text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                      <th className="px-6 py-4 font-semibold">标题与路径</th>
-                      <th className="px-6 py-4 font-semibold">分类状态</th>
-                      <th className="px-6 py-4 font-semibold text-right">管理</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 bg-white">
-                    {notes.map((note) => {
-                      const status = normalizeStatus(note);
-                      const statusMeta = STATUS_META[status];
 
-                      return (
-                        <tr key={note.id} className="group hover:bg-slate-50/50 transition-colors">
-                          <td className="px-6 py-4">
-                            <div className="font-semibold text-slate-900 mb-1">{note.title}</div>
-                            <div className="flex items-center gap-2 text-xs text-slate-500">
-                               <span className="font-mono bg-slate-100 px-1.5 py-0.5 rounded text-[10px] text-slate-600">/{note.slug}</span>
-                               <span className="text-slate-300">•</span>
-                               <span>{new Date(note.date).toLocaleDateString()}</span>
-                               <span className="text-slate-300">•</span>
-                               <span className="uppercase">{note.language}</span>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4">
-                            <div className="flex flex-col gap-2 max-w-[160px]">
-                              <div className="relative">
-                                <select
-                                  value={note.category}
-                                  onChange={(event) => updateNoteCategory(note, event.target.value)}
-                                  className="w-full appearance-none bg-slate-50 border border-slate-200 text-slate-700 text-xs rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 cursor-pointer hover:bg-slate-100 transition-colors"
-                                >
-                                  <option value="">未分类</option>
-                                  <option value="AI">AI</option>
-                                  <option value="Bug修复">Bug修复</option>
-                                  <option value="MVP">MVP</option>
-                                  <option value="SOP">SOP</option>
-                                  <option value="上线">上线</option>
-                                  <option value="产品">产品</option>
-                                  <option value="代码审查">代码审查</option>
-                                  <option value="写作">写作</option>
-                                  <option value="开发">开发</option>
-                                  <option value="效率">效率</option>
-                                  <option value="文案">文案</option>
-                                  <option value="检查清单">检查清单</option>
-                                  <option value="模板">模板</option>
-                                  <option value="用户研究">用户研究</option>
-                                  <option value="竞品分析">竞品分析</option>
-                                  <option value="编程">编程</option>
-                                  <option value="营销">营销</option>
-                                  <option value="访谈">访谈</option>
-                                </select>
-                                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
-                                  <svg className="h-3 w-3 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path></svg>
-                                </div>
-                              </div>
-                              <div className="relative">
-                                <select
-                                  value={status}
-                                  onChange={(event) => updateNoteStatus(note, event.target.value as LifecycleStatus)}
-                                  className={`w-full appearance-none border text-xs rounded-md py-1.5 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer transition-colors ${
-                                    status === 'published' ? 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100' :
-                                    status === 'review' ? 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100' :
-                                    'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
-                                  }`}
-                                >
-                                  <option value="draft">🟡 设为草稿</option>
-                                  <option value="review">🟠 设为待审</option>
-                                  <option value="published">🟢 设为发布</option>
-                                </select>
-                                <div className={`pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 ${status === 'published' ? 'text-emerald-500' : status === 'review' ? 'text-amber-500' : 'text-slate-400'}`}>
-                                  <svg className="h-3 w-3 fill-current" viewBox="0 0 20 20"><path d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" fillRule="evenodd"></path></svg>
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-6 py-4 text-right">
-                            <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <button
-                                type="button"
-                                onClick={() => router.push(`/admin/editor/${note.slug}`)}
-                                className="p-2 text-slate-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-md transition-colors"
-                                title="编辑"
-                              >
-                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                              </button>
-                              <button
-                                type="button"
-                                onClick={() => deleteNote(note)}
-                                disabled={deletingSlug === note.slug}
-                                className="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors disabled:opacity-50"
-                                title="删除"
-                              >
-                                {deletingSlug === note.slug ? (
-                                  <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" className="opacity-75"></path></svg>
-                                ) : (
-                                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
-                                )}
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                    {notes.length === 0 && (
-                      <tr>
-                        <td colSpan={3} className="px-6 py-12 text-center text-sm text-slate-500">
-                          没有找到笔记记录
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
+            <div className="bg-surface-200 rounded-google-xl border border-surface-300 overflow-hidden">
+              <div className="divide-y divide-surface-300">
+                {notes.slice(0, 6).map((note) => {
+                  const status = normalizeStatus(note);
+                  const statusMeta = STATUS_META[status];
+
+                  return (
+                    <div key={note.id} className="flex items-center gap-4 px-5 py-3.5 hover:bg-surface-100/50 transition-colors">
+                      <div className="flex-1 min-w-0">
+                        <div className="font-medium text-surface-900 text-sm truncate">{note.title}</div>
+                        <div className="text-[11px] text-surface-500 mt-0.5">
+                          {new Date(note.date).toLocaleDateString()} &middot; {note.category || '未分类'}
+                        </div>
+                      </div>
+                      <select
+                        value={status}
+                        onChange={(event) => updateNoteStatus(note, event.target.value as LifecycleStatus)}
+                        className={`appearance-none border text-[11px] rounded-full py-1 pl-2.5 pr-7 focus:outline-none cursor-pointer transition-colors ${statusMeta.badgeClass} border-current/20`}
+                      >
+                        <option value="draft">草稿</option>
+                        <option value="review">待审</option>
+                        <option value="published">已发布</option>
+                      </select>
+                      <button
+                        type="button"
+                        onClick={() => router.push(`/admin/editor/${note.slug}`)}
+                        className="text-xs text-surface-500 hover:text-accent transition-colors"
+                      >
+                        编辑
+                      </button>
+                    </div>
+                  );
+                })}
+                {notes.length === 0 && (
+                  <div className="px-5 py-8 text-center text-sm text-surface-500">
+                    暂无内容
+                  </div>
+                )}
               </div>
             </div>
           </section>
 
-          {/* Sidebar / Top Notes */}
+          {/* Top Notes */}
           <section className="space-y-4">
-             <div className="flex items-center justify-between px-1">
-               <h2 className="text-sm font-semibold text-slate-900">最热阅读榜</h2>
-             </div>
-             
-             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-1">
+             <h2 className="text-sm font-semibold text-surface-900 px-1">最热阅读</h2>
+             <div className="bg-surface-200 rounded-google-xl border border-surface-300 p-1">
                {topNotes.length === 0 ? (
-                  <div className="p-5 text-sm text-slate-500 text-center">暂无足够的数据生成热度榜单</div>
+                  <div className="p-5 text-sm text-surface-500 text-center">暂无数据</div>
                ) : (
-                  <ul className="divide-y divide-slate-100">
+                  <ul className="divide-y divide-surface-300">
                     {topNotes.slice(0, 5).map((item, index) => (
-                      <li key={item.slug} className="flex items-center gap-3 p-3 hover:bg-slate-50 rounded-xl transition-colors">
-                        <div className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${index === 0 ? 'bg-amber-100 text-amber-700' : index === 1 ? 'bg-slate-200 text-slate-700' : index === 2 ? 'bg-orange-100 text-orange-700' : 'bg-slate-100 text-slate-500'}`}>
+                      <li key={item.slug} className="flex items-center gap-3 p-3 hover:bg-surface-100 rounded-google-lg transition-colors">
+                        <div className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold ${
+                          index === 0 ? 'bg-accent/10 text-accent' : 'bg-surface-300 text-surface-600'
+                        }`}>
                           {index + 1}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-slate-900 truncate">/{item.slug}</p>
+                          <p className="text-sm font-medium text-surface-900 truncate">/{item.slug}</p>
                         </div>
-                        <div className="text-xs font-semibold text-slate-500 whitespace-nowrap bg-slate-100 px-2 py-1 rounded-md">
-                          {item.views} 阅
+                        <div className="text-xs font-semibold text-surface-500 whitespace-nowrap bg-surface-300 px-2 py-1 rounded-full">
+                          {item.views}
                         </div>
                       </li>
                     ))}

@@ -22,11 +22,15 @@ export interface Note {
     published: boolean;
     lifecycleStatus: LifecycleStatus;
     lang: 'zh' | 'ja';
+    date?: string;
 }
+
+type ApiMode = 'note' | 'blog';
 
 interface EditorProps {
     initialNote?: Note;
     isNew?: boolean;
+    apiMode?: ApiMode;
 }
 
 interface ApiResponse {
@@ -115,12 +119,13 @@ function normalizeNote(input?: Partial<Note>): Note {
     };
 }
 
-function getDraftStorageKey(isNew: boolean, initialNote?: Note) {
-    if (isNew) return 'admin-note-draft:new';
-    return `admin-note-draft:${initialNote?.slug || 'existing'}`;
+function getDraftStorageKey(isNew: boolean, initialNote?: Note, apiMode: ApiMode = 'note') {
+    const prefix = apiMode === 'blog' ? 'admin-blog-draft' : 'admin-note-draft';
+    if (isNew) return `${prefix}:new`;
+    return `${prefix}:${initialNote?.slug || 'existing'}`;
 }
 
-export default function Editor({ initialNote, isNew = false }: EditorProps) {
+export default function Editor({ initialNote, isNew = false, apiMode = 'note' }: EditorProps) {
     const router = useRouter();
     const [note, setNote] = useState<Note>(normalizeNote(initialNote));
     const [originalNote, setOriginalNote] = useState<Note>(normalizeNote(initialNote));
@@ -137,7 +142,7 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
     const uploadInputRef = useRef<HTMLInputElement>(null);
     const coverUploadInputRef = useRef<HTMLInputElement>(null);
-    const draftKeyRef = useRef<string>(getDraftStorageKey(isNew, initialNote));
+    const draftKeyRef = useRef<string>(getDraftStorageKey(isNew, initialNote, apiMode));
     const hydratedRef = useRef(false);
     const deferredContent = useDeferredValue(note.content);
 
@@ -419,11 +424,39 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
 
     const saveOnce = async (): Promise<SaveAttemptResult> => {
         try {
-            const res = await fetch('/api/admin/notes/save', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ note, isNew }),
-            });
+            let res: Response;
+
+            if (apiMode === 'blog') {
+                const frontmatter = {
+                    title: note.title,
+                    date: note.date || new Date().toISOString().split('T')[0],
+                    tags: note.tags,
+                    category: note.category || undefined,
+                    description: note.excerpt,
+                    lang: note.lang,
+                };
+
+                if (isNew) {
+                    res = await fetch('/api/admin/blog/posts', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ slug: note.slug, frontmatter, content: note.content }),
+                    });
+                } else {
+                    res = await fetch(`/api/admin/blog/posts/${note.slug}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ frontmatter, content: note.content }),
+                    });
+                }
+            } else {
+                res = await fetch('/api/admin/notes/save', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ note, isNew }),
+                });
+            }
+
             const data = (await res.json()) as ApiResponse;
 
             if (res.ok && data.success) {
@@ -492,7 +525,7 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
             setNotice({ type: 'success', text: result.message });
 
             if (isNew && result.slug) {
-                router.push(`/admin/editor/${result.slug}`);
+                router.push(apiMode === 'blog' ? `/admin/blog/${result.slug}` : `/admin/editor/${result.slug}`);
             }
         } else {
             setNotice({ type: 'error', text: result.message });
@@ -511,7 +544,7 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
 
     return (
         <AdminShell
-            title={isNew ? '新建笔记' : '编辑笔记'}
+            title={isNew ? (apiMode === 'blog' ? '新建博客' : '新建笔记') : (apiMode === 'blog' ? '编辑博客' : '编辑笔记')}
             description="把写作、排版、预览和发布检查整合到同一个工作台，减少来回切页。"
             hideSidebar={isFocusMode}
             actions={(
@@ -768,7 +801,7 @@ export default function Editor({ initialNote, isNew = false }: EditorProps) {
                             <label className="block text-xs font-medium text-surface-600 mb-1.5">URL Slug</label>
                             <div className="flex overflow-hidden rounded-md border border-surface-300 bg-white">
                                 <span className="inline-flex items-center border-r border-surface-200 bg-surface-50 px-2 text-xs text-surface-500">
-                                    /notes/
+                                    {apiMode === 'blog' ? '/blog/' : '/notes/'}
                                 </span>
                                 <input
                                     type="text"
