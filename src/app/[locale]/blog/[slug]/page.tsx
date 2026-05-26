@@ -18,7 +18,7 @@ export const revalidate = 60;
 export async function generateStaticParams() {
     const params: { locale: string; slug: string }[] = [];
     for (const locale of routing.locales) {
-        const slugs = getAllPostSlugs(locale);
+        const slugs = await getAllPostSlugs(locale);
         for (const slug of slugs) {
             params.push({ locale, slug });
         }
@@ -32,7 +32,7 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
     const { locale, slug } = await params;
-    const post = getPostBySlug(slug, locale as Locale);
+    const post = await getPostBySlug(slug, locale as Locale);
 
     if (!post) {
         return { title: 'Post Not Found' };
@@ -67,7 +67,7 @@ export default async function BlogDetailPage({ params }: Props) {
     const { locale, slug } = await params;
     setRequestLocale(locale);
 
-    const post = getPostBySlug(slug, locale as Locale);
+    const post = await getPostBySlug(slug, locale as Locale);
 
     if (!post) {
         notFound();
@@ -75,7 +75,7 @@ export default async function BlogDetailPage({ params }: Props) {
 
     const t = await getTranslations({ locale, namespace: 'blog' });
     const common = await getTranslations({ locale, namespace: 'common' });
-    const relatedPosts = getRelatedPosts(slug, locale as Locale, 3);
+    const relatedPosts = await getRelatedPosts(slug, locale as Locale, 3);
 
     const pageUrl = absoluteUrl(`/${locale}/blog/${slug}`);
     const articleJsonLd = buildArticleJsonLd({

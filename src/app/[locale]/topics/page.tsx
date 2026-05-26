@@ -26,9 +26,9 @@ export default async function TopicsPage({ params }: Props) {
     setRequestLocale(locale);
 
     const t = await getTranslations({ locale, namespace: 'topics' });
-    const posts = getAllPosts(locale as Locale);
-    const tags = getAllPostTags(locale as Locale);
-    const categories = getAllCategories(locale as Locale);
+    const posts = await getAllPosts(locale as Locale);
+    const tags = await getAllPostTags(locale as Locale);
+    const categories = await getAllCategories(locale as Locale);
 
     // Build topic list from both tags and categories
     const topics: { name: string; type: 'tag' | 'category'; count: number }[] = [];

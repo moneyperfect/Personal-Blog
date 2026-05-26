@@ -43,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // Blog posts
     for (const locale of routing.locales) {
-        const slugs = getAllPostSlugs(locale);
+        const slugs = await getAllPostSlugs(locale);
         slugs.forEach((slug) => {
             dynamicPages.push({
                 url: `${baseUrl}/${locale}/blog/${slug}`,

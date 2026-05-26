@@ -30,9 +30,9 @@ export default async function TopicDetailPage({ params }: Props) {
     const t = await getTranslations({ locale, namespace: 'topics' });
     const common = await getTranslations({ locale, namespace: 'common' });
 
-    const posts = getAllPosts(locale as Locale);
-    const tags = getAllPostTags(locale as Locale);
-    const categories = getAllCategories(locale as Locale);
+    const posts = await getAllPosts(locale as Locale);
+    const tags = await getAllPostTags(locale as Locale);
+    const categories = await getAllCategories(locale as Locale);
 
     // Determine if this topic is a tag or category
     const isCategory = categories.includes(decodedTopic);

@@ -32,7 +32,7 @@ export default async function HomePage({ params }: Props) {
     setRequestLocale(locale);
 
     const projects = getAllProjects(locale as Locale).slice(0, 3);
-    const posts = getAllPosts(locale as Locale).slice(0, 3);
+    const posts = (await getAllPosts(locale as Locale)).slice(0, 3);
     const aboutContent = getAboutContent(locale, {
         avatarUrl: ABOUT_PROFILE_MEDIA_DEFAULTS.avatarUrl,
         portraitUrl: ABOUT_PROFILE_MEDIA_DEFAULTS.portraitUrl,

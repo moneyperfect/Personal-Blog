@@ -16,7 +16,7 @@ export async function GET() {
     const baseUrl = getSiteUrl();
     const locale = 'zh';
 
-    const items = getAllPosts(locale)
+    const items = (await getAllPosts(locale))
         .map((post) => ({
             title: post.frontmatter.title,
             description: post.frontmatter.description,

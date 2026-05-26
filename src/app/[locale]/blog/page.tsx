@@ -29,9 +29,9 @@ export default async function BlogPage({ params, searchParams }: Props) {
     const { tag, category } = await searchParams;
     setRequestLocale(locale);
 
-    const posts = getAllPosts(locale as Locale);
-    const allTags = getAllPostTags(locale as Locale);
-    const allCategories = getAllCategories(locale as Locale);
+    const posts = await getAllPosts(locale as Locale);
+    const allTags = await getAllPostTags(locale as Locale);
+    const allCategories = await getAllCategories(locale as Locale);
     const initialTag = tag && allTags.includes(tag) ? tag : undefined;
     const initialCategory =
         category && allCategories.includes(category) ? category : undefined;
