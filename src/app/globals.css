@@ -89,6 +89,67 @@ html {
 }
 
 /* Line clamp utility */
+/* Hero gradient for homepage */
+.hero-gradient {
+  background: linear-gradient(
+    180deg,
+    #2D2D31 0%,
+    #3D3530 40%,
+    #4A3F38 70%,
+    #FAF7F1 100%
+  );
+}
+
+/* Floating pill animation */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+}
+
+.float-slow {
+  animation: float 6s ease-in-out infinite;
+}
+
+.float-medium {
+  animation: float 4s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.float-fast {
+  animation: float 5s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+/* Scroll indicator bounce */
+@keyframes bounce-subtle {
+  0%, 100% { transform: translateY(0); opacity: 0.5; }
+  50% { transform: translateY(6px); opacity: 1; }
+}
+
+.bounce-subtle {
+  animation: bounce-subtle 2s ease-in-out infinite;
+}
+
+/* Accent glow for bento cards */
+.bento-glow {
+  position: relative;
+}
+
+.bento-glow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  box-shadow: 0 0 30px rgba(196, 104, 73, 0.15), 0 0 60px rgba(196, 104, 73, 0.08);
+  pointer-events: none;
+}
+
+.bento-glow:hover::after {
+  opacity: 1;
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;

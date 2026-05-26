@@ -1,6 +1,13 @@
 import { useTranslations } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import Link from 'next/link';
+import {
+    ArrowRight,
+    ChevronDown,
+    Blocks,
+    Newspaper,
+    Wrench,
+} from 'lucide-react';
 import { Reveal, StaggerGroup, StaggerItem } from '@/components/ui';
 import { getAllProjects } from '@/lib/projects';
 import { getAllPosts } from '@/lib/blog';
@@ -32,7 +39,7 @@ export default async function HomePage({ params }: Props) {
     setRequestLocale(locale);
 
     const projects = getAllProjects(locale as Locale).slice(0, 3);
-    const posts = (await getAllPosts(locale as Locale)).slice(0, 3);
+    const posts = (await getAllPosts(locale as Locale)).slice(0, 4);
     const aboutContent = getAboutContent(locale, {
         avatarUrl: ABOUT_PROFILE_MEDIA_DEFAULTS.avatarUrl,
         portraitUrl: ABOUT_PROFILE_MEDIA_DEFAULTS.portraitUrl,
@@ -63,111 +70,204 @@ function HomeContent({
     posts,
 }: {
     locale: string;
-    hero: { avatarSrc: string; avatarAlt: string; floatingPills: string[]; aboutKicker: string; aboutTitle: string; aboutSubtitle: string };
+    hero: {
+        avatarSrc: string;
+        avatarAlt: string;
+        floatingPills: string[];
+        aboutKicker: string;
+        aboutTitle: string;
+        aboutSubtitle: string;
+    };
     projects: Awaited<ReturnType<typeof getAllProjects>>;
     posts: Awaited<ReturnType<typeof getAllPosts>>;
 }) {
     const t = useTranslations('home');
 
     return (
-        <div className="page-shell">
-            <div className="page-container page-width">
-                {/* 个人介绍 */}
+        <div className="min-h-screen">
+            {/* ── Hero ── */}
+            <section className="hero-gradient relative overflow-hidden flex flex-col items-center justify-center text-center px-6 pt-32 pb-24 sm:pt-40 sm:pb-32 min-h-[85vh]">
+                {/* Floating pills — desktop only */}
+                <div className="hidden lg:block">
+                    {hero.floatingPills.slice(0, 3).map((pill, i) => (
+                        <span
+                            key={pill}
+                            className={`absolute rounded-full border border-white/10 bg-white/5 backdrop-blur-sm px-4 py-1.5 text-[11px] font-medium text-stone-300 select-none ${
+                                i === 0
+                                    ? 'top-[18%] left-[8%] float-slow'
+                                    : i === 1
+                                      ? 'top-[28%] right-[10%] float-medium'
+                                      : 'bottom-[25%] left-[12%] float-fast'
+                            }`}
+                        >
+                            {pill}
+                        </span>
+                    ))}
+                    {hero.floatingPills.slice(3, 5).map((pill, i) => (
+                        <span
+                            key={pill}
+                            className={`absolute rounded-full border border-white/10 bg-white/5 backdrop-blur-sm px-4 py-1.5 text-[11px] font-medium text-stone-300 select-none ${
+                                i === 0
+                                    ? 'top-[40%] right-[6%] float-fast'
+                                    : 'bottom-[18%] right-[14%] float-slow'
+                            }`}
+                        >
+                            {pill}
+                        </span>
+                    ))}
+                </div>
+
                 <Reveal direction="up">
-                    <section className="section pt-8 pb-12">
-                        <div className="card p-6 sm:p-8">
-                            <div className="flex flex-col sm:flex-row items-start gap-6">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img
-                                    src={hero.avatarSrc}
-                                    alt={hero.avatarAlt}
-                                    className="h-20 w-20 rounded-full border-2 border-surface-200 object-cover shrink-0"
-                                />
-                                <div className="flex-1 min-w-0">
-                                    <span className="chip chip-active text-[11px] mb-3 inline-block">
-                                        {hero.aboutKicker}
-                                    </span>
-                                    <h1 className="text-2xl sm:text-3xl font-semibold text-surface-900 mb-3">
-                                        {hero.aboutTitle}
-                                    </h1>
-                                    <p className="text-surface-600 leading-7 mb-4">
-                                        {hero.aboutSubtitle}
-                                    </p>
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                        {hero.floatingPills.map((pill) => (
-                                            <span key={pill} className="chip chip-muted text-[11px]">
-                                                {pill}
-                                            </span>
-                                        ))}
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                        <Link
-                                            href={`/${locale}/about`}
-                                            className="btn btn-tonal text-sm"
-                                        >
-                                            {t('intro.cta')}
-                                        </Link>
-                                        <a
-                                            href="https://github.com/moneyperfect/Personal-Blog"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-surface-200 text-surface-600 hover:text-surface-900 hover:border-surface-300 transition-colors"
-                                            aria-label="GitHub"
-                                        >
-                                            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                                            </svg>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                    <div className="relative z-10 max-w-3xl mx-auto">
+                        {/* Kicker */}
+                        <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 backdrop-blur-sm px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-accent mb-8">
+                            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                            {hero.aboutKicker}
+                        </span>
+
+                        {/* Avatar */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                            src={hero.avatarSrc}
+                            alt={hero.avatarAlt}
+                            className="h-24 w-24 sm:h-28 sm:w-28 rounded-full border-2 border-white/10 object-cover mx-auto mb-8"
+                        />
+
+                        {/* Headline */}
+                        <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-stone-50 leading-[1.1] tracking-tight mb-6">
+                            {hero.aboutTitle}
+                        </h1>
+
+                        {/* Subtitle */}
+                        <p className="text-base sm:text-lg text-stone-300 leading-relaxed max-w-xl mx-auto mb-10">
+                            {hero.aboutSubtitle}
+                        </p>
+
+                        {/* CTAs */}
+                        <div className="flex flex-wrap items-center justify-center gap-4">
+                            <Link
+                                href={`/${locale}/projects`}
+                                className="btn bg-accent text-stone-50 hover:brightness-110 px-6 py-3 text-sm font-medium"
+                            >
+                                <Blocks className="h-4 w-4" />
+                                {t('projects.title')}
+                                <ArrowRight className="h-4 w-4" />
+                            </Link>
+                            <Link
+                                href={`/${locale}/about`}
+                                className="btn border border-white/15 text-stone-200 hover:bg-white/10 px-6 py-3 text-sm font-medium"
+                            >
+                                {t('intro.cta')}
+                            </Link>
                         </div>
-                    </section>
+                    </div>
                 </Reveal>
 
-                {/* 项目/作品展示 */}
+                {/* Scroll indicator */}
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bounce-subtle">
+                    <ChevronDown className="h-5 w-5 text-stone-400" />
+                </div>
+            </section>
+
+            {/* ── Stats Bar ── */}
+            <Reveal direction="up">
+                <section className="border-y border-surface-300 bg-surface-100">
+                    <div className="max-w-page mx-auto px-6 py-8 grid grid-cols-3 divide-x divide-surface-300">
+                        <div className="text-center px-4">
+                            <div className="font-display text-3xl sm:text-4xl font-bold text-surface-900">
+                                3+
+                            </div>
+                            <div className="text-xs sm:text-sm text-surface-600 mt-1 font-medium">
+                                Products
+                            </div>
+                        </div>
+                        <div className="text-center px-4">
+                            <div className="font-display text-3xl sm:text-4xl font-bold text-surface-900">
+                                20+
+                            </div>
+                            <div className="text-xs sm:text-sm text-surface-600 mt-1 font-medium">
+                                Articles
+                            </div>
+                        </div>
+                        <div className="text-center px-4">
+                            <div className="font-display text-3xl sm:text-4xl font-bold text-surface-900">
+                                5+
+                            </div>
+                            <div className="text-xs sm:text-sm text-surface-600 mt-1 font-medium">
+                                Tech Areas
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </Reveal>
+
+            <div className="page-container page-width">
+                {/* ── Projects Bento Grid ── */}
                 {projects.length > 0 && (
-                    <Reveal direction="up" delay={0.1}>
+                    <Reveal direction="up">
                         <section className="section">
                             <div className="section-header">
-                                <h2 className="section-title">{t('projects.title')}</h2>
+                                <h2 className="section-title flex items-center gap-2">
+                                    <Wrench className="h-5 w-5 text-accent" />
+                                    {t('projects.title')}
+                                </h2>
                                 <Link
                                     href={`/${locale}/projects`}
-                                    className="link text-sm font-medium"
+                                    className="link text-sm font-medium inline-flex items-center gap-1"
                                 >
                                     {t('projects.viewAll')}
+                                    <ArrowRight className="h-3.5 w-3.5" />
                                 </Link>
                             </div>
-                            <StaggerGroup className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                                {projects.map((project) => (
-                                    <StaggerItem key={project.slug}>
+                            <StaggerGroup className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                {projects.map((project, index) => (
+                                    <StaggerItem
+                                        key={project.slug}
+                                        className={index === 0 ? 'md:col-span-2' : ''}
+                                    >
                                         <Link
-                                            href={project.detailPage || `/${locale}/projects/${project.slug}`}
-                                            className="card list-card block overflow-hidden h-full"
+                                            href={
+                                                project.detailPage ||
+                                                `/${locale}/projects/${project.slug}`
+                                            }
+                                            className="group block bg-surface-200 rounded-google-xl overflow-hidden bento-glow transition-all duration-300 hover:-translate-y-0.5"
                                         >
-                                            {project.image && (
-                                                <div className="aspect-video overflow-hidden bg-surface-100">
-                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                    <img
-                                                        src={project.image}
-                                                        alt={project.name}
-                                                        className="h-full w-full object-cover"
-                                                    />
-                                                </div>
-                                            )}
-                                            <div className="p-5">
-                                                <h3 className="font-semibold text-surface-900 mb-2">
-                                                    {project.name}
-                                                </h3>
-                                                <p className="text-sm text-surface-600 line-clamp-2 mb-3">
-                                                    {project.description}
-                                                </p>
-                                                <div className="flex flex-wrap gap-1.5">
-                                                    {project.techStack.slice(0, 4).map((tech) => (
-                                                        <span key={tech} className="chip chip-muted text-[10px]">
-                                                            {tech}
-                                                        </span>
-                                                    ))}
+                                            <div
+                                                className={`flex flex-col ${index === 0 ? 'sm:flex-row' : ''}`}
+                                            >
+                                                {project.image && (
+                                                    <div
+                                                        className={`overflow-hidden bg-surface-100 ${index === 0 ? 'sm:w-3/5 aspect-video sm:aspect-auto' : 'aspect-video'}`}
+                                                    >
+                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                        <img
+                                                            src={project.image}
+                                                            alt={project.name}
+                                                            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                                                        />
+                                                    </div>
+                                                )}
+                                                <div
+                                                    className={`p-5 sm:p-6 flex flex-col justify-center ${index === 0 ? 'sm:w-2/5' : ''}`}
+                                                >
+                                                    <h3 className="font-display text-lg sm:text-xl font-semibold text-surface-900 mb-2 group-hover:text-accent transition-colors">
+                                                        {project.name}
+                                                    </h3>
+                                                    <p className="text-sm text-surface-600 line-clamp-2 mb-4">
+                                                        {project.description}
+                                                    </p>
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        {project.techStack
+                                                            .slice(0, 4)
+                                                            .map((tech) => (
+                                                                <span
+                                                                    key={tech}
+                                                                    className="chip chip-muted text-[10px]"
+                                                                >
+                                                                    {tech}
+                                                                </span>
+                                                            ))}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </Link>
@@ -178,41 +278,51 @@ function HomeContent({
                     </Reveal>
                 )}
 
-                {/* 博客 */}
+                {/* ── Blog List ── */}
                 {posts.length > 0 && (
                     <Reveal direction="up" delay={0.1}>
-                        <section className="section pb-12 sm:pb-16">
+                        <section className="section pb-16 sm:pb-24">
                             <div className="section-header">
-                                <h2 className="section-title">{t('latestBlog.title')}</h2>
+                                <h2 className="section-title flex items-center gap-2">
+                                    <Newspaper className="h-5 w-5 text-accent" />
+                                    {t('latestBlog.title')}
+                                </h2>
                                 <Link
                                     href={`/${locale}/blog`}
-                                    className="link text-sm font-medium"
+                                    className="link text-sm font-medium inline-flex items-center gap-1"
                                 >
                                     {t('latestBlog.viewAll')}
+                                    <ArrowRight className="h-3.5 w-3.5" />
                                 </Link>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                            <div className="divide-y divide-surface-300">
                                 {posts.map((post) => (
                                     <Link
                                         key={post.slug}
                                         href={`/${locale}/blog/${post.slug}`}
-                                        className="group block list-card"
+                                        className="group flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 py-5 transition-colors hover:bg-surface-200/50 -mx-3 px-3 rounded-google"
                                     >
-                                        <div className="flex flex-wrap gap-2 mb-2">
-                                            {post.frontmatter.tags.map((tag) => (
-                                                <span key={tag} className="chip chip-muted text-[11px]">
-                                                    #{tag}
-                                                </span>
-                                            ))}
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex flex-wrap gap-1.5 mb-1.5">
+                                                {post.frontmatter.tags
+                                                    .slice(0, 2)
+                                                    .map((tag) => (
+                                                        <span
+                                                            key={tag}
+                                                            className="text-[10px] font-medium text-accent uppercase tracking-wider"
+                                                        >
+                                                            {tag}
+                                                        </span>
+                                                    ))}
+                                            </div>
+                                            <h3 className="font-display text-base sm:text-lg font-semibold text-surface-900 group-hover:text-accent transition-colors truncate">
+                                                {post.frontmatter.title}
+                                            </h3>
                                         </div>
-                                        <h3 className="text-lg font-semibold text-surface-900 group-hover:text-accent mb-2">
-                                            {post.frontmatter.title}
-                                        </h3>
-                                        <p className="text-surface-600 line-clamp-2">
-                                            {post.frontmatter.description}
-                                        </p>
-                                        <span className="text-sm text-surface-500 mt-2 block">
-                                            {new Date(post.frontmatter.date).toLocaleDateString()}
+                                        <span className="text-xs text-surface-500 tabular-nums shrink-0">
+                                            {new Date(
+                                                post.frontmatter.date
+                                            ).toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'ja-JP')}
                                         </span>
                                     </Link>
                                 ))}
