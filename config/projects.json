@@ -1,5 +1,24 @@
 [
   {
+    "slug": "homework",
+    "name": {
+      "zh": "Python 作业",
+      "ja": "Python 宿題"
+    },
+    "description": {
+      "zh": "数据结构课程实验作业：带头结点的单链表、链式基数排序法。",
+      "ja": "データ構造コースの実験宿題：先頭ノード付き単方向連結リスト、基数ソート。"
+    },
+    "techStack": [
+      "Python"
+    ],
+    "detailPage": "/projects/homework.html",
+    "content": {
+      "zh": "数据结构课程的两次实验作业，包含带头结点的单链表代码设计和链式基数排序法的实现。",
+      "ja": "データ構造コースの2回の実験宿題。"
+    }
+  },
+  {
     "slug": "vibeimg",
     "name": {
       "zh": "VibeImg",
@@ -9,7 +28,13 @@
       "zh": "GPT 最新生图模型在国内直接可用，内置热门素材模板，72 小时从 idea 到第一个付费用户。",
       "ja": "GPT最新画像生成モデルを中国国内で直接利用可能。人気素材テンプレート内蔵、72時間でアイデアから最初の有料ユーザーまで。"
     },
-    "techStack": ["Next.js", "TypeScript", "OpenAI API", "Supabase", "Vercel"],
+    "techStack": [
+      "Next.js",
+      "TypeScript",
+      "OpenAI API",
+      "Supabase",
+      "Vercel"
+    ],
     "link": "https://vibeimg.cc",
     "image": "/images/projects/vibeimg-home.webp",
     "detailPage": "/projects/vibeimg.html",
@@ -28,7 +53,13 @@
       "zh": "基于 Next.js 16 + Supabase 的全栈个人博客与数字产品平台，支持中日双语、Admin 后台、支付集成与 SEO 优化。",
       "ja": "Next.js 16 + Supabase によるフルスタック個人ブログ＆デジタル商品プラットフォーム。中日バイリンガル対応、Admin管理画面、決済連携、SEO最適化済み。"
     },
-    "techStack": ["Next.js", "TypeScript", "Supabase", "Tailwind CSS", "Framer Motion"],
+    "techStack": [
+      "Next.js",
+      "TypeScript",
+      "Supabase",
+      "Tailwind CSS",
+      "Framer Motion"
+    ],
     "link": "https://nasbuild.dev",
     "github": "https://github.com/moneyperfect/Personal-Blog",
     "image": "/images/projects/personal-brand-site.jpg",
