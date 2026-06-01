@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python 作业</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1e1e1e;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    color: #cccccc;
+    min-height: 100vh;
+  }
+
+  /* Title bar */
+  .titlebar {
+    background: #323233;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    color: #999;
+    user-select: none;
+  }
+
+  /* Tab bar */
+  .tab-bar {
+    background: #252526;
+    display: flex;
+    border-bottom: 1px solid #1e1e1e;
+    padding-top: 4px;
+  }
+
+  .tab {
+    padding: 8px 20px;
+    font-size: 13px;
+    color: #969696;
+    cursor: pointer;
+    border-right: 1px solid #1e1e1e;
+    background: #2d2d2d;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    user-select: none;
+    transition: background 0.1s;
+  }
+
+  .tab:hover { background: #2a2a2a; }
+
+  .tab.active {
+    background: #1e1e1e;
+    color: #fff;
+    border-top: 2px solid #007acc;
+  }
+
+  .tab .icon {
+    width: 14px;
+    height: 14px;
+    background: #3572a5;
+    border-radius: 2px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 700;
+    color: #fff;
+  }
+
+  /* Breadcrumb */
+  .breadcrumb {
+    background: #1e1e1e;
+    padding: 4px 16px;
+    font-size: 12px;
+    color: #888;
+    border-bottom: 1px solid #2d2d2d;
+  }
+
+  .breadcrumb span { margin: 0 4px; }
+
+  /* Editor */
+  .editor-wrap {
+    display: flex;
+    overflow: auto;
+    min-height: calc(100vh - 30px - 36px - 24px - 28px);
+  }
+
+  /* Line numbers */
+  .line-numbers {
+    background: #1e1e1e;
+    padding: 16px 0;
+    text-align: right;
+    user-select: none;
+    min-width: 50px;
+    color: #858585;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    flex-shrink: 0;
+    position: sticky;
+    left: 0;
+  }
+
+  .line-numbers div {
+    padding: 0 12px 0 8px;
+  }
+
+  /* Code area */
+  .code-area {
+    flex: 1;
+    padding: 16px 16px 16px 12px;
+    font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    white-space: pre;
+    overflow-x: auto;
+    color: #d4d4d4;
+  }
+
+  /* Status bar */
+  .statusbar {
+    background: #007acc;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 12px;
+    font-size: 12px;
+    color: #fff;
+  }
+
+  .statusbar-left, .statusbar-right {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  /* Syntax highlighting */
+  .kw { color: #c586c0; }       /* keywords: class, def, return, if, for, while, not, is, in, import, from */
+  .fn { color: #dcdcaa; }       /* function names */
+  .cls { color: #4ec9b0; }      /* class names */
+  .str { color: #ce9178; }      /* strings */
+  .num { color: #b5cea8; }      /* numbers */
+  .cmt { color: #6a9955; }      /* comments */
+  .op { color: #d4d4d4; }       /* operators */
+  .bi { color: #4fc1ff; }       /* built-ins: print, len, max, range, None, True, False, self */
+  .dec { color: #dcdcaa; }      /* decorators */
+  .param { color: #9cdcfe; }    /* parameters */
+
+  .file-content { display: none; }
+  .file-content.active { display: block; }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .line-numbers { min-width: 36px; font-size: 12px; }
+    .code-area { font-size: 12px; padding: 12px 8px 12px 8px; }
+    .tab { padding: 6px 14px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="titlebar">Python 作业 — nasbuild.dev</div>
+
+<div class="tab-bar">
+  <div class="tab active" onclick="switchTab(0)">
+    <span class="icon">py</span>
+    实验一.py
+  </div>
+  <div class="tab" onclick="switchTab(1)">
+    <span class="icon">py</span>
+    实验二.py
+  </div>
+</div>
+
+<div class="breadcrumb" id="breadcrumb">
+  <span>作业</span> <span>/</span> <span id="current-file">实验一.py</span>
+</div>
+
+<div class="editor-wrap">
+  <div class="line-numbers" id="line-numbers"></div>
+  <div class="code-area" id="code-area"></div>
+</div>
+
+<div class="statusbar">
+  <div class="statusbar-left">
+    <span>Python</span>
+    <span>UTF-8</span>
+  </div>
+  <div class="statusbar-right">
+    <span id="line-info"></span>
+  </div>
+</div>
+
+<!-- File contents stored as data -->
+<div class="file-content active" id="file-0">class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+
+class LinkedList:
+    def __init__(self):
+        # ① 新建一个带有头结点的空链表
+        self.head = Node(None)
+
+    def add(self, data):
+        # 在链表头插入一个新结点（头插法）
+        new_node = Node(data)
+        new_node.next = self.head.next
+        self.head.next = new_node
+
+    def insert(self, data):
+        # 在指定值的结点后面插入新结点
+        # 找到值为 data 的前驱结点，在其后面插入 data+1
+        p = self.head
+        while p.next is not None:
+            if p.next.data == data:
+                new_node = Node(data + 1)
+                new_node.next = p.next.next
+                p.next.next = new_node
+                return
+            p = p.next
+
+    def display(self):
+        # 逐个输出结点的值
+        p = self.head.next
+        while p is not None:
+            if p.next is not None:
+                print(p.data, end="-&gt;")
+            else:
+                print(p.data)
+            p = p.next
+
+
+# 主程序
+L = LinkedList()
+
+# ② 在链表头逐个插入9个结点
+#    头插法是倒序插入，要得到 1,2,3,4,5,7,8,9,10 的遍历结果
+#    需要按从大到小的顺序插入
+nums = [10, 9, 8, 7, 5, 4, 3, 2, 1]
+for x in nums:
+    L.add(x)
+
+print("链表建立完成后遍历结果：")
+L.display()
+
+# ③ 在5和7之间插入一个结点，数据域为6
+L.insert(5)
+
+print("在5和7之间插入6后遍历结果：")
+L.display()</div>
+
+<div class="file-content" id="file-1">class Node:
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+
+class LinkedList:
+    def __init__(self):
+        self.head = None
+        self.tail = None
+
+    def add(self, data):
+        new_node = Node(data)
+        if self.head is None:
+            self.head = new_node
+            self.tail = new_node
+        else:
+            self.tail.next = new_node
+            self.tail = new_node
+
+    def delete_head(self):
+        if self.head is None:
+            return None
+        data = self.head.data
+        self.head = self.head.next
+        if self.head is None:
+            self.tail = None
+        return data
+
+    def is_empty(self):
+        return self.head is None
+
+    def display(self):
+        p = self.head
+        while p is not None:
+            print(p.data, end=" ")
+            p = p.next
+
+
+def radix_sort(arr):
+    # ① 将待排数据转换为链表方式存储
+    L = LinkedList()
+    for x in arr:
+        L.add(x)
+
+    print("排序前：")
+    L.display()
+    print()
+
+    # 找最大值，确定最大位数
+    max_val = max(arr)
+    max_digits = len(str(max_val))
+
+    # ② 建立10个链表，分别对应数字0-9
+    buckets = []
+    for i in range(10):
+        buckets.append(LinkedList())
+
+    # 按位数从个位到最高位进行分配和收集
+    for digit in range(max_digits):
+        # 分配：将链表中的元素按当前位的数字插入对应桶
+        while not L.is_empty():
+            num = L.delete_head()
+            # 取当前位的数字
+            index = (num // (10 ** digit)) % 10
+            buckets[index].add(num)
+
+        # 收集：将10个桶中的元素按顺序读出，回存到链表
+        for i in range(10):
+            while not buckets[i].is_empty():
+                num = buckets[i].delete_head()
+                L.add(num)
+
+        print("第", digit + 1, "轮排序后：")
+        L.display()
+        print()
+
+    return L
+
+
+# 主程序
+arr = [123, 45, 678, 9, 10, 321, 55, 888, 234, 66]
+L = radix_sort(arr)
+
+print("排序最终结果：")
+L.display()
+print()</div>
+
+<script>
+const fileNames = ['实验一.py', '实验二.py'];
+const titles = ['带头结点的单链表代码设计', '链式基数排序法'];
+let currentTab = 0;
+
+function highlightPython(code) {
+  // Escape HTML
+  code = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  // Restore our pre-escaped arrows
+  code = code.replace(/&amp;gt;/g, '&gt;');
+
+  // Order matters: comments first, then strings, then the rest
+
+  // Comments
+  code = code.replace(/(#.*?)$/gm, '<span class="cmt">$1</span>');
+
+  // Strings (double and single quoted, including multiline)
+  code = code.replace(/("""[\s\S]*?"""|'''[\s\S]*?'''|"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*')/g, '<span class="str">$1</span>');
+
+  // Keywords
+  const kws = ['class', 'def', 'return', 'if', 'else', 'elif', 'for', 'while', 'not', 'is', 'in', 'import', 'from', 'and', 'or', 'pass', 'break', 'continue', 'as', 'with'];
+  kws.forEach(kw => {
+    const re = new RegExp('\\b(' + kw + ')\\b', 'g');
+    code = code.replace(re, '<span class="kw">$1</span>');
+  });
+
+  // Built-ins
+  const bis = ['print', 'len', 'max', 'range', 'None', 'True', 'False', 'self', 'int', 'str', 'list', 'append'];
+  bis.forEach(bi => {
+    const re = new RegExp('\\b(' + bi + ')\\b', 'g');
+    code = code.replace(re, '<span class="bi">$1</span>');
+  });
+
+  // Numbers (standalone)
+  code = code.replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
+
+  // Class names after 'class '
+  code = code.replace(/(<span class="kw">class<\/span>\s+)(<span class="bi">)?(\w+)/g, '$1$2<span class="cls">$3</span>');
+
+  // Function names after 'def '
+  code = code.replace(/(<span class="kw">def<\/span>\s+)(\w+)/g, '$1<span class="fn">$2</span>');
+
+  return code;
+}
+
+function renderFile(index) {
+  const raw = document.getElementById('file-' + index).textContent;
+  const lines = raw.split('\n');
+  const totalLines = lines.length;
+
+  // Line numbers
+  const lineNums = document.getElementById('line-numbers');
+  lineNums.innerHTML = lines.map((_, i) => '<div>' + (i + 1) + '</div>').join('');
+
+  // Code with highlighting
+  const codeArea = document.getElementById('code-area');
+  const highlighted = highlightPython(raw);
+  codeArea.innerHTML = highlighted;
+
+  // Status bar
+  document.getElementById('line-info').textContent = 'Ln ' + totalLines + ', Col 1';
+  document.getElementById('current-file').textContent = fileNames[index];
+
+  // Title
+  document.title = titles[index] + ' — Python 作业';
+}
+
+function switchTab(index) {
+  if (index === currentTab) return;
+  currentTab = index;
+
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', i === index);
+  });
+
+  renderFile(index);
+}
+
+// Initial render
+renderFile(0);
+</script>
+
+</body>
+</html>
