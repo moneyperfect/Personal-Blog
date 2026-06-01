@@ -16,7 +16,9 @@
     "content": {
       "zh": "数据结构课程的两次实验作业，包含带头结点的单链表代码设计和链式基数排序法的实现。",
       "ja": "データ構造コースの2回の実験宿題。"
-    }
+    },
+    "link": "/projects/homework.html",
+    "image": ""
   },
   {
     "slug": "vibeimg",
