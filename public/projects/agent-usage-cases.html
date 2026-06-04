@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent 不是等你想好才用的</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #FAF7F1;
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+    color: #3d3a36;
+    line-height: 1.8;
+  }
+
+  /* Hero */
+  .hero {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 100px 24px 80px;
+    text-align: center;
+  }
+
+  .hero-tag {
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: #b8a89a;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .hero h1 {
+    font-family: Georgia, 'Noto Serif CJK SC', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: #2d2a26;
+    line-height: 1.3;
+    margin-bottom: 28px;
+  }
+
+  .hero h1 em {
+    color: #C46849;
+    font-style: normal;
+  }
+
+  .hero p {
+    font-size: 17px;
+    color: #6b6660;
+    line-height: 1.9;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* Core insight */
+  .insight {
+    max-width: 620px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+    text-align: center;
+  }
+
+  .insight-line {
+    width: 40px;
+    height: 2px;
+    background: #C46849;
+    margin: 0 auto 28px;
+  }
+
+  .insight p {
+    font-size: 15px;
+    color: #9a9590;
+    line-height: 2;
+  }
+
+  .insight p strong {
+    color: #3d3a36;
+    font-weight: 600;
+  }
+
+  /* Section title */
+  .section-label {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .section-label span {
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: #b8a89a;
+  }
+
+  /* Cases */
+  .cases {
+    max-width: 720px;
+    margin: 0 auto 100px;
+    padding: 0 24px;
+  }
+
+  .case {
+    margin-bottom: 32px;
+    border-radius: 16px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease;
+  }
+
+  .case:hover {
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+
+  .case-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 28px 32px;
+    background: #f5f0e8;
+    transition: background 0.3s ease;
+  }
+
+  .case.open .case-header {
+    background: #ebe5da;
+  }
+
+  .case-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: #C46849;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .case-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: #fff;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  .case-title {
+    flex: 1;
+  }
+
+  .case-title h3 {
+    font-family: Georgia, 'Noto Serif CJK SC', serif;
+    font-size: 20px;
+    font-weight: 600;
+    color: #2d2a26;
+    margin-bottom: 4px;
+  }
+
+  .case-title p {
+    font-size: 14px;
+    color: #9a9590;
+  }
+
+  .case-arrow {
+    width: 24px;
+    height: 24px;
+    stroke: #b8a89a;
+    fill: none;
+    stroke-width: 2;
+    transition: transform 0.3s ease;
+  }
+
+  .case.open .case-arrow {
+    transform: rotate(180deg);
+  }
+
+  .case-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s ease;
+  }
+
+  .case.open .case-body {
+    max-height: 600px;
+  }
+
+  .case-content {
+    padding: 28px 32px 32px;
+    background: #f8f4ec;
+  }
+
+  .case-content p {
+    font-size: 15px;
+    color: #6b6660;
+    line-height: 2;
+    margin-bottom: 16px;
+  }
+
+  .case-content p:last-child {
+    margin-bottom: 0;
+  }
+
+  .case-content .highlight {
+    color: #C46849;
+    font-weight: 600;
+  }
+
+  .case-content .stat {
+    display: inline-block;
+    background: #C46849;
+    color: #fff;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-right: 8px;
+  }
+
+  /* Flow */
+  .flow {
+    max-width: 620px;
+    margin: 0 auto 100px;
+    padding: 0 24px;
+  }
+
+  .flow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    position: relative;
+  }
+
+  .flow-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #C46849;
+    margin-top: 8px;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .flow-step:not(:last-child) .flow-dot::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 5px;
+    width: 2px;
+    height: calc(100% + 24px);
+    background: #e0d8d0;
+  }
+
+  .flow-text {
+    padding-bottom: 32px;
+  }
+
+  .flow-text h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2d2a26;
+    margin-bottom: 6px;
+  }
+
+  .flow-text p {
+    font-size: 14px;
+    color: #9a9590;
+    line-height: 1.7;
+  }
+
+  /* CTA */
+  .cta {
+    text-align: center;
+    padding: 80px 24px 120px;
+  }
+
+  .cta-line {
+    width: 40px;
+    height: 2px;
+    background: #C46849;
+    margin: 0 auto 32px;
+  }
+
+  .cta p {
+    font-size: 17px;
+    color: #6b6660;
+    line-height: 1.9;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .cta p strong {
+    color: #C46849;
+    font-weight: 600;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 32px; }
+    .case-header { padding: 20px 20px; gap: 14px; }
+    .case-content { padding: 20px 20px 24px; }
+    .case-title h3 { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <p class="hero-tag">关于 Agent</p>
+  <h1>你不需要知道<br>Agent 能用来干什么</h1>
+  <p>很多人不用 AI Agent，卡在一个问题上：<br>"我到底用它来做什么？"</p>
+</div>
+
+<!-- Insight -->
+<div class="insight">
+  <div class="insight-line"></div>
+  <p>
+    不是 <strong>想清楚了再去用</strong><br>
+    而是 <strong>用着用着就清楚了</strong>
+  </p>
+</div>
+
+<!-- Cases -->
+<div class="section-label">
+  <span>我的真实案例</span>
+</div>
+
+<div class="cases">
+
+  <!-- Case 1 -->
+  <div class="case" onclick="this.classList.toggle('open')">
+    <div class="case-header">
+      <div class="case-icon">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <div class="case-title">
+        <h3>公众号全自动运转</h3>
+        <p>一天三篇，一篇都没手写过</p>
+      </div>
+      <svg class="case-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="case-body">
+      <div class="case-content">
+        <p>我做公众号不是先想好"我要用 Agent 写文章"。而是某天觉得写文章太累了，试着让 Agent 帮我写了一篇——效果还行，于是继续用。</p>
+        <p>后来发现它还能帮我做封面图、检测 AI 味、自动上传草稿箱。再后来，定时任务配上了，<span class="highlight">每天 3 篇，全自动</span>。</p>
+        <p><span class="stat">选题</span><span class="stat">写文</span><span class="stat">AI检测</span><span class="stat">生图</span><span class="stat">上传</span>——全程无人干预。</p>
+        <p>一开始我只是想"让它帮个忙"，现在它自己就是一个内容工厂。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Case 2 -->
+  <div class="case" onclick="this.classList.toggle('open')">
+    <div class="case-header">
+      <div class="case-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      </div>
+      <div class="case-title">
+        <h3>不会写代码，也能造产品</h3>
+        <p>Agent 当工程师，我当老板</p>
+      </div>
+      <svg class="case-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="case-body">
+      <div class="case-content">
+        <p>VibeImg 是一个 AI 生图网站，从代码到部署，<span class="highlight">我没手写一行代码</span>。我只负责说"我要什么"，Agent 负责"怎么实现"。</p>
+        <p>服务器配置、Docker 部署、API 对接、前端页面——全是 Agent 搞定的。我甚至不知道 Docker 是什么语法，但产品已经上线在跑了。</p>
+        <p>这不是"我提前想好的用途"。我只是在用 Agent 的过程中发现：<span class="highlight">原来不会写代码也能造东西</span>。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Case 3 -->
+  <div class="case" onclick="this.classList.toggle('open')">
+    <div class="case-header">
+      <div class="case-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="case-title">
+        <h3>24 小时在线的助手</h3>
+        <p>不只是聊天，是自动化生活</p>
+      </div>
+      <svg class="case-arrow" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="case-body">
+      <div class="case-content">
+        <p>朋友圈文案、定时发帖、数据监控、会议纪要——这些事情不需要我想，Agent 按时间表自己做。</p>
+        <p>我设了一次规则，之后就再也没管过。<span class="highlight">它不是工具，它是一个 24 小时在线的人</span>。</p>
+        <p>一开始我只是让它帮我发一条朋友圈。现在回头看，它已经接管了我生活中一大堆重复的事。</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Flow -->
+<div class="section-label">
+  <span>这才是正确的打开方式</span>
+</div>
+
+<div class="flow">
+  <div class="flow-steps">
+    <div class="flow-step">
+      <div class="flow-dot"></div>
+      <div class="flow-text">
+        <h4>先让它做一件小事</h4>
+        <p>比如帮你写一个回复、改一段文字、查一个数据</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-dot"></div>
+      <div class="flow-text">
+        <h4>做着做着你会发现</h4>
+        <p>"诶，这个也能让它干"</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-dot"></div>
+      <div class="flow-text">
+        <h4>三个月后回头看</h4>
+        <p>你已经离不开它了</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<div class="cta">
+  <div class="cta-line"></div>
+  <p>
+    别等想清楚了再用<br>
+    <strong>先用起来，用途会自己出现</strong>
+  </p>
+</div>
+
+</body>
+</html>
