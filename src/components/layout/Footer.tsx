@@ -47,6 +47,11 @@ export function Footer() {
                             {t('terms')}
                         </Link>
                     </nav>
+
+                    <div className="flex flex-col items-center md:items-end gap-1">
+                        <p className="text-sm font-medium text-surface-700">{t('contact')}</p>
+                        <p className="text-sm text-surface-600">{t('wechat')}: Mentor_X</p>
+                    </div>
                 </div>
             </div>
         </footer>

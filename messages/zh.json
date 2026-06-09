@@ -11,7 +11,9 @@
   "footer": {
     "about": "关于",
     "privacy": "隐私政策",
-    "terms": "服务条款"
+    "terms": "服务条款",
+    "contact": "联系我",
+    "wechat": "微信"
   },
   "home": {
     "intro": {

@@ -11,7 +11,9 @@
     "footer": {
         "about": "概要",
         "privacy": "プライバシー",
-        "terms": "利用規約"
+        "terms": "利用規約",
+        "contact": "お問い合わせ",
+        "wechat": "WeChat"
     },
     "home": {
         "intro": {
