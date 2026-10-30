@@ -3,9 +3,10 @@
   "files": [
     "assets/fonts/OFL.txt",
     "assets/fonts/heading.woff2",
-    "assets/index-BPEYuZ-5.css",
-    "assets/index-XJD182Jw.js",
+    "assets/index-4kuwfz2o.js",
+    "assets/index-C2HUynVY.css",
     "assets/model-poster-mobile.webp",
+    "assets/model-poster-preview.webp",
     "assets/model-poster.webp",
     "assets/models/01_nas.glb",
     "assets/models/02_thinker.glb",
@@ -17,7 +18,19 @@
     "assets/models/08_muse.glb",
     "assets/models/09_laptop.glb",
     "assets/models/all_9_charms.glb",
-    "assets/scene-B-7ZBr0I.js",
+    "assets/runtime/images/desktop.61a7f809fd0ff620.webp",
+    "assets/runtime/images/mobile.aad5a5c334e0fba9.webp",
+    "assets/runtime/images/rope.de9bea08c5d82db7.webp",
+    "assets/runtime/models/01_nas.e4129b67fa129828.glb.br",
+    "assets/runtime/models/02_thinker.463f5c3b2736f342.glb.br",
+    "assets/runtime/models/03_strategy_book.148560ce322a9799.glb.br",
+    "assets/runtime/models/04_epictetus.980920b636406091.glb.br",
+    "assets/runtime/models/05_dumbbell.7640f270451702c4.glb.br",
+    "assets/runtime/models/06_finance.39bd147d3e877b85.glb.br",
+    "assets/runtime/models/07_machiavelli.67500c3e1b53f72d.glb.br",
+    "assets/runtime/models/08_muse.a471ae0c930f530b.glb.br",
+    "assets/runtime/models/09_laptop.29b2ce1e0bd92c5d.glb.br",
+    "assets/scene-JAqIFnLi.js",
     "assets/textures/nylon-weave-imagegen-v1.webp"
   ]
 }

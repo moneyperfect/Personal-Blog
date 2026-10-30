@@ -7,20 +7,25 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f7f2e8'/%3E%3Cpath d='M17 46V18h5l20 22V18h5v28h-5L22 24v22Z' fill='%2320170f'/%3E%3C/svg%3E" />
     <meta name="description" content="我是 Nas。写东西，做东西，也练自己。这里记录我的思考、代码和动手做出的东西。" />
     <title>Nas — パーソナルサイト</title>
-    <link rel="preload" href="/assets/fonts/heading.woff2?v=5" as="font" type="font/woff2" crossorigin />
-    <script type="module" crossorigin src="/assets/index-XJD182Jw.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-BPEYuZ-5.css">
+    <link rel="preload" as="image" href="/assets/runtime/images/desktop.61a7f809fd0ff620.webp" media="(min-width: 701px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/assets/runtime/images/mobile.aad5a5c334e0fba9.webp" media="(max-width: 700px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/assets/runtime/images/rope.de9bea08c5d82db7.webp" crossorigin="anonymous" fetchpriority="low" />
+    <script type="module" crossorigin src="/assets/index-4kuwfz2o.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C2HUynVY.css">
       <link rel="canonical" href="https://nasbuild.dev/ja" />
     <link rel="alternate" hreflang="zh" href="https://nasbuild.dev/zh" />
     <link rel="alternate" hreflang="ja" href="https://nasbuild.dev/ja" />
-    <script defer src="/api/home-analytics"></script>
+    <script async src="/api/home-analytics"></script>
   </head>
   <body>
     <a class="skip-link" href="/ja/blog">記事を読む</a>
     <main>
       <section class="hero" id="home" aria-labelledby="hero-title">
-        <div id="scene-host" class="scene-host" aria-label="赤いストラップに吊るされた九つの立体チャーム。マウスや指で動かせます。">
-          <img id="scene-fallback" class="scene-fallback" src="/assets/model-poster.webp" alt="赤いストラップと九つの金色チャームのパーソナルコレクション" hidden />
+        <div id="scene-host" class="scene-host is-loading" aria-label="赤いストラップに吊るされた九つの立体チャーム。マウスや指で動かせます。">
+          <picture class="scene-poster">
+            <source media="(max-width: 700px)" srcset="/assets/runtime/images/mobile.aad5a5c334e0fba9.webp" />
+            <img id="scene-fallback" class="scene-fallback" src="/assets/runtime/images/desktop.61a7f809fd0ff620.webp" alt="赤いストラップと九つの金色チャームのパーソナルコレクション" fetchpriority="high" decoding="async" width="1280" height="801" />
+          </picture>
         </div>
 
         <header class="site-header">

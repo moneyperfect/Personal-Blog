@@ -64,7 +64,7 @@ for (const locale of ['zh', 'ja']) {
         `    <link rel="canonical" href="https://nasbuild.dev/${locale}" />`,
         '    <link rel="alternate" hreflang="zh" href="https://nasbuild.dev/zh" />',
         '    <link rel="alternate" hreflang="ja" href="https://nasbuild.dev/ja" />',
-        '    <script defer src="/api/home-analytics"></script>',
+        '    <script async src="/api/home-analytics"></script>',
         '  </head>',
     ].join('\n'));
     await writeFile(join(experienceRoot, `${locale}.html`), localized);

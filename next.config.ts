@@ -23,6 +23,21 @@ const nextConfig: NextConfig = {
   turbopack: {
     root: __dirname,
   },
+  async headers() {
+    return [
+      {
+        source: '/assets/runtime/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
+      },
+      {
+        source: '/assets/runtime/models/:path*',
+        headers: [
+          { key: 'Content-Encoding', value: 'br' },
+          { key: 'Content-Type', value: 'model/gltf-binary' },
+        ],
+      },
+    ];
+  },
 };
 
 export default withNextIntl(nextConfig);
