@@ -13,7 +13,7 @@ export function Footer() {
             <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8 py-10">
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="flex flex-col items-center md:items-start gap-2">
-                        <Link
+                        <a
                             href={`/${locale}`}
                             className="flex items-center gap-2 font-semibold text-lg text-surface-900"
                         >
@@ -21,7 +21,7 @@ export function Footer() {
                                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                             </svg>
                             <span>NAS</span>
-                        </Link>
+                        </a>
                         <p className="text-sm text-surface-600">
                             © {currentYear} NAS Digital Products
                         </p>

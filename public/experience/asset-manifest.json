@@ -1,0 +1,23 @@
+{
+  "source": "sites/red-thread",
+  "files": [
+    "assets/fonts/OFL.txt",
+    "assets/fonts/heading.woff2",
+    "assets/index-BPEYuZ-5.css",
+    "assets/index-XJD182Jw.js",
+    "assets/model-poster-mobile.webp",
+    "assets/model-poster.webp",
+    "assets/models/01_nas.glb",
+    "assets/models/02_thinker.glb",
+    "assets/models/03_strategy_book.glb",
+    "assets/models/04_epictetus.glb",
+    "assets/models/05_dumbbell.glb",
+    "assets/models/06_finance.glb",
+    "assets/models/07_machiavelli.glb",
+    "assets/models/08_muse.glb",
+    "assets/models/09_laptop.glb",
+    "assets/models/all_9_charms.glb",
+    "assets/scene-B-7ZBr0I.js",
+    "assets/textures/nylon-weave-imagegen-v1.webp"
+  ]
+}

@@ -28,7 +28,7 @@ export function Header() {
         <header className="sticky top-0 z-50 border-b border-surface-300 bg-surface-100/90 backdrop-blur-md">
             <div className="max-w-page mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex h-16 items-center justify-between">
-                    <Link
+                    <a
                         href={`/${locale}`}
                         className="flex items-center gap-2 text-lg font-semibold text-surface-900 hover:text-accent transition-colors"
                     >
@@ -40,7 +40,7 @@ export function Header() {
                             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
                         </svg>
                         <span className="hidden sm:inline">NAS</span>
-                    </Link>
+                    </a>
 
                     <nav className="hidden items-center gap-1 md:flex">
                         {navItems.map((item) => {
