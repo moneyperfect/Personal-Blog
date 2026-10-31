@@ -134,7 +134,7 @@ export function BlogClient({
                                 <span className="text-sm text-surface-500 mt-2 block">
                                     {new Date(
                                         post.frontmatter.date
-                                    ).toLocaleDateString()}
+                                    ).toLocaleDateString(locale === 'zh' ? 'zh-CN' : 'ja-JP', { timeZone: 'UTC' })}
                                 </span>
                             </Link>
                         ))}
