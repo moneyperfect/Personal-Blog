@@ -3,8 +3,9 @@
   "files": [
     "assets/fonts/OFL.txt",
     "assets/fonts/heading.woff2",
-    "assets/index-4kuwfz2o.js",
-    "assets/index-C2HUynVY.css",
+    "assets/index-D1DodSwX.js",
+    "assets/index-D9KOodT6.css",
+    "assets/model-poster-mobile-compact.webp",
     "assets/model-poster-mobile.webp",
     "assets/model-poster-preview.webp",
     "assets/model-poster.webp",
@@ -20,6 +21,8 @@
     "assets/models/all_9_charms.glb",
     "assets/runtime/images/desktop.61a7f809fd0ff620.webp",
     "assets/runtime/images/mobile.aad5a5c334e0fba9.webp",
+    "assets/runtime/images/mobile.e4d832f6e3bb6276.webp",
+    "assets/runtime/images/mobileCompact.dbfac6a10ab17db8.webp",
     "assets/runtime/images/rope.de9bea08c5d82db7.webp",
     "assets/runtime/models/01_nas.e4129b67fa129828.glb.br",
     "assets/runtime/models/02_thinker.463f5c3b2736f342.glb.br",
@@ -30,7 +33,7 @@
     "assets/runtime/models/07_machiavelli.67500c3e1b53f72d.glb.br",
     "assets/runtime/models/08_muse.a471ae0c930f530b.glb.br",
     "assets/runtime/models/09_laptop.29b2ce1e0bd92c5d.glb.br",
-    "assets/scene-JAqIFnLi.js",
+    "assets/scene-9C03um6k.js",
     "assets/textures/nylon-weave-imagegen-v1.webp"
   ]
 }
